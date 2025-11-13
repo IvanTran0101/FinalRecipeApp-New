@@ -1,0 +1,48 @@
+package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
+import java.util.UUID;
+
+@Entity(tableName = "User")
+public class UserEntity {
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "user_id")
+    private UUID userId;
+
+    @NonNull
+    @ColumnInfo(name = "username")
+    private String username;
+
+    @NonNull
+    @ColumnInfo(name = "password_hash")
+    private String passwordHash;
+
+    @ColumnInfo(name = "avatar_image")
+    private String avatarImage;
+
+    public UserEntity(@NonNull UUID userId, @NonNull String username, @NonNull String passwordHash, String avatarImage) {
+        this.userId = userId;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.avatarImage = avatarImage;
+    }
+
+    @NonNull
+    public UUID getUserId() { return userId; }
+    public void setUserId(@NonNull UUID userId) { this.userId = userId; }
+
+    @NonNull
+    public String getUsername() { return username; }
+    public void setUsername(@NonNull String username) { this.username = username; }
+
+    @NonNull
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(@NonNull String passwordHash) { this.passwordHash = passwordHash; }
+
+    public String getAvatarImage() { return avatarImage; }
+    public void setAvatarImage(String avatarImage) { this.avatarImage = avatarImage; }
+}
