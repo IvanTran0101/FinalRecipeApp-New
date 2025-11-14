@@ -1,8 +1,8 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class Ingredient {
-    private String ingredientId;
-    private String recipeId;
+    private Integer ingredientId;
+    private Integer recipeId;
     private String name;
     private int quantity;
     private String unit;
@@ -11,8 +11,8 @@ public class Ingredient {
 
     }
 
-    public Ingredient(String ingredientId,
-                      String recipeId,
+    public Ingredient(Integer ingredientId,
+                      Integer recipeId,
                       String name,
                       int quantity,
                       String unit) {
@@ -23,19 +23,19 @@ public class Ingredient {
         this.unit = unit;
     }
 
-    public String getIngredientId() {
+    public Integer getIngredientId() {
         return ingredientId;
     }
 
-    public void setIngredientId(String ingredientId) {
+    public void setIngredientId(Integer ingredientId) {
         this.ingredientId = ingredientId;
     }
 
-    public String getRecipeId() {
+    public Integer getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
     }
 

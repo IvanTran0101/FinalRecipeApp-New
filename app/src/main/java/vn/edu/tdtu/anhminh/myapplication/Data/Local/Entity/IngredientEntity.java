@@ -18,11 +18,11 @@ public class IngredientEntity {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "ingredient_id")
-    private UUID ingredientId;
+    private Integer ingredientId;
 
     @NonNull
     @ColumnInfo(name = "recipe_id", index = true)
-    private UUID recipeId;
+    private Integer recipeId;
 
     @NonNull
     @ColumnInfo(name = "name")
@@ -39,7 +39,7 @@ public class IngredientEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
-    public IngredientEntity(@NonNull UUID ingredientId, @NonNull UUID recipeId, @NonNull String name, @NonNull Double quantity, @NonNull String unit) {
+    public IngredientEntity(@NonNull Integer ingredientId, @NonNull Integer recipeId, @NonNull String name, @NonNull Double quantity, @NonNull String unit) {
         this.ingredientId = ingredientId;
         this.recipeId = recipeId;
         this.name = name;
@@ -47,11 +47,11 @@ public class IngredientEntity {
         this.unit = unit;
     }
 
-    public void setIngredientId(@NonNull UUID ingredientId) {
+    public void setIngredientId(@NonNull Integer ingredientId) {
         this.ingredientId = ingredientId;
     }
 
-    public void setRecipeId(@NonNull UUID recipeId) {
+    public void setRecipeId(@NonNull Integer recipeId) {
         this.recipeId = recipeId;
     }
 
@@ -83,7 +83,7 @@ public class IngredientEntity {
     }
 
     @NonNull
-    public UUID getIngredientId() { return ingredientId; }
+    public Integer getIngredientId() { return ingredientId; }
     @NonNull
-    public UUID getRecipeId() { return recipeId; }
+    public Integer getRecipeId() { return recipeId; }
 }

@@ -11,7 +11,7 @@ public class UserEntity {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "user_id")
-    private UUID userId;
+    private Integer userId;
 
     @NonNull
     @ColumnInfo(name = "username")
@@ -24,7 +24,7 @@ public class UserEntity {
     @ColumnInfo(name = "avatar_image")
     private String avatarImage;
 
-    public UserEntity(@NonNull UUID userId, @NonNull String username, @NonNull String passwordHash, String avatarImage) {
+    public UserEntity(@NonNull Integer userId, @NonNull String username, @NonNull String passwordHash, String avatarImage) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -32,8 +32,8 @@ public class UserEntity {
     }
 
     @NonNull
-    public UUID getUserId() { return userId; }
-    public void setUserId(@NonNull UUID userId) { this.userId = userId; }
+    public Integer getUserId() { return userId; }
+    public void setUserId(@NonNull Integer userId) { this.userId = userId; }
 
     @NonNull
     public String getUsername() { return username; }

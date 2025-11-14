@@ -27,15 +27,15 @@ import java.util.UUID;
 public class PlanEntity {
     @NonNull
     @ColumnInfo(name = "week_id")
-    private UUID weekId;
+    private Integer weekId;
 
     @NonNull
     @ColumnInfo(name = "recipe_id")
-    private UUID recipeId;
+    private Integer recipeId;
 
     @NonNull
     @ColumnInfo(name = "user_id")
-    private UUID userId;
+    private Integer userId;
 
     @NonNull
     @ColumnInfo(name = "week_number")
@@ -49,7 +49,7 @@ public class PlanEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
-    public PlanEntity(@NonNull UUID weekId, @NonNull UUID recipeId, @NonNull UUID userId,@NonNull Integer weekNumber, @NonNull Integer weekDay) {
+    public PlanEntity(@NonNull Integer weekId, @NonNull Integer recipeId, @NonNull Integer userId,@NonNull Integer weekNumber, @NonNull Integer weekDay) {
         this.weekId = weekId;
         this.recipeId = recipeId;
         this.userId = userId;
@@ -58,15 +58,15 @@ public class PlanEntity {
     }
 
     @NonNull
-    public UUID getWeekId() { return weekId; }
+    public Integer getWeekId() { return weekId; }
     public void setWeekId(@NonNull UUID weekId) { this.weekId = weekId; }
 
     @NonNull
-    public UUID getRecipeId() { return recipeId; }
+    public Integer getRecipeId() { return recipeId; }
     public void setRecipeId(@NonNull UUID recipeId) { this.recipeId = recipeId; }
 
     @NonNull
-    public UUID getUserId() { return userId; }
+    public Integer getUserId() { return userId; }
     public void setUserId(@NonNull UUID userId) { this.userId = userId; }
 
     @NonNull

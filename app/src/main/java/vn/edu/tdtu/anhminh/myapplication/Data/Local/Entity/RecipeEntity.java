@@ -18,10 +18,10 @@ public class RecipeEntity {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "recipe_id")
-    private UUID recipeId;
+    private Integer recipeId;
 
     @ColumnInfo(name = "user_id")
-    private UUID userId;
+    private Integer userId;
 
     @ColumnInfo(name = "title")
     private String title;
@@ -52,17 +52,17 @@ public class RecipeEntity {
     @ColumnInfo(name = "fat")
     private Double fat;
 
-    @ColumnInfo(name = "status", defaultValue = "Unpin")
-    private String status;
+    @ColumnInfo(name = "status", defaultValue = "0")
+    private Boolean isPinned;
 
     // -------------------------------------------------------------------
     // --- 1. CONSTRUCTOR (REQUIRED by Room) ---
     // Room needs a way to create an instance when reading from the database.
     // This constructor must include all columns used by Room.
     // -------------------------------------------------------------------
-    public RecipeEntity(@NonNull UUID recipeId, UUID userId, String title, String recipeImage, String category,
+    public RecipeEntity(@NonNull Integer recipeId, Integer userId, String title, String recipeImage, String category,
             String dietMode, String videoLink, Double calories, Double protein, Double carb,
-            Double fat, String status) {
+            Double fat, Boolean isPinned) {
 
         this.recipeId = recipeId;
         this.userId = userId;
@@ -75,15 +75,15 @@ public class RecipeEntity {
         this.protein = protein;
         this.carb = carb;
         this.fat = fat;
-        this.status = status;
+        this.isPinned = isPinned;
     }
 
     @NonNull
-    public UUID getRecipeId() { return recipeId; }
-    public void setRecipeId(@NonNull UUID recipeId) { this.recipeId = recipeId; }
+    public Integer getRecipeId() { return recipeId; }
+    public void setRecipeId(@NonNull Integer recipeId) { this.recipeId = recipeId; }
 
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -112,6 +112,6 @@ public class RecipeEntity {
     public Double getFat() { return fat; }
     public void setFat(Double fat) { this.fat = fat; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public Boolean getIsPinned() { return isPinned; }
+    public void setIsPinned(Boolean isPinned) { this.isPinned = isPinned; }
 }

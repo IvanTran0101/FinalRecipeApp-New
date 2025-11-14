@@ -1,7 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class User {
-    private String userId;
+    private Integer userId;
     private String username;
     private String passwordHash;
     private String avatarImage; //uri string
@@ -10,18 +10,18 @@ public class User {
 
     }
 
-    public User(String userId, String username, String passwordHash, String avatarImage) {
+    public User(Integer userId, String username, String passwordHash, String avatarImage) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.avatarImage = avatarImage;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

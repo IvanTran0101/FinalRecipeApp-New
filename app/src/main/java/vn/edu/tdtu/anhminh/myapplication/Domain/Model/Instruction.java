@@ -1,8 +1,8 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class Instruction {
-    private String instructionId;
-    private String recipeId;
+    private Integer instructionId;
+    private Integer recipeId;
     private int stepNumber;
     private String instruction;
 
@@ -10,8 +10,8 @@ public class Instruction {
 
     }
 
-    public Instruction(String instructionId,
-                       String recipeId,
+    public Instruction(Integer instructionId,
+                       Integer recipeId,
                        int stepNumber,
                        String instruction) {
         this.instructionId = instructionId;
@@ -20,19 +20,19 @@ public class Instruction {
         this.instruction = instruction;
     }
 
-    public String getInstructionId() {
+    public Integer getInstructionId() {
         return instructionId;
     }
 
-    public void setInstructionId(String instructionId) {
+    public void setInstructionId(Integer instructionId) {
         this.instructionId = instructionId;
     }
 
-    public String getRecipeId() {
+    public Integer getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
     }
 

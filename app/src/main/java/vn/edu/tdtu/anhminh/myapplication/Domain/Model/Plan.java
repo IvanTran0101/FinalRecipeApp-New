@@ -2,8 +2,8 @@ package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class Plan {
     private String weekId;
-    private String userId;
-    private String recipeId;
+    private Integer userId;
+    private Integer recipeId;
 
     private int weekNumber;
     private int weekDay;
@@ -12,7 +12,7 @@ public class Plan {
 
     }
 
-    public Plan(String weekId, String userId, String recipeId, int weekNumber, int weekDay) {
+    public Plan(String weekId, Integer userId, Integer recipeId, int weekNumber, int weekDay) {
         this.weekId = weekId;
         this.userId = userId;
         this.recipeId = recipeId;
@@ -28,19 +28,19 @@ public class Plan {
         this.weekId = weekId;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public String getRecipeId() {
+    public Integer getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
     }
 

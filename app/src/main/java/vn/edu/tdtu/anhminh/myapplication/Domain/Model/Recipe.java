@@ -3,8 +3,8 @@ package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 import java.util.List;
 
 public class Recipe {
-    private String recipeId;
-    private String userId;
+    private Integer recipeId;
+    private Integer userId;
 
     private String title;
     private String recipeImage; //uri duoi dang String
@@ -18,7 +18,7 @@ public class Recipe {
     private Integer fat;
 
     //pin/unpin
-    private String status;
+    private Boolean isPinned;
 
     private List<Ingredient> ingredients;
     private List<Instruction> instructions;
@@ -26,8 +26,8 @@ public class Recipe {
     public Recipe(){
 
     }
-    public Recipe(String recipeId,
-                  String userId,
+    public Recipe(Integer recipeId,
+                  Integer userId,
                   String title,
                   String recipeImage,
                   String category,
@@ -37,7 +37,7 @@ public class Recipe {
                   Integer protein,
                   Integer carb,
                   Integer fat,
-                  String status,
+                  Boolean isPinned,
                   List<Ingredient> ingredients,
                   List<Instruction> instructions){
         this.recipeId = recipeId;
@@ -51,24 +51,24 @@ public class Recipe {
         this.protein = protein;
         this.carb = carb;
         this.fat = fat;
-        this.status = status;
+        this.isPinned = isPinned;
         this.ingredients = ingredients;
         this.instructions = instructions;
     }
 
-    public String getRecipeId() {
+    public Integer getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -144,12 +144,12 @@ public class Recipe {
         this.fat = fat;
     }
 
-    public String getStatus() {
-        return status;
+    public Boolean getPinned() {
+        return isPinned;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setPinned(Boolean pinned) {
+        isPinned = pinned;
     }
 
     public List<Ingredient> getIngredients() {

@@ -19,11 +19,11 @@ public class InstructionEntity {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "instruction_id")
-    private UUID instructionId;
+    private Integer instructionId;
 
     @NonNull
     @ColumnInfo(name = "recipe_id")
-    private UUID recipeId;
+    private Integer recipeId;
 
     @NonNull
     @ColumnInfo(name = "step_number")
@@ -37,8 +37,8 @@ public class InstructionEntity {
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
     public InstructionEntity(
-            @NonNull UUID instructionId,
-            @NonNull UUID recipeId,
+            @NonNull Integer instructionId,
+            @NonNull Integer recipeId,
             @NonNull Integer stepNumber,
             @NonNull String instruction) {
 
@@ -49,12 +49,12 @@ public class InstructionEntity {
     }
 
     @NonNull
-    public UUID getInstructionId() { return instructionId; }
-    public void setInstructionId(@NonNull UUID instructionId) { this.instructionId = instructionId; }
+    public Integer getInstructionId() { return instructionId; }
+    public void setInstructionId(@NonNull Integer instructionId) { this.instructionId = instructionId; }
 
     @NonNull
-    public UUID getRecipeId() { return recipeId; }
-    public void setRecipeId(@NonNull UUID recipeId) { this.recipeId = recipeId; }
+    public Integer getRecipeId() { return recipeId; }
+    public void setRecipeId(@NonNull Integer recipeId) { this.recipeId = recipeId; }
 
     @NonNull
     public Integer getStepNumber() { return stepNumber; }
