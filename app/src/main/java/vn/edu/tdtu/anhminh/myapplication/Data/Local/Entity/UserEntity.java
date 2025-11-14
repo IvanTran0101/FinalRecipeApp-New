@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
-import java.util.UUID;
 
 @Entity(tableName = "User")
 public class UserEntity {

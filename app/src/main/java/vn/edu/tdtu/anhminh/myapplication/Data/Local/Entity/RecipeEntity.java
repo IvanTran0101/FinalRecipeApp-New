@@ -5,7 +5,6 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
-import java.util.UUID;
 
 @Entity(tableName = "Recipe", foreignKeys = @ForeignKey(
         entity = UserEntity.class, // 1. The PARENT table entity

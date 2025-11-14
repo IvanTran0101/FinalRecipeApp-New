@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.annotation.NonNull;
-import java.util.UUID;
 
 @Entity(tableName = "Plan", primaryKeys = {"week_id", "user_id", "week_day"},
         foreignKeys = {
@@ -59,15 +58,15 @@ public class PlanEntity {
 
     @NonNull
     public Integer getWeekId() { return weekId; }
-    public void setWeekId(@NonNull UUID weekId) { this.weekId = weekId; }
+    public void setWeekId(@NonNull Integer weekId) { this.weekId = weekId; }
 
     @NonNull
     public Integer getRecipeId() { return recipeId; }
-    public void setRecipeId(@NonNull UUID recipeId) { this.recipeId = recipeId; }
+    public void setRecipeId(@NonNull Integer recipeId) { this.recipeId = recipeId; }
 
     @NonNull
     public Integer getUserId() { return userId; }
-    public void setUserId(@NonNull UUID userId) { this.userId = userId; }
+    public void setUserId(@NonNull Integer userId) { this.userId = userId; }
 
     @NonNull
     public Integer getWeekNumber() { return weekNumber; }
