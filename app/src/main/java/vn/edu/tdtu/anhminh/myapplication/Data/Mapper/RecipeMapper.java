@@ -9,7 +9,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 
 public class RecipeMapper {
-    private RecipeMapper(){
+    private RecipeMapper() {
 
     }
 
