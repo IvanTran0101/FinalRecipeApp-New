@@ -12,25 +12,71 @@ import java.util.List;
 
 @Dao
 public interface RecipeDAO {
+
+    // ---------------------------------------------------
+    // INSERT
+    // ---------------------------------------------------
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(RecipeEntity recipe);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insertAll(List<RecipeEntity> recipes);
+
+    // ---------------------------------------------------
+    // UPDATE & DELETE
+    // ---------------------------------------------------
     @Update
     int update(RecipeEntity recipe);
 
     @Delete
     int delete(RecipeEntity recipe);
 
-
-    @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId")
-    RecipeEntity getRecipeById(int recipeId);
-
+    // ---------------------------------------------------
+    // SELECT ALL (UI Home)
+    // ---------------------------------------------------
     @Query("SELECT * FROM Recipe ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getAllRecipes();
 
+    // ---------------------------------------------------
+    // SELECT BY ID (Detail Screen)
+    // ---------------------------------------------------
+    @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId LIMIT 1")
+    RecipeEntity getRecipeById(int recipeId);
+
+    // ---------------------------------------------------
+    // SELECT BY USER ID (My Recipes)
+    // ---------------------------------------------------
     @Query("SELECT * FROM Recipe WHERE user_id = :userId ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getRecipesByCreator(int userId);
 
+    // ---------------------------------------------------
+    // PIN / UNPIN
+    // ---------------------------------------------------
+    // Pinned = true → status = 1
     @Query("SELECT * FROM Recipe WHERE status = 1 ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getPinnedRecipes();
+
+    // Unpinned = false → status = 0
+    @Query("SELECT * FROM Recipe WHERE status = 0 ORDER BY title ASC")
+    LiveData<List<RecipeEntity>> getUnpinnedRecipes();
+
+    // ---------------------------------------------------
+    // TOGGLE PIN (recipeDAO.togglePinned(id);
+    // ---------------------------------------------------
+    @Query("UPDATE Recipe SET status = CASE status WHEN 1 THEN 0 ELSE 1 END WHERE recipe_id = :recipeId")
+    void togglePinned(int recipeId);
+
+    // ---------------------------------------------------
+    // COUNT (OPTIONAL)
+    // ---------------------------------------------------
+    @Query("SELECT COUNT(*) FROM Recipe")
+    int countRecipes();
+
+    // SELECT ALL (background thread)
+    @Query("SELECT * FROM Recipe ORDER BY title ASC")
+    List<RecipeEntity> getAllSync();
+
+    // SELECT PINNED (background thread)
+    @Query("SELECT * FROM Recipe WHERE status = 1 ORDER BY title ASC")
+    List<RecipeEntity> getPinnedRecipesSync();
 }

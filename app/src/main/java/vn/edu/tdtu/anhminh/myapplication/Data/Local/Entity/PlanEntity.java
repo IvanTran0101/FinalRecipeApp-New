@@ -3,9 +3,10 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
-@Entity(tableName = "Plan", primaryKeys = {"week_id", "user_id", "week_day"},
+@Entity(tableName = "Plan",
         foreignKeys = {
                 // FK 1: Link to UserEntity
                 @ForeignKey(
@@ -24,6 +25,10 @@ import androidx.annotation.NonNull;
         }
 )
 public class PlanEntity {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "plan_id")
+    private Integer planId;
+
     @NonNull
     @ColumnInfo(name = "week_id")
     private Integer weekId;
@@ -48,13 +53,17 @@ public class PlanEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
-    public PlanEntity(@NonNull Integer weekId, @NonNull Integer recipeId, @NonNull Integer userId,@NonNull Integer weekNumber, @NonNull Integer weekDay) {
+    public PlanEntity(Integer planId, @NonNull Integer weekId, @NonNull Integer recipeId, @NonNull Integer userId, @NonNull Integer weekNumber, @NonNull Integer weekDay) {
+        this.planId = planId;
         this.weekId = weekId;
         this.recipeId = recipeId;
         this.userId = userId;
         this.weekNumber = weekNumber;
         this.weekDay = weekDay;
     }
+
+    public Integer getPlanId() { return planId; }
+    public void setPlanId(Integer planId) { this.planId = planId; }
 
     @NonNull
     public Integer getWeekId() { return weekId; }
