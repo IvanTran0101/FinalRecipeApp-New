@@ -71,4 +71,12 @@ public interface RecipeDAO {
     // ---------------------------------------------------
     @Query("SELECT COUNT(*) FROM Recipe")
     int countRecipes();
+
+    // SELECT ALL (background thread)
+    @Query("SELECT * FROM Recipe ORDER BY title ASC")
+    List<RecipeEntity> getAllSync();
+
+    // SELECT PINNED (background thread)
+    @Query("SELECT * FROM Recipe WHERE status = 1 ORDER BY title ASC")
+    List<RecipeEntity> getPinnedRecipesSync();
 }

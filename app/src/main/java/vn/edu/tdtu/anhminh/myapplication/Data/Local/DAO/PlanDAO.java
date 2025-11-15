@@ -25,9 +25,12 @@ public interface PlanDAO {
     @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId ORDER BY week_day ASC")
     LiveData<List<PlanEntity>> getPlanForWeek(int userId, int weekId);
 
-    @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId AND week_day = :weekDay")
-    PlanEntity getPlanSlot(int userId, int weekId, int weekDay);
+    @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId AND week_day = :weekDay ORDER BY plan_id ASC")
+    List<PlanEntity> getPlanSlotsForDay(int userId, int weekId, int weekDay);
 
     @Query("SELECT * FROM `Plan` WHERE recipe_id = :recipeId")
     List<PlanEntity> getPlanEntriesByRecipe(int recipeId);
+
+    @Query("DELETE FROM `Plan` WHERE user_id = :userId AND week_id = :weekId")
+    void deletePlansForWeek(int userId, int weekId);
 }
