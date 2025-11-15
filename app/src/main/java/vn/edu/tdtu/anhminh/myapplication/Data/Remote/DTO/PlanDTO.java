@@ -1,7 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO;
 
 public class PlanDTO {
-    private String weekId;
+    private Integer weekId;
     private Integer userId;
     private Integer recipeId;
 
@@ -12,7 +12,7 @@ public class PlanDTO {
 
     }
 
-    public PlanDTO(String weekId,
+    public PlanDTO(Integer weekId,
                    Integer userId,
                    Integer recipeId,
                    int weekNumber,
@@ -24,11 +24,11 @@ public class PlanDTO {
         this.weekDay = weekDay;
     }
 
-    public String getWeekId() {
+    public Integer getWeekId() {
         return weekId;
     }
 
-    public void setWeekId(String weekId) {
+    public void setWeekId(Integer weekId) {
         this.weekId = weekId;
     }
 

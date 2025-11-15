@@ -29,7 +29,7 @@ public class IngredientEntity {
 
     @NonNull
     @ColumnInfo(name = "quantity")
-    private Double quantity;
+    private int quantity;
 
     @NonNull
     @ColumnInfo(name = "unit")
@@ -38,7 +38,7 @@ public class IngredientEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
-    public IngredientEntity(@NonNull Integer ingredientId, @NonNull Integer recipeId, @NonNull String name, @NonNull Double quantity, @NonNull String unit) {
+    public IngredientEntity(@NonNull Integer ingredientId, @NonNull Integer recipeId, @NonNull String name, @NonNull int quantity, @NonNull String unit) {
         this.ingredientId = ingredientId;
         this.recipeId = recipeId;
         this.name = name;
@@ -64,11 +64,11 @@ public class IngredientEntity {
     }
 
     @NonNull
-    public Double getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(@NonNull Double quantity) {
+    public void setQuantity(@NonNull int quantity) {
         this.quantity = quantity;
     }
 
