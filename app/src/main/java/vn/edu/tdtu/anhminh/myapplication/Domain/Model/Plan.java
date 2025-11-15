@@ -1,6 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class Plan {
+    private Integer planId;
     private Integer weekId;
     private Integer userId;
     private Integer recipeId;
@@ -12,12 +13,21 @@ public class Plan {
 
     }
 
-    public Plan(Integer weekId, Integer userId, Integer recipeId, int weekNumber, int weekDay) {
+    public Plan(Integer planId, Integer weekId, Integer userId, Integer recipeId, int weekNumber, int weekDay) {
+        this.planId = planId;
         this.weekId = weekId;
         this.userId = userId;
         this.recipeId = recipeId;
         this.weekNumber = weekNumber;
         this.weekDay = weekDay;
+    }
+
+    public Integer getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Integer planId) {
+        this.planId = planId;
     }
 
     public Integer getWeekId() {

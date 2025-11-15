@@ -16,6 +16,7 @@ public class PlanMapper {
     public static PlanEntity toEntity(PlanDTO dto){
         if(dto == null) return null;
         return new PlanEntity(
+                dto.getPlanId(),
                 dto.getWeekId(),
                 dto.getRecipeId(),
                 dto.getUserId(),
@@ -43,6 +44,7 @@ public class PlanMapper {
 
         Plan model = new Plan();
 
+        model.setPlanId(entity.getPlanId());
         model.setWeekId(entity.getWeekId());
         model.setRecipeId(entity.getRecipeId());
         model.setUserId(entity.getUserId());
@@ -70,6 +72,7 @@ public class PlanMapper {
         if (model == null) return null;
 
         return new PlanEntity(
+                model.getPlanId(),
                 model.getWeekId(),
                 model.getRecipeId(),
                 model.getUserId(),
