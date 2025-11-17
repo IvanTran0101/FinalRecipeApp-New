@@ -91,7 +91,7 @@ public class RecipeMapper {
     //model -> entity
     public static RecipeEntity toEntity(Recipe model) {
         if (model == null) return null;
-        RecipeEntity entity = new RecipeEntity(
+        return new RecipeEntity(
                 model.getRecipeId(),
                 model.getUserId(),
                 model.getTitle(),
@@ -105,7 +105,6 @@ public class RecipeMapper {
                 model.getFat() != null ? model.getFat().doubleValue() : null,
                 model.getPinned()
         );
-        return entity;
     }
 
 }
