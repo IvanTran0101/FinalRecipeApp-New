@@ -255,6 +255,16 @@ public class RecipeRepository {
         return RecipeMapper.toModelList(entities);
     }
 
+    // ---------------------------------------------------
+    // RECIPE: search by title
+    // ---------------------------------------------------
+    public LiveData<List<Recipe>> searchRecipes(String searchQuery) {
+        return Transformations.map(
+                recipeDAO.searchRecipes(searchQuery),
+                RecipeMapper::toModelList
+        );
+    }
+
     //instruction
     public LiveData<List<Instruction>> getInstructionsForRecipe(int recipeId) {
         return Transformations.map(

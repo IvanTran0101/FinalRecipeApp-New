@@ -40,7 +40,7 @@ public interface IngredientDAO {
     @Query("SELECT COUNT(*) FROM Ingredient")
     int countIngredients();
 
-    @Query("SELECT quantity, unit FROM Ingredient WHERE recipe_id = :recipeId")
+    @Query("SELECT * FROM Ingredient WHERE recipe_id = :recipeId")
     LiveData<List<IngredientEntity>> getQuantityAndUnitForRecipe(int recipeId);
 
     @Query("UPDATE Ingredient SET quantity = :newQuantity WHERE ingredient_id = :ingredientId")

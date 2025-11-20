@@ -45,8 +45,16 @@ public interface RecipeDAO {
     @Query("SELECT * FROM Recipe WHERE status = 0 ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getUnpinnedRecipes();
 
-    // TOGGLE PIN (recipeDAO.togglePinned(id);
-    @Query("UPDATE Recipe SET status = CASE status WHEN 1 THEN 0 ELSE 1 END WHERE recipe_id = :recipeId")
+    // SEARCH by title (for Search screen)
+    @Query("SELECT * FROM Recipe " +
+           "WHERE title LIKE '%' || :searchQuery || '%' " +
+           "ORDER BY title ASC")
+    LiveData<List<RecipeEntity>> searchRecipes(String searchQuery);
+
+    // TOGGLE PIN (recipeDAO.togglePinned(id))
+    @Query("UPDATE Recipe " +
+           "SET status = CASE status WHEN 1 THEN 0 ELSE 1 END " +
+           "WHERE recipe_id = :recipeId")
     void togglePinned(int recipeId);
 
     @Query("SELECT COUNT(*) FROM Recipe")
