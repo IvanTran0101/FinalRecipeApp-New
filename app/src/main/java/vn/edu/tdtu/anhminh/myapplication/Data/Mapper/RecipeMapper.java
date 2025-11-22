@@ -60,16 +60,16 @@ public class RecipeMapper {
         model.setVideoLink(entity.getVideoLink());
 
         if (entity.getCalories() != null) {
-            model.setCalories(entity.getCalories().intValue());
+            model.setCalories(entity.getCalories());
         }
         if (entity.getFat() != null) {
-            model.setFat(entity.getFat().intValue());
+            model.setFat(entity.getFat());
         }
         if (entity.getCarb() != null) {
-            model.setCarb(entity.getCarb().intValue());
+            model.setCarb(entity.getCarb());
         }
         if (entity.getProtein() != null) {
-            model.setProtein(entity.getProtein().intValue());
+            model.setProtein(entity.getProtein());
         }
         model.setPinned(entity.getIsPinned());
         return model;

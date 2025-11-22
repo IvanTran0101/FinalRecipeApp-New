@@ -9,11 +9,11 @@ import java.util.List;
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 
-public class SearchRecipesUsecase {
+public class SearchRecipesUseCase {
 
     private final RecipeRepository recipeRepository;
 
-    public SearchRecipesUsecase(RecipeRepository recipeRepository){
+    public SearchRecipesUseCase(RecipeRepository recipeRepository){
         this.recipeRepository = recipeRepository;
     }
 
