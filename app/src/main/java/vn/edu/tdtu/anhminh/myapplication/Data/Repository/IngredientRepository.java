@@ -118,6 +118,31 @@ public class IngredientRepository {
         }
     }
 
+    // Task mới: Gộp Xóa và Thêm vào làm một để tránh xung đột
+    private static class ReplaceIngredientsTask extends android.os.AsyncTask<Void, Void, Void> {
+        private final IngredientDAO dao;
+        private final int recipeId;
+        private final List<IngredientEntity> newEntities;
+
+        ReplaceIngredientsTask(IngredientDAO dao, int recipeId, List<IngredientEntity> newEntities) {
+            this.dao = dao;
+            this.recipeId = recipeId;
+            this.newEntities = newEntities;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // 1. Xóa dữ liệu cũ trước (Chạy tuần tự)
+            dao.deleteIngredientsByRecipeId(recipeId);
+
+            // 2. Sau đó mới thêm dữ liệu mới (nếu có)
+            if (newEntities != null && !newEntities.isEmpty()) {
+                dao.insertAll(newEntities);
+            }
+            return null;
+        }
+    }
+
     // ---------------------------------------------------
     // INGREDIENTS for a recipe
     // ---------------------------------------------------
@@ -175,20 +200,25 @@ public class IngredientRepository {
     // INGREDIENT: thay toàn bộ nguyên liệu của 1 recipe
     // (dùng khi user edit list ingredient rồi bấm Save)
     // ---------------------------------------------------
+    // ---------------------------------------------------
+    // INGREDIENT: thay toàn bộ nguyên liệu của 1 recipe
+    // ---------------------------------------------------
     public void replaceIngredientsForRecipe(int recipeId, List<Ingredient> newIngredients) {
-        new DeleteIngredientsByRecipeTask(ingredientDAO).execute(recipeId);
-        if (newIngredients == null || newIngredients.isEmpty()) return;
+        // 1. Chuẩn bị dữ liệu Entity
         List<IngredientEntity> entities = new ArrayList<>();
-        for (Ingredient ingredient : newIngredients){
-            IngredientEntity entity = IngredientMapper.toEntity(ingredient);
-            if (entity != null){
-                entities.add(entity);
-
+        if (newIngredients != null && !newIngredients.isEmpty()) {
+            for (Ingredient ingredient : newIngredients) {
+                IngredientEntity entity = IngredientMapper.toEntity(ingredient);
+                if (entity != null) {
+                    // Quan trọng: Đảm bảo ID khớp với Recipe đang sửa
+                    entity.setRecipeId(recipeId);
+                    entities.add(entity);
+                }
             }
         }
-        if (!entities.isEmpty()){
-            new InsertIngredientsTask(ingredientDAO).execute(entities);
-        }
+
+        // 2. Gọi Task gộp để thực thi an toàn
+        new ReplaceIngredientsTask(ingredientDAO, recipeId, entities).execute();
     }
 
     // ---------------------------------------------------

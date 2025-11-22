@@ -1,6 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Repository;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.UserDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Database.AppDatabase;
@@ -32,11 +33,25 @@ public class UserRepository {
         }
     }
 
-    public User login(String username, String passwordHash) {
-        UserEntity entity = userDAO.authenticateUser(username, passwordHash);
-        return UserMapper.toModel(entity);
+    // 1. Định nghĩa Callback
+    public interface LoginCallback {
+        void onResult(User user);
     }
 
+    // 2. Sửa hàm login
+    public void login(String username, String passwordHash, LoginCallback callback) {
+        new AsyncTask<Void, Void, User>() {
+            @Override
+            protected User doInBackground(Void... voids) {
+                UserEntity entity = userDAO.authenticateUser(username, passwordHash);
+                return UserMapper.toModel(entity);
+            }
+            @Override
+            protected void onPostExecute(User user) {
+                callback.onResult(user);
+            }
+        }.execute();
+    }
     public boolean usernameExists(String username) {
         return userDAO.getUserByUsername(username) != null;
     }

@@ -77,7 +77,30 @@ public class InstructionRepository {
                 InstructionMapper::toModelList
         );
     }
+    // Task mới: Gộp Xóa và Thêm vào làm một để tránh xung đột
+    private static class ReplaceInstructionTask extends android.os.AsyncTask<Void, Void, Void> {
+        private final InstructionDAO dao;
+        private final int recipeId;
+        private final List<InstructionEntity> newEntities;
 
+        ReplaceInstructionTask(InstructionDAO dao, int recipeId, List<InstructionEntity> newEntities) {
+            this.dao = dao;
+            this.recipeId = recipeId;
+            this.newEntities = newEntities;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // 1. Xóa dữ liệu cũ trước (Chạy tuần tự)
+            dao.deleteInstructionsByRecipeId(recipeId);
+
+            // 2. Sau đó mới thêm dữ liệu mới (nếu có)
+            if (newEntities != null && !newEntities.isEmpty()) {
+                dao.insertAll(newEntities);
+            }
+            return null;
+        }
+    }
     // ---------------------------------------------------
     // INSTRUCTION: thêm 1 bước cho recipe
     // ---------------------------------------------------
@@ -129,19 +152,20 @@ public class InstructionRepository {
     // (dùng khi user edit list step rồi bấm Save)
     // ---------------------------------------------------
     public void replaceInstructionsForRecipe(int recipeId, List<Instruction> newInstructions) {
-        new DeleteInstructionsByRecipeTask(instructionDAO).execute(recipeId);
-        if (newInstructions == null || newInstructions.isEmpty()) return;
-
+        // 1. Chuẩn bị dữ liệu Entity
         List<InstructionEntity> entities = new ArrayList<>();
-        for (Instruction instruction : newInstructions){
-            InstructionEntity entity = InstructionMapper.toEntity(instruction);
-            if (entity != null) {
-                entities.add(entity);
+        if (newInstructions != null && !newInstructions.isEmpty()) {
+            for (Instruction instruction : newInstructions) {
+                InstructionEntity entity = InstructionMapper.toEntity(instruction);
+                if (entity != null) {
+                    // Quan trọng: Đảm bảo ID khớp với Recipe đang sửa
+                    entity.setRecipeId(recipeId);
+                    entities.add(entity);
+                }
             }
+        }
 
-        }
-        if (!entities.isEmpty()){
-            new InsertInstructionsTask(instructionDAO).execute(entities);
-        }
+        // 2. Gọi Task gộp để thực thi an toàn
+        new ReplaceInstructionTask(instructionDAO, recipeId, entities).execute();
     }
 }
