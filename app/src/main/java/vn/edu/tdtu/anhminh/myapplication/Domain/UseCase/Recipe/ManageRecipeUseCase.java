@@ -34,10 +34,10 @@ public class ManageRecipeUseCase {
         try{
             recipeRepository.addRecipe(recipe);
             if (ingredients != null && !ingredients.isEmpty()) {
-                ingredientRepository.addIngredients(ingredients);
+                ingredientRepository.addMultipleIngredients(ingredients);
             }
             if (instructions != null && !instructions.isEmpty()){
-                instructionRepository.addInstructions(instructions);
+                instructionRepository.addMultipleInstructions(instructions);
             }
             if (callback != null ) callback.onSuccess();
         }catch (Exception e){
