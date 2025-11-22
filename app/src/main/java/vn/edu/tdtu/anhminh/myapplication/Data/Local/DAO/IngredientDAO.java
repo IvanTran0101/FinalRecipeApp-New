@@ -47,7 +47,7 @@ public interface IngredientDAO {
     LiveData<List<IngredientEntity>> getQuantityAndUnitForRecipe(int recipeId);
 
     @Query("UPDATE Ingredient SET quantity = :newQuantity WHERE ingredient_id = :ingredientId")
-    int updateIngredientQuantity(int ingredientId, int newQuantity);
+    int updateIngredientQuantity(int ingredientId, double newQuantity);
 
     @Query("UPDATE Ingredient SET unit = :newUnit WHERE ingredient_id = :ingredientId")
     int updateIngredientUnit(int ingredientId, String newUnit);

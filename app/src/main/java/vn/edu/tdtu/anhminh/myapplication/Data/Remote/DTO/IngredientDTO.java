@@ -4,7 +4,7 @@ public class IngredientDTO {
     private Integer ingredientId;
     private Integer recipeId;
     private String name;
-    private int quantity;
+    private double quantity;
     private String unit;
 
     public IngredientDTO(){
@@ -14,7 +14,7 @@ public class IngredientDTO {
     public IngredientDTO(Integer ingredientId,
                          Integer recipeId,
                          String name,
-                         int quantity,
+                         double quantity,
                          String unit) {
         this.ingredientId = ingredientId;
         this.recipeId = recipeId;
@@ -47,11 +47,11 @@ public class IngredientDTO {
         this.name = name;
     }
 
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 

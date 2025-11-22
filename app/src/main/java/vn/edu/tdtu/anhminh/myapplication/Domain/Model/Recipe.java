@@ -12,10 +12,10 @@ public class Recipe {
     private String dietMode;
     private String videoLink; //uri
 
-    private Integer calories;
-    private Integer protein;
-    private Integer carb;
-    private Integer fat;
+    private Double calories;
+    private Double protein;
+    private Double carb;
+    private Double fat;
 
     //pin/unpin
     private Boolean isPinned;
@@ -33,10 +33,10 @@ public class Recipe {
                   String category,
                   String dietMode,
                   String videoLink,
-                  Integer calories,
-                  Integer protein,
-                  Integer carb,
-                  Integer fat,
+                  Double calories,
+                  Double protein,
+                  Double carb,
+                  Double fat,
                   Boolean isPinned,
                   List<Ingredient> ingredients,
                   List<Instruction> instructions){
@@ -112,35 +112,35 @@ public class Recipe {
         this.videoLink = videoLink;
     }
 
-    public Integer getCalories() {
+    public Double getCalories() {
         return calories;
     }
 
-    public void setCalories(Integer calories) {
+    public void setCalories(Double calories) {
         this.calories = calories;
     }
 
-    public Integer getProtein() {
+    public Double getProtein() {
         return protein;
     }
 
-    public void setProtein(Integer protein) {
+    public void setProtein(Double protein) {
         this.protein = protein;
     }
 
-    public Integer getCarb() {
+    public Double getCarb() {
         return carb;
     }
 
-    public void setCarb(Integer carb) {
+    public void setCarb(Double carb) {
         this.carb = carb;
     }
 
-    public Integer getFat() {
+    public Double getFat() {
         return fat;
     }
 
-    public void setFat(Integer fat) {
+    public void setFat(Double fat) {
         this.fat = fat;
     }
 

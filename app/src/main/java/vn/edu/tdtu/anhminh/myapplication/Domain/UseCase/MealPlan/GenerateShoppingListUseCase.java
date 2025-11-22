@@ -33,7 +33,7 @@ public class GenerateShoppingListUseCase {
         //Get a distinct list of recipe IDs scheduled this week
         List<Integer> distinctRecipeIds = weeklyPlans.stream().map(Plan::getRecipeId).distinct().collect(Collectors.toList());
 
-        Map<String, Integer> aggregatedQuantities = new HashMap<>();
+        Map<String, Double> aggregatedQuantities = new HashMap<>();
 
         for (int recipeId : distinctRecipeIds) {
             List<Ingredient> ingredients = ingredientRepository.getAllIngredientsByRecipeIdSync(recipeId);
@@ -45,21 +45,21 @@ public class GenerateShoppingListUseCase {
 
                 String key = ingredient.getName().trim().toLowerCase() + "_" + ingredient.getUnit().trim().toLowerCase();
 
-                int currentTotal = aggregatedQuantities.getOrDefault(key, 0);
+                double currentTotal = aggregatedQuantities.getOrDefault(key, 0.0);
                 aggregatedQuantities.put(key, currentTotal + ingredient.getQuantity());
             }
         }
 
         List<ShoppingListItem> finalShoppingList = new ArrayList<>();
 
-        for (Map.Entry<String, Integer> entry : aggregatedQuantities.entrySet()) {
+        for (Map.Entry<String, Double> entry : aggregatedQuantities.entrySet()) {
             String key = entry.getKey();
             String[] parts = key.split("_", 2);
 
             String name = parts[0];
             String unit = (parts.length > 1) ? parts[1] : "";
 
-            int finalQuantity = entry.getValue();
+            double finalQuantity = entry.getValue();
 
             String capitalizedName = name.substring(0, 1).toUpperCase() + name.substring(1);
 
@@ -71,17 +71,13 @@ public class GenerateShoppingListUseCase {
 
     private static class ShoppingListItem {
         private final String name;
-        private final int totalQuantity;
+        private final double totalQuantity;
         private final String unit;
 
-        public ShoppingListItem(String name, int totalQuantity, String unit) {
+        public ShoppingListItem(String name, double totalQuantity, String unit) {
             this.name = name;
             this.totalQuantity = totalQuantity;
             this.unit = unit;
         }
-
-        public String getName() { return name; }
-        public int getTotalQuantity() { return totalQuantity; }
-        public String getUnit() { return unit; }
     }
 }

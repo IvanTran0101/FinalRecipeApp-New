@@ -73,8 +73,8 @@ public class IngredientRepository {
     private static class UpdateIngredientQuantityTask extends android.os.AsyncTask<Void, Void, Void> {
         private final IngredientDAO dao;
         private final int ingredientId;
-        private final int newQuantity;
-        UpdateIngredientQuantityTask(IngredientDAO dao, int ingredientId, int newQuantity) {
+        private final double newQuantity;
+        UpdateIngredientQuantityTask(IngredientDAO dao, int ingredientId, double newQuantity) {
             this.dao = dao;
             this.ingredientId = ingredientId;
             this.newQuantity = newQuantity;
@@ -224,7 +224,7 @@ public class IngredientRepository {
     // ---------------------------------------------------
     // INGREDIENT: update quantity
     // ---------------------------------------------------
-    public void updateIngredientQuantity(int ingredientId, int newQuantity) {
+    public void updateIngredientQuantity(int ingredientId, double newQuantity) {
         new UpdateIngredientQuantityTask(ingredientDAO, ingredientId, newQuantity).execute();
     }
 
