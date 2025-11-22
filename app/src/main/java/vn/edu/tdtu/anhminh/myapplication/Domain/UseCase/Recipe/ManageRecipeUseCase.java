@@ -71,7 +71,7 @@ public class ManageRecipeUseCase {
                 if (recipe != null){
                     int recipeId = recipe.getRecipeId();
 
-                    ingredientRepository.deleteIngredientsForRecipe(recipeId);;
+                    ingredientRepository.deleteIngredientsForRecipe(recipeId);
                     instructionRepository.deleteInstructionsForRecipe(recipeId);
                     recipeRepository.deleteRecipe(recipe);
             }

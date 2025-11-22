@@ -78,12 +78,12 @@ public class InstructionRepository {
         );
     }
     // Task mới: Gộp Xóa và Thêm vào làm một để tránh xung đột
-    private static class ReplaceInstructionTask extends android.os.AsyncTask<Void, Void, Void> {
+    private static class ReplaceInstructionsTask extends android.os.AsyncTask<Void, Void, Void> {
         private final InstructionDAO dao;
         private final int recipeId;
         private final List<InstructionEntity> newEntities;
 
-        ReplaceInstructionTask(InstructionDAO dao, int recipeId, List<InstructionEntity> newEntities) {
+        ReplaceInstructionsTask(InstructionDAO dao, int recipeId, List<InstructionEntity> newEntities) {
             this.dao = dao;
             this.recipeId = recipeId;
             this.newEntities = newEntities;
@@ -91,10 +91,9 @@ public class InstructionRepository {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            // 1. Xóa dữ liệu cũ trước (Chạy tuần tự)
+            // Xóa trước
             dao.deleteInstructionsByRecipeId(recipeId);
-
-            // 2. Sau đó mới thêm dữ liệu mới (nếu có)
+            // Thêm sau (đảm bảo tuần tự)
             if (newEntities != null && !newEntities.isEmpty()) {
                 dao.insertAll(newEntities);
             }
@@ -152,20 +151,17 @@ public class InstructionRepository {
     // (dùng khi user edit list step rồi bấm Save)
     // ---------------------------------------------------
     public void replaceInstructionsForRecipe(int recipeId, List<Instruction> newInstructions) {
-        // 1. Chuẩn bị dữ liệu Entity
         List<InstructionEntity> entities = new ArrayList<>();
         if (newInstructions != null && !newInstructions.isEmpty()) {
             for (Instruction instruction : newInstructions) {
                 InstructionEntity entity = InstructionMapper.toEntity(instruction);
                 if (entity != null) {
-                    // Quan trọng: Đảm bảo ID khớp với Recipe đang sửa
-                    entity.setRecipeId(recipeId);
+                    entity.setRecipeId(recipeId); // Quan trọng: Gán ID recipe
                     entities.add(entity);
                 }
             }
         }
-
-        // 2. Gọi Task gộp để thực thi an toàn
-        new ReplaceInstructionTask(instructionDAO, recipeId, entities).execute();
+        // Gọi Task gộp mới tạo
+        new ReplaceInstructionsTask(instructionDAO, recipeId, entities).execute();
     }
 }
