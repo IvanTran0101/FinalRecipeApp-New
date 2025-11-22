@@ -37,6 +37,9 @@ public interface IngredientDAO {
     @Query("SELECT * FROM Ingredient WHERE recipe_id = :recipeId ORDER BY name ASC")
     LiveData<List<IngredientEntity>> getIngredientsForRecipe(int recipeId);
 
+    @Query("SELECT * FROM Ingredient WHERE recipe_id = :recipeId ORDER BY name ASC")
+    List<IngredientEntity> getIngredientsForRecipeSync(int recipeId);
+
     @Query("SELECT COUNT(*) FROM Ingredient")
     int countIngredients();
 

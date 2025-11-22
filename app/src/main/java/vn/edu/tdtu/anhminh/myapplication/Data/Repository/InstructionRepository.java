@@ -5,20 +5,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.RecipeDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.InstructionDAO;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.IngredientDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Database.AppDatabase;
-import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.IngredientMapper;
 import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.InstructionMapper;
-import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
-import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
-import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.RecipeEntity;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.InstructionEntity;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.IngredientEntity;
-import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.RecipeMapper;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
@@ -100,7 +92,7 @@ public class InstructionRepository {
     // ---------------------------------------------------
     // INSTRUCTION: thêm nhiều bước cùng lúc
     // ---------------------------------------------------
-    public void addInstructions(List<Instruction> instructions) {
+    public void addMultipleInstructions(List<Instruction> instructions) {
         if (instructions == null || instructions.isEmpty()) return;
         List<InstructionEntity> entities = new ArrayList<>();
         for (Instruction instruction : instructions) {
