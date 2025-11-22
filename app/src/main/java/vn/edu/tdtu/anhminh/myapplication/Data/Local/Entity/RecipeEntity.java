@@ -3,15 +3,21 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
-@Entity(tableName = "Recipe", foreignKeys = @ForeignKey(
-        entity = UserEntity.class, // 1. The PARENT table entity
-        parentColumns = "user_id", // 2. The PK column name in the PARENT (UserEntity)
-        childColumns = "user_id",  // 3. The FK column name in the CHILD (RecipeEntity)
-        onDelete = ForeignKey.CASCADE // Optional: What to do when a User is deleted
-        )
+@Entity(
+    tableName = "Recipe",
+    foreignKeys = @ForeignKey(
+        entity = UserEntity.class,
+        parentColumns = "user_id",
+        childColumns = "user_id",
+        onDelete = ForeignKey.CASCADE
+    ),
+    indices = {
+        @Index(value = "user_id")
+    }
 )
 public class RecipeEntity {
     @PrimaryKey

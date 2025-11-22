@@ -3,25 +3,29 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
-@Entity(tableName = "Plan",
+@Entity(
+        tableName = "Plan",
         foreignKeys = {
-                // FK 1: Link to UserEntity
                 @ForeignKey(
                         entity = UserEntity.class,
                         parentColumns = "user_id",
                         childColumns = "user_id",
-                        onDelete = ForeignKey.CASCADE // If the User is deleted, delete their Plan entries.
+                        onDelete = ForeignKey.CASCADE
                 ),
-                // FK 2: Link to RecipeEntity
                 @ForeignKey(
                         entity = RecipeEntity.class,
                         parentColumns = "recipe_id",
                         childColumns = "recipe_id",
-                        onDelete = ForeignKey.CASCADE // Prevent deleting a Recipe that is currently scheduled.
+                        onDelete = ForeignKey.CASCADE
                 )
+        },
+        indices = {
+                @Index(value = "user_id"),
+                @Index(value = "recipe_id")
         }
 )
 public class PlanEntity {
