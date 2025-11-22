@@ -172,6 +172,14 @@ public class IngredientRepository {
     }
 
     // ---------------------------------------------------
+    // INGREDIENT: delete all ingredients for a recipe
+    // (used by ManageRecipeUseCase when deleting a recipe)
+    // ---------------------------------------------------
+    public void deleteIngredientsForRecipe(int recipeId) {
+        new DeleteIngredientsByRecipeTask(ingredientDAO).execute(recipeId);
+    }
+
+    // ---------------------------------------------------
     // INGREDIENT: thay toàn bộ nguyên liệu của 1 recipe
     // (dùng khi user edit list ingredient rồi bấm Save)
     // ---------------------------------------------------

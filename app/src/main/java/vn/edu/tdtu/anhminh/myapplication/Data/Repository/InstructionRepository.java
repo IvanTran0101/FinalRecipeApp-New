@@ -125,6 +125,14 @@ public class InstructionRepository {
     }
 
     // ---------------------------------------------------
+    // INSTRUCTION: delete all steps for a recipe
+    // (used by ManageRecipeUseCase when deleting a recipe)
+    // ---------------------------------------------------
+    public void deleteInstructionsForRecipe(int recipeId) {
+        new DeleteInstructionsByRecipeTask(instructionDAO).execute(recipeId);
+    }
+
+    // ---------------------------------------------------
     // INSTRUCTION: thay toàn bộ steps của 1 recipe
     // (dùng khi user edit list step rồi bấm Save)
     // ---------------------------------------------------
