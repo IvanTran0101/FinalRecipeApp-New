@@ -5,20 +5,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.RecipeDAO;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.InstructionDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.IngredientDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Database.AppDatabase;
 import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.IngredientMapper;
-import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.InstructionMapper;
-import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
-import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
-import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.RecipeEntity;
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.InstructionEntity;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.IngredientEntity;
-import vn.edu.tdtu.anhminh.myapplication.Data.Mapper.RecipeMapper;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
@@ -148,7 +140,7 @@ public class IngredientRepository {
     // ---------------------------------------------------
     // INGREDIENT: thêm nhiều nguyên liệu cùng lúc
     // ---------------------------------------------------
-    public void addIngredients(List<Ingredient> ingredients) {
+    public void addMultipleIngredients(List<Ingredient> ingredients) {
         if(ingredients == null || ingredients.isEmpty())return;
         List<IngredientEntity> entities = new ArrayList<>();
         for (Ingredient ingredient : ingredients){
@@ -233,6 +225,11 @@ public class IngredientRepository {
     // ---------------------------------------------------
     public List<Ingredient> getAllIngredients() {
         List<IngredientEntity> entities = ingredientDAO.getAllIngredients();
+        return IngredientMapper.toModelList(entities);
+    }
+
+    public List<Ingredient> getAllIngredientsByRecipeIdSync(int recipeId) {
+        List<IngredientEntity> entities = ingredientDAO.getIngredientsForRecipeSync(recipeId);
         return IngredientMapper.toModelList(entities);
     }
 

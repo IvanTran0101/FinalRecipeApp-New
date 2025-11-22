@@ -80,6 +80,11 @@ public class PlanRepository {
         );
     }
 
+    public List<Plan> getPlanForWeekSync(int userId, int weekId) {
+        List<PlanEntity> entities = planDAO.getPlanForWeekSync(userId, weekId);
+        return PlanMapper.toModelList(entities);
+    }
+
     // Get all recipes in a given day as domain models
     public List<Plan> getPlanSlotsForDay(int userId, int weekId, int weekDay) {
         List<PlanEntity> entities = planDAO.getPlanSlotsForDay(userId, weekId, weekDay);

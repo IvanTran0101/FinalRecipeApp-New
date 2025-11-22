@@ -25,6 +25,9 @@ public interface PlanDAO {
     @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId ORDER BY week_day ASC")
     LiveData<List<PlanEntity>> getPlanForWeek(int userId, int weekId);
 
+    @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId ORDER BY week_day ASC")
+    List<PlanEntity> getPlanForWeekSync(int userId, int weekId);
+
     @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId AND week_day = :weekDay ORDER BY plan_id ASC")
     List<PlanEntity> getPlanSlotsForDay(int userId, int weekId, int weekDay);
 
