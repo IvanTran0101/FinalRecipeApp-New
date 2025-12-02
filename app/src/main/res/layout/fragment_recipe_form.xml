@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <EditText
+            android:id="@+id/et_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Recipe Title"
+            android:background="@drawable/rounded_search_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Image Picker -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="16dp">
+            <ImageView
+                android:id="@+id/img_recipe_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_image_placeholder"
+                android:scaleType="center"
+                android:background="#EEE"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose From Gallery"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Category & Diet -->
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_search_bg"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/spinner_diet"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_search_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Add Ingredient Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Ingredients"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/et_ingredient_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="Name (e.g. Pasta)"
+                android:background="@drawable/rounded_search_bg"
+                android:padding="10dp"/>
+            <EditText
+                android:id="@+id/et_ingredient_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Qty"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rounded_search_bg"
+                android:padding="10dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_add_ingredient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:layout_gravity="end"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Add Instruction Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Instructions"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/et_instruction_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Step 1..."
+            android:minLines="2"
+            android:background="@drawable/rounded_search_bg"
+            android:padding="10dp"/>
+
+        <!-- Nutrition Inputs -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nutrition"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <EditText android:id="@+id/et_cal" android:hint="Cal" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+            <EditText android:id="@+id/et_pro" android:hint="Pro" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+            <EditText android:id="@+id/et_fat" android:hint="Fat" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+            <EditText android:id="@+id/et_carb" android:hint="Carb" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_video_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Video Link"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"/>
+
+        <Button
+            android:id="@+id/btn_save_recipe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Recipe"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

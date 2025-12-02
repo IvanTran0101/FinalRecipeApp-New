@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="12dp">
+
+    <!-- Day Box (e.g. "M") -->
+    <TextView
+        android:id="@+id/tv_day_label"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/rounded_search_bg"
+        android:gravity="center"
+        android:text="M"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
+
+    <!-- The Blue Line / Meal Name -->
+    <TextView
+        android:id="@+id/tv_meal_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginHorizontal="16dp"
+        android:background="@android:color/transparent"
+        android:hint="Add meal..."
+        android:textSize="16sp"/>
+
+    <!-- The Plus Button -->
+    <ImageView
+        android:id="@+id/btn_add_meal"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_add_circle_outline"
+        android:contentDescription="Add Meal"/>
+
+</LinearLayout>

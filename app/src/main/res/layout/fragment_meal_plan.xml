@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Header: < Weekly Planner > -->
+    <ImageView
+        android:id="@+id/btn_prev_week"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_week_title"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_week_title"/>
+
+    <TextView
+        android:id="@+id/tv_week_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weekly Planner"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/btn_next_week"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_week_title"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_week_title"/>
+
+    <!-- The Scrollable List of Days (S, M, T, W...) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_week_days"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_week_title"
+        app:layout_constraintBottom_toTopOf="@+id/layout_bottom_actions"
+        tools:listitem="@layout/item_meal_plan_day"/>
+
+    <!-- Bottom Actions: Statistic Button & Cart Icon -->
+    <LinearLayout
+        android:id="@+id/layout_bottom_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Statistic Button -->
+        <Button
+            android:id="@+id/btn_statistic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Statistic"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            app:strokeColor="@android:color/black"
+            app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+        <!-- Cart Icon -->
+        <ImageView
+            android:id="@+id/btn_cart"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_marginStart="16dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

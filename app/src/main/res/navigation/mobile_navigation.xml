@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_recipeDetail"
+            app:destination="@id/recipeDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_meal_plan"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.MealPlan.MealPlanFragment"
+        android:label="Meal Plan"
+        tools:layout="@layout/fragment_meal_plan"/>
+
+    <fragment
+        android:id="@+id/navigation_groceries"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Map.MapFragment"
+        android:label="Groceries"
+        tools:layout="@layout/fragment_map"/>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Components.UserProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile"/>
+
+    <fragment
+        android:id="@+id/recipeDetailFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.RecipeDetailFragment"
+        android:label="Recipe Details"
+        tools:layout="@layout/fragment_recipe_detail">
+
+        <action
+            android:id="@+id/action_detail_to_ingredient"
+            app:destination="@id/ingredientFragment" />
+
+        <action
+            android:id="@+id/action_detail_to_instruction"
+            app:destination="@id/instructionFragment" />
+
+        <action
+            android:id="@+id/action_detail_to_nutrition"
+            app:destination="@id/nutritionFragment" />
+
+    </fragment> <dialog
+    android:id="@+id/ingredientFragment"
+    android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.IngredientFragment"
+    android:label="Ingredients"
+    tools:layout="@layout/fragment_ingredient" />
+
+    <dialog
+        android:id="@+id/instructionFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.InstructionFragment"
+        android:label="Instructions"
+        tools:layout="@layout/fragment_instruction"/>
+
+    <dialog
+        android:id="@+id/nutritionFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.NutritionFragment"
+        android:label="Nutrition"
+        tools:layout="@layout/fragment_nutrition"/>
+
+</navigation>
