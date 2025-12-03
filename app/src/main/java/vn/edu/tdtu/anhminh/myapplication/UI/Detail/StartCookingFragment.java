@@ -4,20 +4,27 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.UI.Adapters.CookingStepAdapter;
+import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
 public class StartCookingFragment extends Fragment {
 
     private ViewPager2 viewPager;
     private ImageButton btnPrev, btnNext, btnClose;
     private TextView tvStepCounter;
+    private RecipeViewModel viewModel;
 
     public StartCookingFragment() {
         super(R.layout.fragment_start_cooking);
@@ -27,38 +34,79 @@ public class StartCookingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize Views
+        // 1. Init Views
         viewPager = view.findViewById(R.id.view_pager_steps);
         btnPrev = view.findViewById(R.id.btn_prev_step);
         btnNext = view.findViewById(R.id.btn_next_step);
         btnClose = view.findViewById(R.id.btn_close_cooking);
         tvStepCounter = view.findViewById(R.id.tv_step_counter);
 
-        // 2. Handle Close Button
-        btnClose.setOnClickListener(v -> {
-            Navigation.findNavController(view).popBackStack();
-        });
+        // 2. Setup ViewModel
+        ViewModelFactory factory = Injection.provideViewModelFactory();
+        viewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
 
-        // 3. TODO: Setup ViewPager Adapter
-        // StepAdapter adapter = new StepAdapter(recipe.getInstructions());
-        // viewPager.setAdapter(adapter);
+        // 3. Close Button
+        btnClose.setOnClickListener(v -> Navigation.findNavController(view).popBackStack());
 
-        // 4. Handle Arrows (Logic placeholders)
+        // 4. Load Data
+        if (getArguments() != null) {
+            int recipeId = getArguments().getInt("recipe_id", -1);
+            if (recipeId != -1) {
+
+                // === CRITICAL FIX: Load Instructions List directly ===
+                viewModel.getInstructions(recipeId).observe(getViewLifecycleOwner(), instructions -> {
+                    if (instructions != null && !instructions.isEmpty()) {
+
+                        // Setup Adapter
+                        CookingStepAdapter adapter = new CookingStepAdapter(instructions);
+                        viewPager.setAdapter(adapter);
+
+                        // Initial Counter Update
+                        updateCounter(0, instructions.size());
+
+                        // Handle Arrow Visibility
+                        btnPrev.setVisibility(View.INVISIBLE); // Hide Prev on first step
+                        if (instructions.size() <= 1) btnNext.setVisibility(View.INVISIBLE); // Hide Next if only 1 step
+                    } else {
+                        Toast.makeText(getContext(), "No instructions found.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+        // 5. Handle Arrows
         btnPrev.setOnClickListener(v -> {
-            // Logic: viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+            int current = viewPager.getCurrentItem();
+            if (current > 0) {
+                viewPager.setCurrentItem(current - 1);
+            }
         });
 
         btnNext.setOnClickListener(v -> {
-            // Logic: viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+            int current = viewPager.getCurrentItem();
+            if (viewPager.getAdapter() != null && current < viewPager.getAdapter().getItemCount() - 1) {
+                viewPager.setCurrentItem(current + 1);
+            }
         });
 
-        // 5. Handle Page Change (to update text "Step 1 of 5")
+        // 6. Handle Page Change
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                // Update tvStepCounter here
+                if (viewPager.getAdapter() != null) {
+                    int total = viewPager.getAdapter().getItemCount();
+                    updateCounter(position, total);
+
+                    // Toggle Arrow Visibility for better UX
+                    btnPrev.setVisibility(position == 0 ? View.INVISIBLE : View.VISIBLE);
+                    btnNext.setVisibility(position == total - 1 ? View.INVISIBLE : View.VISIBLE);
+                }
             }
         });
+    }
+
+    private void updateCounter(int current, int total) {
+        tvStepCounter.setText("Step " + (current + 1) + " of " + total);
     }
 }

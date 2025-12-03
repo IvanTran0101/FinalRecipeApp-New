@@ -62,9 +62,9 @@ public class RecipeRepository {
         return RecipeMapper.toModelList(entities);
     }
 
-    public void addRecipe(Recipe recipe){
+    public long addRecipe(Recipe recipe){
         RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new InsertRecipeTask(recipeDAO).execute(entity);
+        return recipeDAO.insert(entity);
     }
 
     public void importRecipesFromDtoList(List<RecipeDTO> dtos){
@@ -76,7 +76,7 @@ public class RecipeRepository {
 
     public void updateRecipe(Recipe recipe){
         RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new UpdateRecipeTask(recipeDAO).execute(entity);
+        recipeDAO.update(entity);
     }
 
     public void deleteRecipe(Recipe recipe) {

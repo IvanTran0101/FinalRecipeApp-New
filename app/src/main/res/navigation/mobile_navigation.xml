@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_detail_to_nutrition"
             app:destination="@id/nutritionFragment" />
+        <action
+            android:id="@+id/action_detail_to_form"
+            app:destination="@id/recipeFormFragment" />
     </fragment>
 
     <dialog
@@ -64,7 +67,11 @@
         android:id="@+id/instructionFragment"
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.InstructionFragment"
         android:label="Instructions"
-        tools:layout="@layout/fragment_instruction"/>
+        tools:layout="@layout/fragment_instruction">
+        <action
+            android:id="@+id/action_instruction_to_startCooking"
+            app:destination="@id/startCookingFragment" />
+    </dialog>
 
     <dialog
         android:id="@+id/nutritionFragment"
@@ -77,5 +84,11 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.RecipeFormFragment"
         android:label="Add Recipe"
         tools:layout="@layout/fragment_recipe_form" />
+
+    <fragment
+        android:id="@+id/startCookingFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.StartCookingFragment"
+        android:label="Start Cooking"
+        tools:layout="@layout/fragment_start_cooking" />
 
 </navigation>

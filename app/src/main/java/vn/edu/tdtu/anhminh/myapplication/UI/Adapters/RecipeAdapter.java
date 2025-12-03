@@ -44,11 +44,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe currentRecipe = recipeList.get(position);
         holder.title.setText(currentRecipe.getTitle());
 
-        // Handle Image: If it's a default ID (integer), set it.
-        // In the future, you will handle String URIs here.
-        if (currentRecipe.getRecipeImage() != null) {
-            // Check if it is a resource ID or a URI string
-            // For now, we assume it's a resource ID or placeholder
+        String imagePath = currentRecipe.getRecipeImage();
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                    .load(imagePath)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .centerCrop()
+                    .into(holder.image);
+        } else {
+            // Manually set placeholder
             holder.image.setImageResource(R.drawable.ic_launcher_background);
         }
 
