@@ -50,7 +50,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lunch"
-                android:background="@drawable/rounded_search_bg"
                 android:padding="8dp"
                 android:textColor="#0077CC"
                 android:layout_marginEnd="8dp"/>
@@ -60,7 +59,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Vegan"
-                android:background="@drawable/rounded_search_bg"
                 android:padding="8dp"
                 android:textColor="#4CAF50"/>
         </LinearLayout>

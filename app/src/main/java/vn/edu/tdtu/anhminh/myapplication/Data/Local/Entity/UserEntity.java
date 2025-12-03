@@ -2,6 +2,7 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
@@ -28,6 +29,10 @@ public class UserEntity {
         this.username = username;
         this.passwordHash = passwordHash;
         this.avatarImage = avatarImage;
+    }
+
+    @Ignore
+    public UserEntity() {
     }
 
     @NonNull

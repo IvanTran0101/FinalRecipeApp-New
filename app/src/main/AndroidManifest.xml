@@ -25,10 +25,10 @@
             android:name=".UI.MealPlan.ShoppingListActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.Login.LoginActivity"
+            android:name=".UI.Main.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.Main.MainActivity"
+            android:name=".UI.Login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

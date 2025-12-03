@@ -15,8 +15,7 @@ import vn.edu.tdtu.anhminh.myapplication.R;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private List<Recipe> recipeList;
-    // We add a listener so we can handle clicks in the Fragment, not here
-    private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Recipe recipe);
@@ -25,6 +24,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener listener) {
         this.recipeList = recipeList;
         this.listener = listener;
+    }
+
+    // NEW METHOD: Updates the list and refreshes UI
+    public void setRecipes(List<Recipe> newRecipes) {
+        this.recipeList = newRecipes;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -39,6 +44,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe currentRecipe = recipeList.get(position);
         holder.title.setText(currentRecipe.getTitle());
 
+        // Handle Image: If it's a default ID (integer), set it.
+        // In the future, you will handle String URIs here.
+        if (currentRecipe.getRecipeImage() != null) {
+            // Check if it is a resource ID or a URI string
+            // For now, we assume it's a resource ID or placeholder
+            holder.image.setImageResource(R.drawable.ic_launcher_background);
+        }
+
         holder.itemView.setOnClickListener(v -> {
             listener.onItemClick(currentRecipe);
         });
@@ -46,6 +59,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public int getItemCount() {
+        if (recipeList == null) return 0;
         return recipeList.size();
     }
 

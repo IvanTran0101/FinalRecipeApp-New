@@ -2,13 +2,11 @@ package vn.edu.tdtu.anhminh.myapplication.UI;
 
 import android.content.Context;
 
-import vn.edu.tdtu.anhminh.myapplication.Data.Local.Database.AppDatabase;
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.*;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateMealFrequencyReportUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateShoppingListUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.ManageMealPlanUseCase;
-import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.GenerateNutritionOverviewUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
@@ -57,7 +55,10 @@ public class Injection {
         return new AuthenticateUserUseCase(userRepo);
     }
 
-    public static ViewModelFactory provideRecipeViewModelFactory() {
-        return new ViewModelFactory(provideManageRecipeUseCase());
+    public static ViewModelFactory provideViewModelFactory() {
+        return new ViewModelFactory(
+                provideManageRecipeUseCase(),
+                provideAuthenticateUserUseCase(),
+                provideSearchRecipesUseCase());
     }
 }

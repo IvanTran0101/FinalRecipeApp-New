@@ -1,7 +1,9 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,30 +25,40 @@ public class SearchRecipesUseCase {
         public Boolean pinned;
     }
 
-    public LiveData<List<Recipe>> execute(String query, FilterOptions filter){
-        MutableLiveData<List<Recipe>> result = new MutableLiveData<>();
+    public LiveData<List<Recipe>> execute(String query, int userId, FilterOptions filter) {
 
-        recipeRepository.searchRecipes(query).observeForever(recipes -> {
-            if (recipes == null) {
-                result.setValue(null);
-                return;
+        // We use MediatorLiveData to listen to the Repository's LiveData
+        MediatorLiveData<List<Recipe>> result = new MediatorLiveData<>();
+
+        LiveData<List<Recipe>> source = recipeRepository.searchRecipes(query, userId);
+
+        result.addSource(source, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(List<Recipe> recipes) {
+                if (recipes == null) {
+                    result.setValue(null);
+                    return;
+                }
+
+                // 1. Copy list to avoid modifying the original LiveData source
+                List<Recipe> filtered = new ArrayList<>(recipes);
+
+                // 2. Apply Memory Filters (Category, Diet, etc.)
+                if (filter != null) {
+                    if (filter.category != null && !filter.category.isEmpty()) {
+                        filtered.removeIf(r -> !filter.category.equalsIgnoreCase(r.getCategory()));
+                    }
+                    if (filter.dietMode != null && !filter.dietMode.isEmpty()) {
+                        filtered.removeIf(r -> !filter.dietMode.equalsIgnoreCase(r.getDietMode()));
+                    }
+                    if (filter.pinned != null) {
+                        filtered.removeIf(r -> r.getPinned() != filter.pinned);
+                    }
+                }
+
+                // 3. Post final result
+                result.setValue(filtered);
             }
-
-            List<Recipe> filtered = new ArrayList<>(recipes);
-
-            if (filter != null){
-                if (filter.category != null && !filter.category.isEmpty()){
-                    filtered.removeIf(r -> !filter.category.equals(r.getCategory()));
-                }
-                if (filter.dietMode != null && !filter.dietMode.isEmpty()){
-                    filtered.removeIf(r -> !filter.dietMode.equals(r.getDietMode()));
-                }
-                if (filter.pinned != null){
-                    filtered.removeIf(r -> r.getPinned() != filter.pinned);
-                }
-            }
-
-            result.setValue(filtered);
         });
 
         return result;

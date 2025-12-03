@@ -10,9 +10,14 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Home.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home">
+
         <action
             android:id="@+id/action_home_to_recipeDetail"
             app:destination="@id/recipeDetailFragment" />
+
+        <action
+            android:id="@+id/action_home_to_recipeForm"
+            app:destination="@id/recipeFormFragment" />
     </fragment>
 
     <fragment
@@ -38,24 +43,22 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.RecipeDetailFragment"
         android:label="Recipe Details"
         tools:layout="@layout/fragment_recipe_detail">
-
         <action
             android:id="@+id/action_detail_to_ingredient"
             app:destination="@id/ingredientFragment" />
-
         <action
             android:id="@+id/action_detail_to_instruction"
             app:destination="@id/instructionFragment" />
-
         <action
             android:id="@+id/action_detail_to_nutrition"
             app:destination="@id/nutritionFragment" />
+    </fragment>
 
-    </fragment> <dialog
-    android:id="@+id/ingredientFragment"
-    android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.IngredientFragment"
-    android:label="Ingredients"
-    tools:layout="@layout/fragment_ingredient" />
+    <dialog
+        android:id="@+id/ingredientFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.IngredientFragment"
+        android:label="Ingredients"
+        tools:layout="@layout/fragment_ingredient" />
 
     <dialog
         android:id="@+id/instructionFragment"
@@ -68,5 +71,11 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.NutritionFragment"
         android:label="Nutrition"
         tools:layout="@layout/fragment_nutrition"/>
+
+    <fragment
+        android:id="@+id/recipeFormFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.RecipeFormFragment"
+        android:label="Add Recipe"
+        tools:layout="@layout/fragment_recipe_form" />
 
 </navigation>

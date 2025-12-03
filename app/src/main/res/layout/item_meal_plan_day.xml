@@ -11,7 +11,6 @@
         android:id="@+id/tv_day_label"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@drawable/rounded_search_bg"
         android:gravity="center"
         android:text="M"
         android:textStyle="bold"
@@ -33,7 +32,6 @@
         android:id="@+id/btn_add_meal"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/ic_add_circle_outline"
         android:contentDescription="Add Meal"/>
 
 </LinearLayout>

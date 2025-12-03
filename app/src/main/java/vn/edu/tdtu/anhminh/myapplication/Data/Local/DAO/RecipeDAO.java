@@ -67,4 +67,7 @@ public interface RecipeDAO {
     // SELECT PINNED (background thread)
     @Query("SELECT * FROM Recipe WHERE status = 1 ORDER BY title ASC")
     List<RecipeEntity> getPinnedRecipesSync();
+
+    @Query("SELECT * FROM Recipe WHERE user_id = :userId AND title LIKE '%' || :searchQuery || '%' ORDER BY title ASC")
+    LiveData<List<RecipeEntity>> searchRecipesForUser(String searchQuery, int userId);
 }

@@ -44,7 +44,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.9.6'
     implementation 'androidx.navigation:navigation-ui:2.9.6'
     implementation 'androidx.media3:media3-effect:1.8.0'
-    implementation 'androidx.activity:activity:1.11.0'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
 
     // Room
     def room_version = "2.6.1"
