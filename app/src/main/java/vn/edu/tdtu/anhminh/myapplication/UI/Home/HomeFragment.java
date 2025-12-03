@@ -36,38 +36,36 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Setup RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recycler_recipes);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        // Initialize Adapter with Empty List first
         adapter = new RecipeAdapter(new ArrayList<>(), new RecipeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Recipe recipe) {
-                // Navigate to Detail
-                // Use SafeArgs in the future to pass recipe ID
-                Navigation.findNavController(view).navigate(R.id.action_home_to_recipeDetail);
+                Bundle bundle = new Bundle();
+
+                // 2. Pass the ID (Best practice: pass ID and reload from DB,
+                // but passing the whole object is easier for now if Recipe implements Serializable)
+                bundle.putInt("recipe_id", recipe.getRecipeId());
+
+                // 3. Navigate with the Bundle
+                Navigation.findNavController(view).navigate(R.id.action_home_to_recipeDetail, bundle);
             }
         });
         recyclerView.setAdapter(adapter);
 
-        // 2. Setup ViewModel
         ViewModelFactory factory = Injection.provideViewModelFactory();
         viewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
 
-        // 1. GET USER ID FROM PREFS
         UserPrefs prefs = UserPrefs.getInstance(requireContext());
         int userId = prefs.getUserId();
 
-        // 2. SET ID TO VIEWMODEL
         viewModel.setCurrentUserId(userId);
 
-        // 3. NOW SEARCH (It will now use the correct ID)
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), recipes -> {
             adapter.setRecipes(recipes);
         });
 
-        // Initial load
         viewModel.search("");
 
         View fab = view.findViewById(R.id.fab_add);

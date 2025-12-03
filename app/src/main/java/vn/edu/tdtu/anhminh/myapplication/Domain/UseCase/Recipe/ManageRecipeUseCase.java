@@ -1,5 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.IngredientRepository;
@@ -81,4 +83,8 @@ public class ManageRecipeUseCase {
         }
     }
 
+    public LiveData<Recipe> getRecipeById(int recipeId) {
+        // You need to ensure RecipeRepository has a method returning LiveData<Recipe>
+        return recipeRepository.getRecipeByIdLiveData(recipeId);
+    }
 }

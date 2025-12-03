@@ -55,6 +55,10 @@ public class RecipeViewModel extends ViewModel {
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<List<Recipe>> getSearchResults() { return searchResults; }
 
+    public LiveData<Recipe> getRecipeById(int recipeId) {
+        return manageRecipeUseCase.getRecipeById(recipeId);
+    }
+
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
         // Trigger a refresh if needed
@@ -78,6 +82,9 @@ public class RecipeViewModel extends ViewModel {
     // --- CUD OPERATIONS (Create, Update, Delete) ---
 
     public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
+        if (currentUserId != -1) {
+            recipe.setUserId(currentUserId);
+        }
         executor.execute(() -> {
             manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
                 @Override

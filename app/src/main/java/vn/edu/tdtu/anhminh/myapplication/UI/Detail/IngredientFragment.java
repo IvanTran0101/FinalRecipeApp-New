@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
+import androidx.fragment.app.DialogFragment;
 import vn.edu.tdtu.anhminh.myapplication.R;
 
-public class IngredientFragment extends BottomSheetDialogFragment {
+public class IngredientFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -21,5 +20,7 @@ public class IngredientFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        view.findViewById(R.id.btn_close).setOnClickListener(v -> dismiss());
     }
 }

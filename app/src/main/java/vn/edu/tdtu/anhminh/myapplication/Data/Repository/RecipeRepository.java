@@ -89,6 +89,13 @@ public class RecipeRepository {
         return RecipeMapper.toModel(entity);
     }
 
+    public LiveData<Recipe> getRecipeByIdLiveData(int recipeId) {
+        return Transformations.map(
+                recipeDAO.getRecipeByIdLive(recipeId),
+                RecipeMapper::toModel
+        );
+    }
+
     public void togglePinned(int recipeId){
         new TogglePinnedTask(recipeDAO).execute(recipeId);
     }

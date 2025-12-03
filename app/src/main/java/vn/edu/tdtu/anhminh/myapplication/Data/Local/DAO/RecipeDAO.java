@@ -33,6 +33,9 @@ public interface RecipeDAO {
     @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId LIMIT 1")
     RecipeEntity getRecipeById(int recipeId);
 
+    @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId LIMIT 1")
+    LiveData<RecipeEntity> getRecipeByIdLive(int recipeId);
+
     // SELECT BY USER ID (My Recipes)
     @Query("SELECT * FROM Recipe WHERE user_id = :userId ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getRecipesByCreator(int userId);
