@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -25,11 +26,12 @@ import vn.edu.tdtu.anhminh.myapplication.Utils.NetworkUtils;
 public class RecipeDetailFragment extends Fragment {
     private RecipeViewModel viewModel;
     private TextView tvTitle, tvCategory, tvDiet;
-
     // Store current recipe to handle Copy/Delete
     private Recipe currentRecipe;
     private ImageView ivRecipeImage;
     private WebView webViewVideo;
+    private ImageButton ivFavoriteToggle;
+    private boolean isTogglingFavorite = false;
 
     public RecipeDetailFragment() {
         super(R.layout.fragment_recipe_detail);
@@ -43,6 +45,7 @@ public class RecipeDetailFragment extends Fragment {
         ivRecipeImage = view.findViewById(R.id.iv_recipe_image);
         tvCategory = view.findViewById(R.id.tv_category);
         tvDiet = view.findViewById(R.id.tv_diet);
+        ivFavoriteToggle = view.findViewById(R.id.iv_favorite_toggle);
         View btnClose = view.findViewById(R.id.btn_close_detail);
         webViewVideo = view.findViewById(R.id.webview_video);
         webViewVideo.getSettings().setJavaScriptEnabled(true); // REQUIRED for YouTube
@@ -61,8 +64,21 @@ public class RecipeDetailFragment extends Fragment {
 
         viewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                // If we just deleted, close the screen
-                Navigation.findNavController(view).popBackStack();
+                if (isTogglingFavorite) {
+                    // It was a favorite toggle, so don't pop back.
+                    // Reset the flag.
+                    isTogglingFavorite = false;
+                } else {
+                    // For other operations like delete or copy, pop back.
+                    Navigation.findNavController(view).popBackStack();
+                }
+            }
+        });
+
+        ivFavoriteToggle.setOnClickListener(v -> {
+            if (currentRecipe != null) {
+                isTogglingFavorite = true;
+                viewModel.toggleFavorite(currentRecipe.getRecipeId());
             }
         });
 
@@ -161,6 +177,13 @@ public class RecipeDetailFragment extends Fragment {
                 tvTitle.setText(recipe.getTitle());
                 tvCategory.setText(recipe.getCategory());
                 tvDiet.setText(recipe.getDietMode());
+
+                if (recipe.getPinned() != null && recipe.getPinned()) {
+                    ivFavoriteToggle.setImageResource(R.drawable.ic_favorite);
+                } else {
+                    ivFavoriteToggle.setImageResource(R.drawable.ic_favorite_border);
+                }
+
                 String imagePath = recipe.getRecipeImage();
                 if (imagePath != null && !imagePath.isEmpty()) {
                     com.bumptech.glide.Glide.with(this)
@@ -182,7 +205,7 @@ public class RecipeDetailFragment extends Fragment {
                     cardVideo.setVisibility(View.VISIBLE);
 
                     // The YouTube Embed Player HTML
-                    String embedHtml = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + videoId + "\" frameborder=\"0\" allowfullscreen></iframe>";
+                    String embedHtml = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + videoId + "?autoplay=1\" frameborder=\"0\" allowfullscreen></iframe>";
 
                     webViewVideo.loadData(embedHtml, "text/html", "utf-8");
                 } else {

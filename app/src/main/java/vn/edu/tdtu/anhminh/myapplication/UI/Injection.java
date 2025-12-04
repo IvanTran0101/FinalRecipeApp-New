@@ -59,6 +59,8 @@ public class Injection {
         return new ViewModelFactory(
                 provideManageRecipeUseCase(),
                 provideAuthenticateUserUseCase(),
-                provideSearchRecipesUseCase());
+                provideSearchRecipesUseCase(),
+                provideToggleFavoriteRecipeUseCase()
+        );
     }
 }

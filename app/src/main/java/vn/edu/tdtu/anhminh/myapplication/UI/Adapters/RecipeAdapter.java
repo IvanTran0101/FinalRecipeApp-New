@@ -1,5 +1,6 @@
 package vn.edu.tdtu.anhminh.myapplication.UI.Adapters;
 
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,26 +8,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
 import java.util.List;
-
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 import vn.edu.tdtu.anhminh.myapplication.R;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private List<Recipe> recipeList;
-    private final OnItemClickListener listener;
+    private final OnItemClickListener clickListener;
+    private final OnItemLongClickListener longClickListener;
+    private final SparseBooleanArray selectedItems = new SparseBooleanArray();
 
     public interface OnItemClickListener {
         void onItemClick(Recipe recipe);
     }
 
-    public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener listener) {
-        this.recipeList = recipeList;
-        this.listener = listener;
+    public interface OnItemLongClickListener {
+        void onItemLongClick(Recipe recipe);
     }
 
-    // NEW METHOD: Updates the list and refreshes UI
+    public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
+        this.recipeList = recipeList;
+        this.clickListener = clickListener;
+        this.longClickListener = longClickListener;
+    }
+
     public void setRecipes(List<Recipe> newRecipes) {
         this.recipeList = newRecipes;
         notifyDataSetChanged();
@@ -45,7 +52,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.title.setText(currentRecipe.getTitle());
 
         String imagePath = currentRecipe.getRecipeImage();
-
         if (imagePath != null && !imagePath.isEmpty()) {
             com.bumptech.glide.Glide.with(holder.itemView.getContext())
                     .load(imagePath)
@@ -53,13 +59,29 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                     .centerCrop()
                     .into(holder.image);
         } else {
-            // Manually set placeholder
             holder.image.setImageResource(R.drawable.ic_launcher_background);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            listener.onItemClick(currentRecipe);
+            clickListener.onItemClick(currentRecipe);
         });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onItemLongClick(currentRecipe);
+            }
+            return true;
+        });
+
+        if (selectedItems.get(currentRecipe.getRecipeId(), false)) {
+            // Show the overlay
+            holder.overlay.setVisibility(View.VISIBLE);
+            holder.checkIcon.setVisibility(View.VISIBLE); // Optional: Show checkmark
+        } else {
+            // Hide the overlay
+            holder.overlay.setVisibility(View.GONE);
+            holder.checkIcon.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -68,14 +90,50 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return recipeList.size();
     }
 
+    public void toggleSelection(int recipeId) {
+        boolean existsInList = recipeList.stream().anyMatch(r -> r.getRecipeId() == recipeId);
+
+        if (existsInList) {
+            if (selectedItems.get(recipeId, false)) {
+                selectedItems.delete(recipeId);
+            } else {
+                selectedItems.put(recipeId, true);
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public void clearSelection() {
+        selectedItems.clear();
+        notifyDataSetChanged();
+    }
+
+    public int getSelectedCount() {
+        return selectedItems.size();
+    }
+
+    public List<Recipe> getSelectedItems() {
+        List<Recipe> items = new ArrayList<>();
+        for (int i = 0; i < recipeList.size(); i++) {
+            if (selectedItems.get(recipeList.get(i).getRecipeId(), false)) {
+                items.add(recipeList.get(i));
+            }
+        }
+        return items;
+    }
+
     public static class RecipeViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public ImageView image;
+        public View overlay;
+        public ImageView checkIcon;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.txt_recipe_title);
             image = itemView.findViewById(R.id.img_recipe);
+            overlay = itemView.findViewById(R.id.view_overlay);
+            checkIcon = itemView.findViewById(R.id.icon_check);
         }
     }
 }

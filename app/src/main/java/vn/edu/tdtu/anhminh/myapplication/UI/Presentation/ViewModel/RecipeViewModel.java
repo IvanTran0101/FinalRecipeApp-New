@@ -15,42 +15,45 @@ import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
 
 public class RecipeViewModel extends ViewModel {
     // Dependencies
     private final ManageRecipeUseCase manageRecipeUseCase;
     private final SearchRecipesUseCase searchRecipesUseCase;
+    private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;
 
-    // Executor for background threads (CUD operations)
+    // Executor for background threads
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    // CUD Status LiveData
+    // Status LiveData
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
-    // --- SEARCH LOGIC VARIABLES ---
-    // This holds the current Query String and Filter Options
+    // --- SEARCH LOGIC ---
     private final MutableLiveData<Pair<String, SearchRecipesUseCase.FilterOptions>> searchInput = new MutableLiveData<>();
-
-    // This is the Output: It automatically updates when searchInput changes
     private final LiveData<List<Recipe>> searchResults;
 
+    // CLEANER: Single source of truth for filters
+    private SearchRecipesUseCase.FilterOptions currentFilterOptions = new SearchRecipesUseCase.FilterOptions();
     private int currentUserId = -1;
 
     public RecipeViewModel(ManageRecipeUseCase manageRecipeUseCase,
-                           SearchRecipesUseCase searchRecipesUseCase) {
+                           SearchRecipesUseCase searchRecipesUseCase,
+                           ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase) {
         this.manageRecipeUseCase = manageRecipeUseCase;
         this.searchRecipesUseCase = searchRecipesUseCase;
+        this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;
 
-        searchInput.setValue(new Pair<>("", null));
+        // Initialize with empty query and empty filter
+        searchInput.setValue(new Pair<>("", currentFilterOptions));
 
-        // 2. UPDATE SwitchMap: Pass 'currentUserId' to the use case
         searchResults = Transformations.switchMap(searchInput, input ->
                 searchRecipesUseCase.execute(input.first, currentUserId, input.second)
         );
     }
 
-    // --- GETTERS FOR UI ---
+    // --- GETTERS ---
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<List<Recipe>> getSearchResults() { return searchResults; }
@@ -69,60 +72,86 @@ public class RecipeViewModel extends ViewModel {
 
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
-        // Trigger a refresh if needed
-        search(searchInput.getValue() != null ? searchInput.getValue().first : "");
+        refreshSearch();
     }
 
-    // --- SEARCH ACTIONS ---
+    // --- SEARCH & FILTER ACTIONS ---
 
     public void search(String query) {
-        SearchRecipesUseCase.FilterOptions currentFilter =
-                searchInput.getValue() != null ? searchInput.getValue().second : null;
-        searchInput.setValue(new Pair<>(query, currentFilter));
+        // Reuse the existing filter object
+        searchInput.setValue(new Pair<>(query, currentFilterOptions));
     }
 
-    public void applyFilter(SearchRecipesUseCase.FilterOptions filter) {
-        String currentQuery =
-                searchInput.getValue() != null ? searchInput.getValue().first : "";
-        searchInput.setValue(new Pair<>(currentQuery, filter));
+    public void setFilters(List<String> categories, List<String> dietModes,
+                           Integer minCalories, Integer maxCalories,
+                           Integer minCarbs, Integer maxCarbs,
+                           Integer minProtein, Integer maxProtein,
+                           Integer minFat, Integer maxFat) {
+
+        // Update the Single Source of Truth
+        currentFilterOptions.categories = categories;
+        currentFilterOptions.dietModes = dietModes;
+        currentFilterOptions.minCalories = minCalories;
+        currentFilterOptions.maxCalories = maxCalories;
+        currentFilterOptions.minCarbs = minCarbs;
+        currentFilterOptions.maxCarbs = maxCarbs;
+        currentFilterOptions.minProtein = minProtein;
+        currentFilterOptions.maxProtein = maxProtein;
+        currentFilterOptions.minFat = minFat;
+        currentFilterOptions.maxFat = maxFat;
+
+        // Get current query and trigger update
+        refreshSearch();
     }
 
-    // --- CUD OPERATIONS (Create, Update, Delete) ---
+    // Helper to refresh search with current state
+    private void refreshSearch() {
+        String currentQuery = searchInput.getValue() != null ? searchInput.getValue().first : "";
+        searchInput.setValue(new Pair<>(currentQuery, currentFilterOptions));
+    }
 
+    // --- CLEANER GETTERS FOR UI RESTORATION ---
+    // These now read directly from the main object
+    public List<String> getCurrentCategories() { return currentFilterOptions.categories; }
+    public List<String> getCurrentDietModes() { return currentFilterOptions.dietModes; }
+    public Integer getMinCalories() { return currentFilterOptions.minCalories; }
+    public Integer getMaxCalories() { return currentFilterOptions.maxCalories; }
+    public Integer getMinCarbs() { return currentFilterOptions.minCarbs; }
+    public Integer getMaxCarbs() { return currentFilterOptions.maxCarbs; }
+    public Integer getMinProtein() { return currentFilterOptions.minProtein; }
+    public Integer getMaxProtein() { return currentFilterOptions.maxProtein; }
+    public Integer getMinFat() { return currentFilterOptions.minFat; }
+    public Integer getMaxFat() { return currentFilterOptions.maxFat; }
+
+    // --- CUD OPERATIONS ---
+    // (These remain exactly the same as before)
     public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
-        if (currentUserId != -1) {
-            recipe.setUserId(currentUserId);
-        }
-        executor.execute(() -> {
-            manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
-                @Override
-                public void onSuccess() { operationSuccess.postValue(true); }
-                @Override
-                public void onError() { errorMessage.postValue("Failed to create recipe"); }
-            });
-        });
+        if (currentUserId != -1) recipe.setUserId(currentUserId);
+        executor.execute(() -> manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
+            @Override public void onSuccess() { operationSuccess.postValue(true); }
+            @Override public void onError() { errorMessage.postValue("Failed to create recipe"); }
+        }));
     }
 
     public void updateRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
-        executor.execute(() -> {
-            manageRecipeUseCase.updateRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
-                @Override
-                public void onSuccess() { operationSuccess.postValue(true); }
-                @Override
-                public void onError() { errorMessage.postValue("Failed to update recipe"); }
-            });
-        });
+        executor.execute(() -> manageRecipeUseCase.updateRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
+            @Override public void onSuccess() { operationSuccess.postValue(true); }
+            @Override public void onError() { errorMessage.postValue("Failed to update recipe"); }
+        }));
     }
 
     public void deleteRecipe(Recipe recipe) {
-        executor.execute(() -> {
-            manageRecipeUseCase.deleteRecipe(recipe, new ManageRecipeUseCase.Callback() {
-                @Override
-                public void onSuccess() { operationSuccess.postValue(true); }
-                @Override
-                public void onError() { errorMessage.postValue("Failed to delete recipe"); }
-            });
-        });
+        executor.execute(() -> manageRecipeUseCase.deleteRecipe(recipe, new ManageRecipeUseCase.Callback() {
+            @Override public void onSuccess() { operationSuccess.postValue(true); }
+            @Override public void onError() { errorMessage.postValue("Failed to delete recipe"); }
+        }));
+    }
+
+    public void toggleFavorite(int recipeId) {
+        executor.execute(() -> toggleFavoriteRecipeUseCase.execute(recipeId, new ToggleFavoriteRecipeUseCase.Callback() {
+            @Override public void onSuccess() { operationSuccess.postValue(true); }
+            @Override public void onError() { errorMessage.postValue("Failed to toggle favorite status"); }
+        }));
     }
 
     @Override
