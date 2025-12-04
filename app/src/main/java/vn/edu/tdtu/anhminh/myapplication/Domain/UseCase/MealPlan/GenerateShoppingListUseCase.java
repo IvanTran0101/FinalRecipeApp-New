@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import vn.edu.tdtu.anhminh.myapplication.Data.Repository.PlanRepository;
+
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.IngredientRepository;
-import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Plan;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.PlanRepository;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Plan;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.ShoppingListItem;
 
 public class GenerateShoppingListUseCase {
     private final PlanRepository planRepository;
@@ -24,60 +27,54 @@ public class GenerateShoppingListUseCase {
             return new ArrayList<>();
         }
 
+        // 1. Get Weekly Plans
         List<Plan> weeklyPlans = planRepository.getPlanForWeekSync(userId, weekId);
-
         if (weeklyPlans == null || weeklyPlans.isEmpty()) {
-            return new ArrayList<>(); //No plans for the week
+            return new ArrayList<>();
         }
 
-        //Get a distinct list of recipe IDs scheduled this week
-        List<Integer> distinctRecipeIds = weeklyPlans.stream().map(Plan::getRecipeId).distinct().collect(Collectors.toList());
+        // 2. Get Distinct Recipe IDs
+        List<Integer> distinctRecipeIds = weeklyPlans.stream()
+                .map(Plan::getRecipeId)
+                .distinct()
+                .collect(Collectors.toList());
 
+        // 3. Aggregate Ingredients
         Map<String, Double> aggregatedQuantities = new HashMap<>();
+        Map<String, String> unitMap = new HashMap<>(); // Keeps the original unit string
 
         for (int recipeId : distinctRecipeIds) {
-            List<Ingredient> ingredients = ingredientRepository.getAllIngredientsByRecipeIdSync(recipeId);
+            List<Ingredient> ingredients = ingredientRepository.getIngredientsForRecipeSync(recipeId);
 
             for (Ingredient ingredient : ingredients) {
-                if (ingredient.getName() == null || ingredient.getUnit() == null) {
-                    continue;
-                }
+                if (ingredient.getName() == null || ingredient.getUnit() == null) continue;
 
                 String key = ingredient.getName().trim().toLowerCase() + "_" + ingredient.getUnit().trim().toLowerCase();
 
+                if (!unitMap.containsKey(key)) {
+                    unitMap.put(key, ingredient.getUnit());
+                }
+
+                // Sum quantities
                 double currentTotal = aggregatedQuantities.getOrDefault(key, 0.0);
                 aggregatedQuantities.put(key, currentTotal + ingredient.getQuantity());
             }
         }
 
+        // 4. Create Final List
         List<ShoppingListItem> finalShoppingList = new ArrayList<>();
 
         for (Map.Entry<String, Double> entry : aggregatedQuantities.entrySet()) {
             String key = entry.getKey();
-            String[] parts = key.split("_", 2);
+            String rawName = key.split("_")[0];
 
-            String name = parts[0];
-            String unit = (parts.length > 1) ? parts[1] : "";
+            String name = rawName.substring(0, 1).toUpperCase() + rawName.substring(1);
 
-            double finalQuantity = entry.getValue();
+            String unit = unitMap.getOrDefault(key, "");
+            double qty = entry.getValue();
 
-            String capitalizedName = name.substring(0, 1).toUpperCase() + name.substring(1);
-
-            finalShoppingList.add(new ShoppingListItem(capitalizedName, finalQuantity, unit));
+            finalShoppingList.add(new ShoppingListItem(name, qty, unit));
         }
-
         return finalShoppingList;
-    }
-
-    private static class ShoppingListItem {
-        private final String name;
-        private final double totalQuantity;
-        private final String unit;
-
-        public ShoppingListItem(String name, double totalQuantity, String unit) {
-            this.name = name;
-            this.totalQuantity = totalQuantity;
-            this.unit = unit;
-        }
     }
 }

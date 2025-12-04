@@ -3,11 +3,14 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
+import androidx.room.Transaction;
 import androidx.room.Update;
 import androidx.room.Delete;
 import androidx.room.Query;
 import androidx.lifecycle.LiveData;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.PlanEntity;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.PlanWithRecipe;
+
 import java.util.List;
 
 @Dao
@@ -36,4 +39,8 @@ public interface PlanDAO {
 
     @Query("DELETE FROM `Plan` WHERE user_id = :userId AND week_id = :weekId")
     void deletePlansForWeek(int userId, int weekId);
+
+    @Transaction
+    @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId")
+    LiveData<List<PlanWithRecipe>> getPlansWithRecipesForWeek(int userId, int weekId);
 }

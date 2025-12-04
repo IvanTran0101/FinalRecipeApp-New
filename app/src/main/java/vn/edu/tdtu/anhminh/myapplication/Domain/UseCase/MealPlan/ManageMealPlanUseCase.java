@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.PlanRepository;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.MealPlanItem;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Plan;
 
 public class ManageMealPlanUseCase {
@@ -14,10 +15,7 @@ public class ManageMealPlanUseCase {
         this.planRepository = planRepository;
     }
 
-    public LiveData<List<Plan>> getWeeklyPlan(int userId, int weekId) {
-        if (userId <= 0 || weekId <= 0) {
-            return null;
-        }
+    public LiveData<List<MealPlanItem>> getWeeklyPlan(int userId, int weekId) {
         return planRepository.getPlanForWeek(userId, weekId);
     }
 

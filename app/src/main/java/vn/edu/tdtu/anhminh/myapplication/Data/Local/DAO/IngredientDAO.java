@@ -54,4 +54,7 @@ public interface IngredientDAO {
 
     @Query("UPDATE Ingredient SET name = :newName WHERE ingredient_id = :ingredientId")
     int updateIngredientName(int ingredientId, String newName);
+
+    @Query("SELECT * FROM Ingredient WHERE recipe_id IN (:recipeIds)")
+    List<IngredientEntity> getIngredientsForRecipes(List<Integer> recipeIds);
 }

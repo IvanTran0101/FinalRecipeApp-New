@@ -24,7 +24,7 @@
             android:name=".UI.MealPlan.AnalyticsActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.MealPlan.ShoppingListActivity"
+            android:name=".UI.MealPlan.ShoppingListFragment"
             android:exported="false" />
         <activity
             android:name=".UI.Main.MainActivity"

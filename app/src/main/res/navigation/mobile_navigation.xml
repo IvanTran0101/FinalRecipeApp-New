@@ -24,7 +24,11 @@
         android:id="@+id/navigation_meal_plan"
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.MealPlan.MealPlanFragment"
         android:label="Meal Plan"
-        tools:layout="@layout/fragment_meal_plan"/>
+        tools:layout="@layout/fragment_meal_plan">
+        <action
+            android:id="@+id/action_mealPlan_to_shoppingList"
+            app:destination="@id/navigation_shopping_list" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_groceries"
@@ -90,5 +94,11 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.Detail.StartCookingFragment"
         android:label="Start Cooking"
         tools:layout="@layout/fragment_start_cooking" />
+
+    <fragment
+        android:id="@+id/navigation_shopping_list"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.MealPlan.ShoppingListFragment"
+        android:label="Shopping List"
+        tools:layout="@layout/fragment_shopping_list"/>
 
 </navigation>

@@ -16,6 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 import vn.edu.tdtu.anhminh.myapplication.R;
 import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
@@ -28,6 +34,8 @@ public class RecipeDetailFragment extends Fragment {
     private TextView tvTitle, tvCategory, tvDiet;
     // Store current recipe to handle Copy/Delete
     private Recipe currentRecipe;
+    private List<Ingredient> currentIngredients = new ArrayList<>();
+    private List<Instruction> currentInstructions = new ArrayList<>();
     private ImageView ivRecipeImage;
     private WebView webViewVideo;
     private ImageButton ivFavoriteToggle;
@@ -149,7 +157,7 @@ public class RecipeDetailFragment extends Fragment {
     }
 
     private void copyCurrentRecipe() {
-        // Create a new object based on current data
+        // 1. Copy Basic Info
         Recipe copy = new Recipe();
         copy.setTitle(currentRecipe.getTitle() + " (Copy)");
         if (currentRecipe.getRecipeImage() != null) {
@@ -163,10 +171,30 @@ public class RecipeDetailFragment extends Fragment {
         copy.setFat(currentRecipe.getFat());
         copy.setCarb(currentRecipe.getCarb());
         copy.setUserId(currentRecipe.getUserId());
+        copy.setPinned(currentRecipe.getPinned());
 
-        // NOTE: Ideally, you should also fetch and copy ingredients/instructions here.
-        // For now, this copies the main recipe data.
-        viewModel.createRecipe(copy, null, null);
+        List<Ingredient> ingredientsCopy = new ArrayList<>();
+        if (currentIngredients != null) {
+            for (Ingredient ing : currentIngredients) {
+                Ingredient newIng = new Ingredient();
+                newIng.setName(ing.getName());
+                newIng.setQuantity(ing.getQuantity());
+                newIng.setUnit(ing.getUnit());
+                ingredientsCopy.add(newIng);
+            }
+        }
+
+        List<Instruction> instructionsCopy = new ArrayList<>();
+        if (currentInstructions != null) {
+            for (Instruction inst : currentInstructions) {
+                Instruction newInst = new Instruction();
+                newInst.setInstruction(inst.getInstruction());
+                newInst.setStepNumber(inst.getStepNumber());
+                instructionsCopy.add(newInst);
+            }
+        }
+
+        viewModel.createRecipe(copy, ingredientsCopy, instructionsCopy);
         Toast.makeText(getContext(), "Recipe Copied to Home", Toast.LENGTH_SHORT).show();
     }
 
@@ -212,6 +240,17 @@ public class RecipeDetailFragment extends Fragment {
                     // Hide the video card if no valid link
                     cardVideo.setVisibility(View.GONE);
                 }
+            }
+        });
+        viewModel.getIngredients(recipeId).observe(getViewLifecycleOwner(), ingredients -> {
+            if (ingredients != null) {
+                this.currentIngredients = new ArrayList<>(ingredients);
+            }
+        });
+
+        viewModel.getInstructions(recipeId).observe(getViewLifecycleOwner(), instructions -> {
+            if (instructions != null) {
+                this.currentInstructions = new ArrayList<>(instructions);
             }
         });
     }

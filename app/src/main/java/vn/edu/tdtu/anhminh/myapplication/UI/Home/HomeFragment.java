@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,6 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Pref.UserPrefs;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 import vn.edu.tdtu.anhminh.myapplication.R;
 import vn.edu.tdtu.anhminh.myapplication.UI.Adapters.RecipeAdapter;
@@ -69,7 +73,7 @@ public class HomeFragment extends Fragment {
                 return true;
             } else if (itemId == R.id.action_copy) {
                 for (Recipe recipe : selectedRecipes) {
-                    copyMultipleRecipes(recipe);
+                    fetchAndCopyRecipe(recipe);
                 }
                 Toast.makeText(getContext(), "Recipes Copied", Toast.LENGTH_SHORT).show();
                 mode.finish();
@@ -219,21 +223,81 @@ public class HomeFragment extends Fragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_home_to_recipeDetail, bundle);
     }
 
-    private void copyMultipleRecipes(Recipe original) {
+    private void fetchAndCopyRecipe(Recipe original) {
+        // 1. Capture the LiveData instance in a variable
+        LiveData<List<Ingredient>> ingredientsLiveData = viewModel.getIngredients(original.getRecipeId());
+
+        ingredientsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Ingredient>>() {
+            @Override
+            public void onChanged(List<Ingredient> ingredients) {
+                // 2. Remove observer from the SAME variable
+                ingredientsLiveData.removeObserver(this);
+
+                // 3. Do the same for Instructions
+                LiveData<List<Instruction>> instructionsLiveData = viewModel.getInstructions(original.getRecipeId());
+
+                instructionsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Instruction>>() {
+                    @Override
+                    public void onChanged(List<Instruction> instructions) {
+                        // Remove observer from the SAME variable
+                        instructionsLiveData.removeObserver(this);
+
+                        // 4. Perform the copy
+                        performDeepCopy(original, ingredients, instructions);
+                    }
+                });
+            }
+        });
+    }
+
+    private void performDeepCopy(Recipe original, List<Ingredient> ingredients, List<Instruction> instructions) {
+        // 1. Copy Basic Recipe Info
         Recipe copy = new Recipe();
         copy.setTitle(original.getTitle() + " (Copy)");
+
         if (original.getRecipeImage() != null) {
             copy.setRecipeImage(original.getRecipeImage());
         }
         copy.setCategory(original.getCategory());
         copy.setDietMode(original.getDietMode());
         copy.setVideoLink(original.getVideoLink());
-        copy.setCalories(original.getCalories());
-        copy.setProtein(original.getProtein());
-        copy.setFat(original.getFat());
-        copy.setCarb(original.getCarb());
+
+        // Null checks for numerical values (Safeguard)
+        copy.setCalories(original.getCalories() != null ? original.getCalories() : 0.0);
+        copy.setProtein(original.getProtein() != null ? original.getProtein() : 0.0);
+        copy.setFat(original.getFat() != null ? original.getFat() : 0.0);
+        copy.setCarb(original.getCarb() != null ? original.getCarb() : 0.0);
+        copy.setPinned(original.getPinned());
+
         copy.setUserId(original.getUserId());
-        viewModel.createRecipe(copy, null, null);
+
+        // 2. Deep Copy Ingredients (Create NEW objects so they don't share IDs)
+        List<Ingredient> newIngredients = new ArrayList<>();
+        if (ingredients != null) {
+            for (Ingredient ing : ingredients) {
+                Ingredient newIng = new Ingredient();
+                newIng.setName(ing.getName());
+                newIng.setQuantity(ing.getQuantity());
+                newIng.setUnit(ing.getUnit());
+                // Do NOT copy the IngredientID, let Room generate a new one
+                newIngredients.add(newIng);
+            }
+        }
+
+        // 3. Deep Copy Instructions
+        List<Instruction> newInstructions = new ArrayList<>();
+        if (instructions != null) {
+            for (Instruction inst : instructions) {
+                Instruction newInst = new Instruction();
+                newInst.setInstruction(inst.getInstruction());
+                newInst.setStepNumber(inst.getStepNumber());
+                // Do NOT copy the InstructionID
+                newInstructions.add(newInst);
+            }
+        }
+
+        // 4. Send to ViewModel to save
+        viewModel.createRecipe(copy, newIngredients, newInstructions);
     }
 
     @Override
