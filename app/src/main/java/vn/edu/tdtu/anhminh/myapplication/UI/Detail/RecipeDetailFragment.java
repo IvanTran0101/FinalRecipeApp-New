@@ -3,6 +3,8 @@ package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import vn.edu.tdtu.anhminh.myapplication.R;
 import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
+import vn.edu.tdtu.anhminh.myapplication.Utils.NetworkUtils;
 
 public class RecipeDetailFragment extends Fragment {
     private RecipeViewModel viewModel;
@@ -26,6 +29,7 @@ public class RecipeDetailFragment extends Fragment {
     // Store current recipe to handle Copy/Delete
     private Recipe currentRecipe;
     private ImageView ivRecipeImage;
+    private WebView webViewVideo;
 
     public RecipeDetailFragment() {
         super(R.layout.fragment_recipe_detail);
@@ -40,6 +44,9 @@ public class RecipeDetailFragment extends Fragment {
         tvCategory = view.findViewById(R.id.tv_category);
         tvDiet = view.findViewById(R.id.tv_diet);
         View btnClose = view.findViewById(R.id.btn_close_detail);
+        webViewVideo = view.findViewById(R.id.webview_video);
+        webViewVideo.getSettings().setJavaScriptEnabled(true); // REQUIRED for YouTube
+        webViewVideo.setWebChromeClient(new WebChromeClient());
 
         btnClose.setOnClickListener(v -> Navigation.findNavController(view).popBackStack());
 
@@ -165,6 +172,22 @@ public class RecipeDetailFragment extends Fragment {
                 } else {
                     // If null, manually set placeholder WITHOUT Glide
                     ivRecipeImage.setImageResource(android.R.color.darker_gray);
+                }
+                String videoLink = recipe.getVideoLink();
+                String videoId = NetworkUtils.getYouTubeId(videoLink);
+
+                View cardVideo = getView().findViewById(R.id.card_video); // The container
+
+                if (videoId != null) {
+                    cardVideo.setVisibility(View.VISIBLE);
+
+                    // The YouTube Embed Player HTML
+                    String embedHtml = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + videoId + "\" frameborder=\"0\" allowfullscreen></iframe>";
+
+                    webViewVideo.loadData(embedHtml, "text/html", "utf-8");
+                } else {
+                    // Hide the video card if no valid link
+                    cardVideo.setVisibility(View.GONE);
                 }
             }
         });

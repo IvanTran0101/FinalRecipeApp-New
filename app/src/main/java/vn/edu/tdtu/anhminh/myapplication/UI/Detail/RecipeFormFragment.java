@@ -1,9 +1,11 @@
 package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -33,8 +39,10 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFact
 
 public class RecipeFormFragment extends Fragment {
     private RecipeViewModel viewModel;
-    private EditText etTitle, etIngName, etIngQty, etCal, etPro, etFat, etCarb, etVideo;
+    private EditText etTitle, etCal, etPro, etFat, etCarb, etVideo;
     private Spinner spCategory, spDiet;
+    private ChipGroup chipGroupIngredients;
+    private Button btnAddIngredient;
     private Button btnSave;
     private LinearLayout instructionContainer;
     private Button btnAddStep;
@@ -43,6 +51,7 @@ public class RecipeFormFragment extends Fragment {
     private ImageView imgPreview;
     private String selectedImageUri = null;
     private ActivityResultLauncher<String> pickImageLauncher;
+    private final List<Ingredient> tempIngredients = new ArrayList<>();
 
     public RecipeFormFragment() { super(R.layout.fragment_recipe_form); }
 
@@ -55,9 +64,7 @@ public class RecipeFormFragment extends Fragment {
                 String localPath = saveImageToInternalStorage(uri);
 
                 if (localPath != null) {
-                    // STEP 2: Save the LOCAL path, not the Gallery URI
                     selectedImageUri = localPath;
-                    // STEP 3: Show preview using the local file
                     imgPreview.setImageURI(Uri.parse(selectedImageUri));
                     imgPreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 } else {
@@ -78,7 +85,6 @@ public class RecipeFormFragment extends Fragment {
 
         imgPreview.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
-        // 1. Check for Arguments (Edit Mode)
         if (getArguments() != null && getArguments().containsKey("recipe_id")) {
             editingRecipeId = getArguments().getInt("recipe_id", -1);
             if (editingRecipeId != -1) {
@@ -91,6 +97,7 @@ public class RecipeFormFragment extends Fragment {
             addInstructionInput("");
         }
 
+        btnAddIngredient.setOnClickListener(v -> showAddIngredientDialog());
         btnAddStep.setOnClickListener(v -> addInstructionInput(""));
         btnSave.setOnClickListener(v -> saveOrUpdateRecipe());
 
@@ -107,8 +114,6 @@ public class RecipeFormFragment extends Fragment {
         imgPreview = view.findViewById(R.id.img_recipe_preview);
         spCategory = view.findViewById(R.id.spinner_category);
         spDiet = view.findViewById(R.id.spinner_diet);
-        etIngName = view.findViewById(R.id.et_ingredient_name);
-        etIngQty = view.findViewById(R.id.et_ingredient_qty);
         etCal = view.findViewById(R.id.et_cal);
         etPro = view.findViewById(R.id.et_pro);
         etFat = view.findViewById(R.id.et_fat);
@@ -117,6 +122,49 @@ public class RecipeFormFragment extends Fragment {
         btnSave = view.findViewById(R.id.btn_save_recipe);
         instructionContainer = view.findViewById(R.id.layout_instruction_container);
         btnAddStep = view.findViewById(R.id.btn_add_step);
+        chipGroupIngredients = view.findViewById(R.id.chip_group_ingredients);
+        btnAddIngredient = view.findViewById(R.id.btn_add_ingredient);
+    }
+
+    private void showAddIngredientDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_ingredient, null);
+        builder.setView(dialogView);
+
+        EditText etName = dialogView.findViewById(R.id.et_dialog_ingredient_name);
+        EditText etQty = dialogView.findViewById(R.id.et_dialog_ingredient_qty);
+        Spinner spUnit = dialogView.findViewById(R.id.spinner_dialog_ingredient_unit);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
+                R.array.unit_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spUnit.setAdapter(adapter);
+
+        builder.setTitle("Add Ingredient");
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String name = etName.getText().toString().trim();
+            String qtyStr = etQty.getText().toString().trim();
+            String unit = spUnit.getSelectedItem().toString();
+
+            if (name.isEmpty() || qtyStr.isEmpty()) {
+                Toast.makeText(getContext(), "Enter name and quantity", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                double qty = Double.parseDouble(qtyStr);
+                Ingredient ingredient = new Ingredient();
+                ingredient.setName(name);
+                ingredient.setQuantity(qty);
+                ingredient.setUnit(unit);
+                tempIngredients.add(ingredient);
+                addChipToGroup(ingredient);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Invalid quantity", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 
     private void loadExistingData(int recipeId) {
@@ -127,7 +175,6 @@ public class RecipeFormFragment extends Fragment {
                     selectedImageUri = recipe.getRecipeImage();
                     try {
                         Uri uri = Uri.parse(selectedImageUri);
-
                         imgPreview.setImageURI(uri);
                         imgPreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     } catch (Exception e) {
@@ -156,7 +203,16 @@ public class RecipeFormFragment extends Fragment {
             }
         });
 
-        // Note: You should also load Ingredients here similarly if you have getIngredients(id)
+        viewModel.getIngredients(recipeId).observe(getViewLifecycleOwner(), ingredients -> {
+            if (ingredients != null) {
+                tempIngredients.clear();
+                chipGroupIngredients.removeAllViews();
+                for (Ingredient item : ingredients) {
+                    tempIngredients.add(item);
+                    addChipToGroup(item);
+                }
+            }
+        });
     }
 
     private void setSpinnerSelection(Spinner spinner, String value) {
@@ -187,7 +243,6 @@ public class RecipeFormFragment extends Fragment {
         recipe.setDietMode(spDiet.getSelectedItem().toString());
         recipe.setVideoLink(etVideo.getText().toString());
 
-        // Nutrition
         try {
             if(!etCal.getText().toString().isEmpty()) recipe.setCalories(Double.parseDouble(etCal.getText().toString()));
             if(!etPro.getText().toString().isEmpty()) recipe.setProtein(Double.parseDouble(etPro.getText().toString()));
@@ -198,7 +253,6 @@ public class RecipeFormFragment extends Fragment {
             return;
         }
 
-        // --- INSTRUCTIONS ---
         List<Instruction> instructions = new ArrayList<>();
         int stepCount = 1;
         for (int i = 0; i < instructionContainer.getChildCount(); i++) {
@@ -214,23 +268,17 @@ public class RecipeFormFragment extends Fragment {
             }
         }
 
-        // --- INGREDIENTS (Simplified for now) ---
-        List<Ingredient> ingredients = new ArrayList<>();
-        // ... (Add your ingredient parsing logic here) ...
-
         if (isEditMode) {
-            // UPDATE Logic
             recipe.setRecipeId(editingRecipeId);
             UserPrefs prefs = UserPrefs.getInstance(requireContext());
             recipe.setUserId(prefs.getUserId());
 
-            viewModel.updateRecipe(recipe, ingredients, instructions);
+            viewModel.updateRecipe(recipe, tempIngredients, instructions);
         } else {
-            // CREATE Logic
             UserPrefs prefs = UserPrefs.getInstance(requireContext());
             recipe.setUserId(prefs.getUserId());
 
-            viewModel.createRecipe(recipe, ingredients, instructions);
+            viewModel.createRecipe(recipe, tempIngredients, instructions);
         }
     }
 
@@ -242,7 +290,7 @@ public class RecipeFormFragment extends Fragment {
         params.setMargins(0, 8, 0, 8);
         etStep.setLayoutParams(params);
         etStep.setHint("Step " + stepCount + "...");
-        etStep.setText(content); // Pre-fill content
+        etStep.setText(content);
         etStep.setPadding(30, 30, 30, 30);
         etStep.setBackgroundResource(android.R.drawable.edit_text);
         etStep.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -261,32 +309,35 @@ public class RecipeFormFragment extends Fragment {
 
     private String saveImageToInternalStorage(Uri uri) {
         try {
-            // 1. Create a unique file name
             String fileName = "recipe_" + System.currentTimeMillis() + ".jpg";
-
-            // 2. Open Input Stream from the temporary Gallery URI
             InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
-
-            // 3. Create Output Stream to your app's private folder
             File file = new File(requireContext().getFilesDir(), fileName);
             FileOutputStream outputStream = new FileOutputStream(file);
-
-            // 4. Copy the bytes
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, length);
             }
-
-            // 5. Close streams
             outputStream.close();
             inputStream.close();
-
-            // 6. Return the absolute path (starts with file://)
             return Uri.fromFile(file).toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void addChipToGroup(Ingredient ingredient) {
+        Chip chip = new Chip(getContext());
+        chip.setText(ingredient.getName() + " : " + ingredient.getQuantity() + " " + ingredient.getUnit());
+        chip.setCloseIconVisible(true);
+        chip.setCheckable(false);
+
+        chip.setOnCloseIconClickListener(v -> {
+            chipGroupIngredients.removeView(chip);
+            tempIngredients.remove(ingredient);
+        });
+
+        chipGroupIngredients.addView(chip);
     }
 }

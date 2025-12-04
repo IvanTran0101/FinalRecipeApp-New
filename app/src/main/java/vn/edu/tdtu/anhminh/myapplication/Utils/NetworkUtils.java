@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public final class NetworkUtils {
     private NetworkUtils(){
 
@@ -40,4 +43,18 @@ public final class NetworkUtils {
                 connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return networkInfo != null && networkInfo.isConnected();
     }
+
+    public static String getYouTubeId(String url) {
+        if (url == null || url.isEmpty()) return null;
+
+        String pattern = "((?<=(v=))|(?<=be/))([a-zA-Z0-9_-]{11})";
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(url);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
+    }
+
 }

@@ -100,4 +100,8 @@ public class ManageRecipeUseCase {
     public LiveData<List<Instruction>> getInstructions(int recipeId) {
         return instructionRepository.getInstructionsByRecipeId(recipeId);
     }
+
+    public LiveData<List<Ingredient>> getIngredients(int recipeId) {
+        return ingredientRepository.getQuantityAndUnitForRecipe(recipeId);
+    }
 }

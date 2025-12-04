@@ -63,6 +63,10 @@ public class RecipeViewModel extends ViewModel {
         return manageRecipeUseCase.getInstructions(recipeId);
     }
 
+    public LiveData<List<Ingredient>> getIngredients(int recipeId) {
+        return manageRecipeUseCase.getIngredients(recipeId);
+    }
+
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
         // Trigger a refresh if needed
