@@ -150,6 +150,9 @@ public class RecipeDetailFragment extends Fragment {
                         .setNegativeButton("Cancel", null)
                         .show();
                 return true;
+            } else if (itemId == R.id.action_timer) {
+                Navigation.findNavController(view).navigate(R.id.action_detail_to_cookingTimer);
+                return true;
             }
             return false;
         });

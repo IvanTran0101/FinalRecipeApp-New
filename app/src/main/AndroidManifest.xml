@@ -21,12 +21,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".UI.MealPlan.AnalyticsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".UI.MealPlan.ShoppingListFragment"
-            android:exported="false" />
-        <activity
             android:name=".UI.Main.MainActivity"
             android:exported="false" />
         <activity
@@ -40,7 +34,7 @@
         </activity> <!-- Alarm Receiver -->
         <receiver
             android:name=".Broadcast.AlarmReceiver"
-            android:exported="false" /> <!-- Boot Receiver -->
+            android:exported="true" /> <!-- Boot Receiver -->
         <receiver
             android:name=".Broadcast.BootReceiver"
             android:enabled="true"

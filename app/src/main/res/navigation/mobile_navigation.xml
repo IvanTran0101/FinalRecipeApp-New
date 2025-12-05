@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_mealPlan_to_shoppingList"
             app:destination="@id/navigation_shopping_list" />
+        <action
+            android:id="@+id/action_mealPlan_to_analytics"
+            app:destination="@id/analyticsFragment" />
     </fragment>
 
     <fragment
@@ -59,6 +62,9 @@
         <action
             android:id="@+id/action_detail_to_form"
             app:destination="@id/recipeFormFragment" />
+        <action
+            android:id="@+id/action_detail_to_cookingTimer"
+            app:destination="@id/cookingTimerFragment" />
     </fragment>
 
     <dialog
@@ -100,5 +106,21 @@
         android:name="vn.edu.tdtu.anhminh.myapplication.UI.MealPlan.ShoppingListFragment"
         android:label="Shopping List"
         tools:layout="@layout/fragment_shopping_list"/>
+
+    <fragment
+        android:id="@+id/analyticsFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.MealPlan.AnalyticsFragment"
+        android:label="Analytics"
+        tools:layout="@layout/fragment_analytics" >
+        <action
+            android:id="@+id/action_analytics_to_mealPlan"
+            app:destination="@id/navigation_meal_plan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cookingTimerFragment"
+        android:name="vn.edu.tdtu.anhminh.myapplication.UI.Timer.CookingTimerFragment"
+        android:label="Cooking Timer"
+        tools:layout="@layout/fragment_cooking_timer" />
 
 </navigation>

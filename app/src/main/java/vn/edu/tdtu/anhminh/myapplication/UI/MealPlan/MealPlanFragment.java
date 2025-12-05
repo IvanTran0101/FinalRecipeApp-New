@@ -2,6 +2,7 @@ package vn.edu.tdtu.anhminh.myapplication.UI.MealPlan;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
         ImageView nextWeekButton = view.findViewById(R.id.btn_next_week);
         RecyclerView weekDaysRecycler = view.findViewById(R.id.recycler_week_days);
         ImageView btnCart = view.findViewById(R.id.btn_cart);
+        Button btnStatistic = view.findViewById(R.id.btn_statistic);
 
         updateWeekTitle();
 
@@ -61,6 +63,10 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
         btnCart.setOnClickListener(v -> {
             // Navigate to Shopping List
             Navigation.findNavController(view).navigate(R.id.action_mealPlan_to_shoppingList);
+        });
+
+        btnStatistic.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_mealPlan_to_analytics);
         });
 
         mealPlanAdapter = new MealPlanAdapter(getDaysOfWeek(), new MealPlanAdapter.MealPlanInteractionListener() {

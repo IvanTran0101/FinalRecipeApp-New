@@ -48,7 +48,7 @@ public class Injection {
     }
 
     public static GenerateMealFrequencyReportUseCase provideGenerateMealFrequencyReportUseCase() {
-        return new GenerateMealFrequencyReportUseCase(planRepository, recipeRepo);
+        return new GenerateMealFrequencyReportUseCase();
     }
 
     public static AuthenticateUserUseCase provideAuthenticateUserUseCase() {

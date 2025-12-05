@@ -43,4 +43,8 @@ public interface PlanDAO {
     @Transaction
     @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId")
     LiveData<List<PlanWithRecipe>> getPlansWithRecipesForWeek(int userId, int weekId);
+
+    @Transaction
+    @Query("SELECT * FROM `Plan` WHERE user_id = :userId AND week_id = :weekId")
+    List<PlanWithRecipe> getPlansWithRecipesForWeekSync(int userId, int weekId);
 }

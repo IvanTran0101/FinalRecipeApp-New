@@ -154,33 +154,24 @@ public class PlanRepository {
         return PlanMapper.toModelList(entities);
     }
 
-    public List<Ingredient> getIngredientsForShoppingList(int userId, int weekId) {
-        // 1. REUSE: Get the plan entities (We only need the recipeId from them)
-        List<PlanEntity> plans = planDAO.getPlanForWeekSync(userId, weekId);
+    public List<MealPlanItem> getPlanForWeekSync_Domain(int userId, int weekId) {
+        // 1. Fetch Entities (Filtered by Week ID)
+        List<PlanWithRecipe> dbList = planDAO.getPlansWithRecipesForWeekSync(userId, weekId);
 
-        if (plans == null || plans.isEmpty()) {
-            return new ArrayList<>();
+        List<MealPlanItem> domainList = new ArrayList<>();
+        if (dbList != null) {
+            for (PlanWithRecipe item : dbList) {
+                // 2. Map Entities -> Domain Models
+                Plan planModel = PlanMapper.toModel(item.plan);
+                Recipe recipeModel = null;
+                if (item.recipe != null) {
+                    recipeModel = RecipeMapper.toModel(item.recipe);
+                }
+
+                // 3. Wrap in MealPlanItem
+                domainList.add(new MealPlanItem(planModel, recipeModel));
+            }
         }
-
-        // 2. Extract IDs
-        List<Integer> recipeIds = new ArrayList<>();
-        for (PlanEntity plan : plans) {
-            recipeIds.add(plan.getRecipeId());
-        }
-
-        // 3. Batch Fetch Ingredients
-        List<IngredientEntity> entities = ingredientDAO.getIngredientsForRecipes(recipeIds);
-
-        // 4. Convert to Domain Models
-        List<Ingredient> domainIngredients = new ArrayList<>();
-        for(IngredientEntity entity : entities) {
-            Ingredient ing = new Ingredient();
-            ing.setName(entity.getName());
-            ing.setQuantity(entity.getQuantity());
-            ing.setUnit(entity.getUnit());
-            domainIngredients.add(ing);
-        }
-
-        return domainIngredients;
+        return domainList;
     }
 }
