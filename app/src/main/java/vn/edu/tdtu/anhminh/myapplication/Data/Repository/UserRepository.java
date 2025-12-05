@@ -33,9 +33,42 @@ public class UserRepository {
         }
     }
 
+    private static class UpdateUserTask extends AsyncTask<UserEntity, Void, Boolean> {
+        private final UserDAO userDAO;
+        private final RepositoryCallback callback;
+
+        UpdateUserTask(UserDAO userDAO, RepositoryCallback callback) {
+            this.userDAO = userDAO;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Boolean doInBackground(UserEntity... entities) {
+            if (entities != null && entities.length > 0) {
+                // update returns the number of rows affected
+                int rows = userDAO.update(entities[0]);
+                return rows > 0;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (callback != null) {
+                if (success) callback.onSuccess();
+                else callback.onError("Failed to update user in database.");
+            }
+        }
+    }
+
     // 1. Định nghĩa Callback
     public interface LoginCallback {
         void onResult(User user);
+    }
+
+    public interface RepositoryCallback {
+        void onSuccess();
+        void onError(String message);
     }
 
     // 2. Sửa hàm login
@@ -60,6 +93,53 @@ public class UserRepository {
         if (user == null) return;
         UserEntity entity = UserMapper.toEntity(user, user.getPasswordHash());
         new InsertUserTask(userDAO).execute(entity);
+    }
+
+    public void updateUserProfile(int userId, String newUsername, String newAvatarUri, RepositoryCallback callback) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                // 1. Check if Username is taken by ANOTHER user
+                UserEntity existingUser = userDAO.getUserByUsername(newUsername);
+
+                // Check collision:
+                // A user exists with this name AND it is not the current user
+                if (existingUser != null && existingUser.getUserId() != userId) {
+                    return "Username already exists!";
+                }
+
+                // 2. If valid, proceed to update
+                // Fetch the existing entity to ensure we have the correct record
+                UserEntity currentEntity = userDAO.getUserById(userId);
+
+                if (currentEntity != null) {
+                    currentEntity.setUsername(newUsername);
+                    // Only update avatar if a new one is provided
+                    if(newAvatarUri != null) {
+                        currentEntity.setAvatarImage(newAvatarUri);
+                    }
+
+                    int rows = userDAO.update(currentEntity);
+                    if (rows > 0) {
+                        return null; // Null indicates success
+                    } else {
+                        return "Database update failed.";
+                    }
+                }
+                return "User not found in database";
+            }
+
+            @Override
+            protected void onPostExecute(String errorMessage) {
+                if (callback != null) {
+                    if (errorMessage == null) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onError(errorMessage);
+                    }
+                }
+            }
+        }.execute();
     }
 
     private UserEntity getUserByIdInternal(int userId){

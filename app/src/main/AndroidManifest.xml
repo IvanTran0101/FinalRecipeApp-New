@@ -22,7 +22,8 @@
         android:theme="@style/Theme.MyApplication">
         <activity
             android:name=".UI.Main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".UI.Login.LoginActivity"
             android:exported="true">

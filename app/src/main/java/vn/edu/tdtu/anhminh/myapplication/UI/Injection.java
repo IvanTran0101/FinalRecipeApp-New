@@ -4,6 +4,7 @@ import android.content.Context;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.*;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateMealFrequencyReportUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateShoppingListUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.ManageMealPlanUseCase;
@@ -55,10 +56,15 @@ public class Injection {
         return new AuthenticateUserUseCase(userRepo);
     }
 
+    public static UpdateAccountUseCase provideUpdateAccountUseCase() {
+        return new UpdateAccountUseCase(userRepo);
+    }
+
     public static ViewModelFactory provideViewModelFactory() {
         return new ViewModelFactory(
                 provideManageRecipeUseCase(),
                 provideAuthenticateUserUseCase(),
+                provideUpdateAccountUseCase(),
                 provideSearchRecipesUseCase(),
                 provideToggleFavoriteRecipeUseCase()
         );

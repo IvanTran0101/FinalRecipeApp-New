@@ -12,12 +12,12 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Local.Pref.UserPrefs;
 import vn.edu.tdtu.anhminh.myapplication.R;
 import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
 import vn.edu.tdtu.anhminh.myapplication.UI.Main.MainActivity;
-import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.LoginViewModel;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.UserViewModel;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private LoginViewModel viewModel;
+    private UserViewModel viewModel;
     private EditText etUsername;
     private EditText etPassword;
     private Button btnLogin;
@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // 4. Setup ViewModel
         ViewModelFactory factory = Injection.provideViewModelFactory();
-        viewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(this, factory).get(UserViewModel.class);
 
         // 5. Observe Success
         viewModel.getLoginResult().observe(this, user -> {
