@@ -14,7 +14,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_favorite"
-        app:tint="#FFD700"
+        app:tint="@color/orange_primary"
         android:layout_marginEnd="8dp"
         android:visibility="gone"
         tools:visibility="visible"

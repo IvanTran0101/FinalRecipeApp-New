@@ -13,7 +13,7 @@
         android:layout_height="48dp"
         android:gravity="center"
         android:text="M"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="18sp" />
 
@@ -29,7 +29,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:src="@android:drawable/ic_input_add"
-        app:tint="@android:color/black"
+        app:tint="@color/orange_primary"
         android:contentDescription="Add Meal" />
 
 </LinearLayout>

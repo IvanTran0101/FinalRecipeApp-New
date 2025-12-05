@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    style="@style/FragmentBackground"
     android:padding="16dp">
 
     <ImageButton
@@ -42,7 +42,7 @@
         android:id="@+id/tv_step_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Step 1 of 5"
+        android:text="Step 0 of 0"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/btn_prev_step"

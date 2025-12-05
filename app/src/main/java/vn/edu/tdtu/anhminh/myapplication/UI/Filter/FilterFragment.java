@@ -29,7 +29,7 @@ public class FilterFragment extends DialogFragment {
 
     private RecipeViewModel viewModel;
 
-    private CheckBox cbBreakfast, cbLunch, cbDinner, cbDessert, cbVegan, cbKeto;
+    private CheckBox cbBreakfast, cbLunch, cbDinner, cbDessert, cbSnack, cbVegan, cbKeto, cbGlutenFree;
     private EditText etCalMin, etCalMax, etCarbMin, etCarbMax, etProteinMin, etProteinMax, etFatMin, etFatMax;
     private Button btnApplyFilter;
     private TextView btnReset;
@@ -40,18 +40,22 @@ public class FilterFragment extends DialogFragment {
         return inflater.inflate(R.layout.fragment_filter, container, false);
     }
 
-    // This makes the Dialog look like a popup in the center
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.PopupDialogAnimation);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
         Window window = getDialog().getWindow();
         if (window != null) {
             WindowManager.LayoutParams params = window.getAttributes();
-            // Set width to 90% of screen, Height to Wrap Content
             params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(params);
-            window.setBackgroundDrawableResource(android.R.color.transparent); // Optional: for rounded corners in XML
+            window.setBackgroundDrawableResource(android.R.color.transparent);
         }
     }
 
@@ -85,9 +89,10 @@ public class FilterFragment extends DialogFragment {
         cbLunch = view.findViewById(R.id.cb_lunch);
         cbDinner = view.findViewById(R.id.cb_dinner);
         cbDessert = view.findViewById(R.id.cb_dessert);
+        cbSnack = view.findViewById(R.id.cb_snack);
         cbVegan = view.findViewById(R.id.cb_vegan);
         cbKeto = view.findViewById(R.id.cb_keto);
-
+        cbGlutenFree = view.findViewById(R.id.cb_gluten_free);
         etCalMin = view.findViewById(R.id.et_cal_min);
         etCalMax = view.findViewById(R.id.et_cal_max);
         etCarbMin = view.findViewById(R.id.et_carb_min);
@@ -96,7 +101,6 @@ public class FilterFragment extends DialogFragment {
         etProteinMax = view.findViewById(R.id.et_protein_max);
         etFatMin = view.findViewById(R.id.et_fat_min);
         etFatMax = view.findViewById(R.id.et_fat_max);
-
         btnApplyFilter = view.findViewById(R.id.btn_apply_filter);
         btnReset = view.findViewById(R.id.btn_reset);
     }
@@ -109,12 +113,14 @@ public class FilterFragment extends DialogFragment {
             cbLunch.setChecked(cats.contains("Lunch"));
             cbDinner.setChecked(cats.contains("Dinner"));
             cbDessert.setChecked(cats.contains("Dessert"));
+            cbSnack.setChecked(cats.contains("Snack"));
         }
 
         List<String> modes = viewModel.getCurrentDietModes();
         if (modes != null) {
             cbVegan.setChecked(modes.contains("Vegan"));
             cbKeto.setChecked(modes.contains("Keto"));
+            cbGlutenFree.setChecked(modes.contains("Gluten-Free"));
         }
 
         // Restore Numbers (Helper function to safely convert Integer to String)
@@ -142,10 +148,13 @@ public class FilterFragment extends DialogFragment {
         if (cbLunch.isChecked()) categories.add("Lunch");
         if (cbDinner.isChecked()) categories.add("Dinner");
         if (cbDessert.isChecked()) categories.add("Dessert");
+        if (cbSnack.isChecked()) categories.add("Snack");
+
 
         List<String> dietModes = new ArrayList<>();
         if (cbVegan.isChecked()) dietModes.add("Vegan");
         if (cbKeto.isChecked()) dietModes.add("Keto");
+        if (cbGlutenFree.isChecked()) dietModes.add("Gluten-Free");
 
         Integer minCalories = etCalMin.getText().toString().isEmpty() ? null : Integer.parseInt(etCalMin.getText().toString());
         Integer maxCalories = etCalMax.getText().toString().isEmpty() ? null : Integer.parseInt(etCalMax.getText().toString());
@@ -164,8 +173,10 @@ public class FilterFragment extends DialogFragment {
         cbLunch.setChecked(false);
         cbDinner.setChecked(false);
         cbDessert.setChecked(false);
+        cbSnack.setChecked(false);
         cbVegan.setChecked(false);
         cbKeto.setChecked(false);
+        cbGlutenFree.setChecked(false);
 
         etCalMin.setText("");
         etCalMax.setText("");

@@ -2,14 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_home"
+        android:iconTint="@color/white"
         android:title="Home" />
 
     <item
         android:id="@+id/navigation_meal_plan"
+        android:iconTint="@color/white"
         android:title="Meal Plan" />
 
     <item
         android:id="@+id/navigation_groceries"
+
         android:title="Groceries" />
 
     <item

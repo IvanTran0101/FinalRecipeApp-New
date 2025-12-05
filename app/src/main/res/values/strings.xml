@@ -9,7 +9,6 @@
     </string-array>
     <string-array name="diet_array">
         <item>None</item>
-        <item>Vegetarian</item>
         <item>Vegan</item>
         <item>Gluten-Free</item>
         <item>Ketogenic</item>
