@@ -26,7 +26,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Local.Pref.UserPrefs;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.User;
 import vn.edu.tdtu.anhminh.myapplication.R;
 import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
-import vn.edu.tdtu.anhminh.myapplication.UI.Login.LoginActivity;
+import vn.edu.tdtu.anhminh.myapplication.UI.Authenticate.LoginActivity;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.UserViewModel;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 

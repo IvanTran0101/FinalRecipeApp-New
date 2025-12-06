@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ReciMe</string>
+    <string name="app_name">Receta</string>
     <string-array name="category_array">
         <item>Breakfast</item>
         <item>Lunch</item>

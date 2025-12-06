@@ -111,11 +111,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 if (imagePath != null && !imagePath.isEmpty()) {
                     com.bumptech.glide.Glide.with(holder.itemView.getContext())
                             .load(imagePath)
-                            .placeholder(R.drawable.ic_launcher_background)
+                            .placeholder(android.R.color.darker_gray)
                             .centerCrop()
                             .into(holder.image);
                 } else {
-                    holder.image.setImageResource(R.drawable.ic_launcher_background);
+                    holder.image.setImageResource(android.R.color.darker_gray);
                 }
             }
 

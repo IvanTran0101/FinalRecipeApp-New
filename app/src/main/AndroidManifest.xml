@@ -28,7 +28,10 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".UI.Login.LoginActivity"
+            android:name=".UI.Authenticate.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UI.Authenticate.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

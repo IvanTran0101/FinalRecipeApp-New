@@ -85,14 +85,30 @@ public class UserRepository {
             }
         }.execute();
     }
-    public boolean usernameExists(String username) {
-        return userDAO.getUserByUsername(username) != null;
-    }
 
-    public void register(User user){
-        if (user == null) return;
-        UserEntity entity = UserMapper.toEntity(user, user.getPasswordHash());
-        new InsertUserTask(userDAO).execute(entity);
+    public void register(User user, RepositoryCallback callback) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                if (userDAO.getUserByUsername(user.getUsername()) != null) {
+                    return "Username already exists!";
+                }
+                UserEntity entity = UserMapper.toEntity(user, user.getPasswordHash());
+                userDAO.insert(entity);
+                return null; // null indicates success
+            }
+
+            @Override
+            protected void onPostExecute(String errorMessage) {
+                if (callback != null) {
+                    if (errorMessage == null) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onError(errorMessage);
+                    }
+                }
+            }
+        }.execute();
     }
 
     public void updateUserProfile(int userId, String newUsername, String newAvatarUri, RepositoryCallback callback) {

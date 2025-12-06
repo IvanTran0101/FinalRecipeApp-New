@@ -92,12 +92,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        // Disable Swipe on the Map Fragment
         NavDestination currentDest = navController != null ? navController.getCurrentDestination() : null;
         boolean isMapFragment = (currentDest != null && currentDest.getId() == R.id.navigation_groceries);
         boolean isStartCookingFragment = (currentDest != null && currentDest.getId() == R.id.startCookingFragment);
+        boolean isRecipeDetailFragment = (currentDest != null && currentDest.getId() == R.id.recipeDetailFragment);
 
-        if (gestureDetector != null && !isMapFragment && !isStartCookingFragment) {
+        if (gestureDetector != null && !isMapFragment && !isStartCookingFragment && !isRecipeDetailFragment) {
             gestureDetector.onTouchEvent(event);
         }
 

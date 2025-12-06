@@ -33,6 +33,8 @@ public class MealPlanViewModel extends AndroidViewModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final MutableLiveData<List<ShoppingListItem>> shoppingList = new MutableLiveData<>();
     private final MutableLiveData<Pair<Recipe, Map<String, Integer>>> analyticsData = new MutableLiveData<>();
+    private LiveData<List<MealPlanItem>> cachedPlanData;
+    private int lastLoadedWeekId = -1;
 
     public MealPlanViewModel(@NonNull Application application) {
         super(application);
@@ -46,7 +48,14 @@ public class MealPlanViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<MealPlanItem>> getWeeklyPlan(int userId, int weekId) {
-        return manageMealPlanUseCase.getWeeklyPlan(userId, weekId);
+        if (cachedPlanData != null && lastLoadedWeekId == weekId) {
+            return cachedPlanData;
+        }
+
+        // If it's a new week (or first load), fetch from DB and save it
+        lastLoadedWeekId = weekId;
+        cachedPlanData = manageMealPlanUseCase.getWeeklyPlan(userId, weekId);
+        return cachedPlanData;
     }
 
     public LiveData<Pair<Recipe, Map<String, Integer>>> getAnalyticsData() {

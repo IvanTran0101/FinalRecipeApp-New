@@ -46,11 +46,31 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/tv_cat_label">
 
-        <CheckBox android:id="@+id/cb_breakfast" android:text="Breakfast" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_lunch" android:text="Lunch" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_dinner" android:text="Dinner" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_dessert" android:text="Dessert" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_snack" android:text="Snack" android:layout_width="wrap_content"/>
+        <CheckBox
+            android:id="@+id/cb_breakfast"
+            android:text="Breakfast"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox
+            android:id="@+id/cb_lunch"
+            android:text="Lunch"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox
+            android:id="@+id/cb_dinner"
+            android:text="Dinner"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox
+            android:id="@+id/cb_dessert"
+            android:text="Dessert"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox
+            android:id="@+id/cb_snack"
+            android:text="Snack"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
     </GridLayout>
 
     <TextView
@@ -71,9 +91,18 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/tv_diet_label">
 
-        <CheckBox android:id="@+id/cb_vegan" android:text="Vegan" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_gluten_free" android:text="Gluten-Free" android:layout_width="wrap_content"/>
-        <CheckBox android:id="@+id/cb_keto" android:text="Ketogenic" android:layout_width="wrap_content"/>
+        <CheckBox android:id="@+id/cb_vegan"
+            android:text="Vegan"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox android:id="@+id/cb_gluten_free"
+            android:text="Gluten-Free"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
+        <CheckBox android:id="@+id/cb_keto"
+            android:text="Ketogenic"
+            android:layout_width="wrap_content"
+            app:buttonTint="@color/orange_primary"/>
     </GridLayout>
 
     <TextView

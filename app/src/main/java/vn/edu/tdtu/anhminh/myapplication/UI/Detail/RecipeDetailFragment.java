@@ -2,14 +2,9 @@ package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -21,10 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import java.util.ArrayList;
 import java.util.List;
-
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
@@ -35,15 +31,13 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFact
 import vn.edu.tdtu.anhminh.myapplication.Utils.NetworkUtils;
 
 public class RecipeDetailFragment extends Fragment {
-    private static final String TAG = "RecipeDetailFragment";
     private RecipeViewModel viewModel;
     private TextView tvTitle, tvCategory, tvDiet;
-    // Store current recipe to handle Copy/Delete
     private Recipe currentRecipe;
     private List<Ingredient> currentIngredients = new ArrayList<>();
     private List<Instruction> currentInstructions = new ArrayList<>();
     private ImageView ivRecipeImage;
-    private WebView webViewVideo;
+    private YouTubePlayerView youTubePlayerView;
     private ImageButton ivFavoriteToggle;
     private boolean isTogglingFavorite = false;
 
@@ -61,18 +55,12 @@ public class RecipeDetailFragment extends Fragment {
         tvDiet = view.findViewById(R.id.tv_diet);
         ivFavoriteToggle = view.findViewById(R.id.iv_favorite_toggle);
         View btnClose = view.findViewById(R.id.btn_close_detail);
-        webViewVideo = view.findViewById(R.id.webview_video);
-        
-        WebSettings webSettings = webViewVideo.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
-        webViewVideo.setWebChromeClient(new WebChromeClient());
+        youTubePlayerView = view.findViewById(R.id.youtube_player_view);
+
+        getLifecycle().addObserver(youTubePlayerView);
 
         btnClose.setOnClickListener(v -> Navigation.findNavController(view).popBackStack());
 
-        //Keep existing Navigation logic for child fragments
         setupChildNavigation(view);
 
         FloatingActionButton fab = view.findViewById(R.id.fab_recipe_options);
@@ -84,11 +72,8 @@ public class RecipeDetailFragment extends Fragment {
         viewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
                 if (isTogglingFavorite) {
-                    // It was a favorite toggle, so don't pop back.
-                    // Reset the flag.
                     isTogglingFavorite = false;
                 } else {
-                    // For other operations like delete or copy, pop back.
                     Navigation.findNavController(view).popBackStack();
                 }
             }
@@ -114,10 +99,8 @@ public class RecipeDetailFragment extends Fragment {
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (nextAnim == 0) {
             if (enter) {
-                // When fragment is opening
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
             } else {
-                // When fragment is closing (popBackStack)
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
             }
         }
@@ -159,12 +142,10 @@ public class RecipeDetailFragment extends Fragment {
                 return true;
 
             } else if (itemId == R.id.action_copy) {
-                //COPY: Duplicate logic
                 copyCurrentRecipe();
                 return true;
 
             } else if (itemId == R.id.action_delete) {
-                //DELETE: Confirm dialog
                 new AlertDialog.Builder(getContext())
                         .setTitle("Delete Recipe")
                         .setMessage("Are you sure you want to delete this recipe?")
@@ -185,7 +166,6 @@ public class RecipeDetailFragment extends Fragment {
     }
 
     private void copyCurrentRecipe() {
-        // 1. Copy Basic Info
         Recipe copy = new Recipe();
         copy.setTitle(currentRecipe.getTitle() + " (Copy)");
         if (currentRecipe.getRecipeImage() != null) {
@@ -229,7 +209,7 @@ public class RecipeDetailFragment extends Fragment {
     private void loadData(int recipeId) {
         viewModel.getRecipeById(recipeId).observe(getViewLifecycleOwner(), recipe -> {
             if (recipe != null) {
-                this.currentRecipe = recipe; // Save reference
+                this.currentRecipe = recipe;
                 tvTitle.setText(recipe.getTitle());
                 tvCategory.setText(recipe.getCategory());
                 tvDiet.setText(recipe.getDietMode());
@@ -243,33 +223,35 @@ public class RecipeDetailFragment extends Fragment {
                 String imagePath = recipe.getRecipeImage();
                 if (imagePath != null && !imagePath.isEmpty()) {
                     com.bumptech.glide.Glide.with(this)
-                            .load(imagePath) // This cannot be null
+                            .load(imagePath)
                             .placeholder(android.R.color.darker_gray)
                             .error(android.R.color.darker_gray)
                             .centerCrop()
-                            .into(ivRecipeImage); // Make sure ivRecipeImage is initialized!
+                            .into(ivRecipeImage);
                 } else {
-                    // If null, manually set placeholder WITHOUT Glide
                     ivRecipeImage.setImageResource(android.R.color.darker_gray);
                 }
+
                 String videoLink = recipe.getVideoLink();
                 String videoId = NetworkUtils.getYouTubeId(videoLink);
-
-                Log.d(TAG, "Video Link: " + videoLink);
-                Log.d(TAG, "Extracted Video ID: " + videoId);
 
                 View cardVideo = getView().findViewById(R.id.card_video);
 
                 if (videoId != null && !videoId.isEmpty()) {
                     cardVideo.setVisibility(View.VISIBLE);
-                    String embedUrl = "https://www.youtube.com/embed/" + videoId + "?playsinline=1&autoplay=0";
-                    webViewVideo.loadUrl(embedUrl);
+
+                    youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                        @Override
+                        public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                            youTubePlayer.loadVideo(videoId, 0);
+                        }
+                    });
                 } else {
-                    Log.d(TAG, "No valid video ID found, hiding video card");
                     cardVideo.setVisibility(View.GONE);
                 }
             }
         });
+
         viewModel.getIngredients(recipeId).observe(getViewLifecycleOwner(), ingredients -> {
             if (ingredients != null) {
                 this.currentIngredients = new ArrayList<>(ingredients);

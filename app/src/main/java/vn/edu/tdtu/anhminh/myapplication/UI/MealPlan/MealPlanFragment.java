@@ -38,7 +38,7 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mealPlanViewModel = new ViewModelProvider(this).get(MealPlanViewModel.class);
+        mealPlanViewModel = new ViewModelProvider(requireActivity()).get(MealPlanViewModel.class);
 
         currentWeek = Calendar.getInstance();
         weekTitle = view.findViewById(R.id.tv_week_title);
@@ -114,7 +114,7 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
         Calendar weekEnd = (Calendar) weekStart.clone();
         weekEnd.add(Calendar.DAY_OF_YEAR, 6);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy", Locale.ENGLISH);
         String title = sdf.format(weekStart.getTime()) + " - " + sdf.format(weekEnd.getTime());
         weekTitle.setText(title);
     }

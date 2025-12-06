@@ -39,22 +39,54 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.ViewHo
     }
 
     public void setMealData(List<MealPlanItem> allPlans, Calendar weekStart) {
-        mealData.clear();
+        // 1. Prepare the new data map
+        Map<String, List<MealPlanItem>> newMealData = new HashMap<>();
         if (allPlans != null) {
             for (MealPlanItem item : allPlans) {
-                // Accessing pure domain models
                 String key = convertPlanToDateKey(weekStart, item.getPlan().getWeekDay());
-
-                if (!mealData.containsKey(key)) {
-                    mealData.put(key, new ArrayList<>());
+                if (!newMealData.containsKey(key)) {
+                    newMealData.put(key, new ArrayList<>());
                 }
-                mealData.get(key).add(item);
+                newMealData.get(key).add(item);
             }
         }
-        notifyDataSetChanged();
+
+        List<Integer> indexesToUpdate = new ArrayList<>();
+
+        for (int i = 0; i < days.size(); i++) {
+            Calendar day = days.get(i);
+            String key = getDateKey(day);
+
+            List<MealPlanItem> oldList = this.mealData.get(key);
+            List<MealPlanItem> newList = newMealData.get(key);
+
+            if (isDayChanged(oldList, newList)) {
+                indexesToUpdate.add(i);
+            }
+        }
+
+        this.mealData.clear();
+        this.mealData.putAll(newMealData);
+
+        for (int index : indexesToUpdate) {
+            notifyItemChanged(index);
+        }
     }
 
-    // ... (convertPlanToDateKey and getDateKey remain the same) ...
+    private boolean isDayChanged(List<MealPlanItem> oldList, List<MealPlanItem> newList) {
+        if (oldList == null && newList == null) return false;
+        if (oldList == null || newList == null) return true;
+        if (oldList.size() != newList.size()) return true;
+
+        for (int i = 0; i < oldList.size(); i++) {
+            int oldId = oldList.get(i).getRecipe().getRecipeId();
+            int newId = newList.get(i).getRecipe().getRecipeId();
+            if (oldId != newId) return true;
+        }
+
+        return false;
+    }
+
     private String convertPlanToDateKey(Calendar weekStart, int dayOfWeekIndex) {
         Calendar cal = (Calendar) weekStart.clone();
         cal.add(Calendar.DAY_OF_YEAR, dayOfWeekIndex - 1);

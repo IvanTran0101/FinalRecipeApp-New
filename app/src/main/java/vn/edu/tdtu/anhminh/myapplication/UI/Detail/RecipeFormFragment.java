@@ -196,11 +196,11 @@ public class RecipeFormFragment extends Fragment {
                         imgPreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        imgPreview.setImageResource(R.drawable.ic_launcher_background);
+                        imgPreview.setImageResource(android.R.color.darker_gray);
                         selectedImageUri = null;
                     }
                 } else {
-                    imgPreview.setImageResource(R.drawable.ic_launcher_background);
+                    imgPreview.setImageResource(android.R.color.darker_gray);
                 }
                 etVideo.setText(recipe.getVideoLink());
                 if(recipe.getCalories() != null) etCal.setText(String.valueOf(recipe.getCalories()));
@@ -320,6 +320,7 @@ public class RecipeFormFragment extends Fragment {
             }
             return false;
         });
+        etStep.requestFocus();
 
         instructionContainer.addView(etStep);
     }
