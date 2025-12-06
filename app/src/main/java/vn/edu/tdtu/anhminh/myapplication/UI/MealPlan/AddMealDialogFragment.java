@@ -8,6 +8,7 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +31,7 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFact
 public class AddMealDialogFragment extends BottomSheetDialogFragment {
 
     private static final String ARG_DAY = "ARG_DAY";
-    private RecipeViewModel viewModel; // 2. Add ViewModel
+    private RecipeViewModel viewModel;
 
     public interface OnRecipeSelectedListener {
         void onRecipeSelected(Recipe recipe, Calendar day);
@@ -50,6 +51,13 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
         AddMealDialogFragment fragment = new AddMealDialogFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Apply the Custom Slide-Up Theme
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.MyBottomSheetDialogTheme);
     }
 
     @Nullable

@@ -13,6 +13,7 @@
         android:id="@+id/btn_prev_week"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:src="@drawable/ic_arrow_left"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_week_title"
         app:layout_constraintBottom_toBottomOf="@id/tv_week_title"/>
@@ -34,11 +35,11 @@
         android:id="@+id/btn_next_week"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:src="@drawable/ic_arrow_right"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_week_title"
         app:layout_constraintBottom_toBottomOf="@id/tv_week_title"/>
 
-    <!-- The Scrollable List of Days (S, M, T, W...) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_week_days"
         android:layout_width="match_parent"
@@ -75,7 +76,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="8dp"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_shopping_list"
+            app:tint="@color/orange_primary" />
 
     </LinearLayout>
 

@@ -12,7 +12,7 @@
         android:id="@+id/btn_close_cooking"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:src="@drawable/ic_close"
         android:background="?attr/selectableItemBackgroundBorderless"
         app:tint="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"

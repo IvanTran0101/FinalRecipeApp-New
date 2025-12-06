@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -124,6 +126,21 @@ public class RecipeFormFragment extends Fragment {
         btnAddStep = view.findViewById(R.id.btn_add_step);
         chipGroupIngredients = view.findViewById(R.id.chip_group_ingredients);
         btnAddIngredient = view.findViewById(R.id.btn_add_ingredient);
+    }
+
+    @Nullable
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (nextAnim == 0) {
+            if (enter) {
+                // When fragment is opening
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
+            } else {
+                // When fragment is closing (popBackStack)
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
+            }
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
     private void showAddIngredientDialog() {

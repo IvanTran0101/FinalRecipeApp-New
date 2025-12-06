@@ -39,9 +39,9 @@
                     android:layout_gravity="top|end"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:background="#80000000"
                     android:padding="8dp"
-                    app:tint="@android:color/white" />
+                    android:src="@drawable/ic_close"
+                    android:background="@android:color/transparent"/>
             </FrameLayout>
 
             <LinearLayout
@@ -160,8 +160,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:theme="@style/MyCustomPopupTheme"
         android:backgroundTint="@color/orange_primary"
-        android:src="@android:drawable/ic_menu_more"
+        android:src="@drawable/ic_detail"
+        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

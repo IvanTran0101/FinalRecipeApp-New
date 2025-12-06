@@ -28,7 +28,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- TIMER VISUALIZATION (Visible only when running) -->
     <FrameLayout
         android:id="@+id/layout_timer_running"
         android:layout_width="250dp"
@@ -68,7 +67,6 @@
             android:textColor="@android:color/black"/>
     </FrameLayout>
 
-    <!-- TIME PICKER (Visible when idle) -->
     <LinearLayout
         android:id="@+id/layout_time_picker"
         android:layout_width="match_parent"
@@ -79,7 +77,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintBottom_toTopOf="@+id/layout_buttons">
 
-        <!-- Hours -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,7 +102,6 @@
             android:layout_marginHorizontal="8dp"
             android:layout_gravity="center"/>
 
-        <!-- Minutes -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -131,7 +127,6 @@
             android:layout_marginHorizontal="8dp"
             android:layout_gravity="center"/>
 
-        <!-- Seconds -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -161,21 +156,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancel_timer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:text="Cancel"
-            android:backgroundTint="#F44336"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#F44336"
             android:layout_marginEnd="16dp"
             android:enabled="false"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_start_timer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:text="Start"
-            android:backgroundTint="#4CAF50"/>
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#4CAF50"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

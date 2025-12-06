@@ -2,6 +2,8 @@ package vn.edu.tdtu.anhminh.myapplication.UI.MealPlan;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -94,5 +96,20 @@ public class AnalyticsFragment extends Fragment {
             }
         }
         tvSummary.setText(sb.toString());
+    }
+
+    @Nullable
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (nextAnim == 0) {
+            if (enter) {
+                // When fragment is opening
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
+            } else {
+                // When fragment is closing (popBackStack)
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
+            }
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 }

@@ -3,5 +3,5 @@
     android:shape="ring"
     android:thickness="10dp"
     android:useLevel="true">
-    <solid android:color="#FF5722" /> <!-- Timer Color -->
+    <solid android:color="@color/orange_primary" /> <!-- Timer Color -->
 </shape>

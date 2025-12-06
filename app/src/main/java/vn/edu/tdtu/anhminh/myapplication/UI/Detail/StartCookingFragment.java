@@ -2,6 +2,8 @@ package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,6 +106,21 @@ public class StartCookingFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Nullable
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (nextAnim == 0) {
+            if (enter) {
+                // When fragment is opening
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
+            } else {
+                // When fragment is closing (popBackStack)
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
+            }
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
     private void updateCounter(int current, int total) {

@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -107,7 +109,21 @@ public class RecipeDetailFragment extends Fragment {
         }
     }
 
-    // Helper to keep onViewCreated clean
+    @Nullable
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (nextAnim == 0) {
+            if (enter) {
+                // When fragment is opening
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
+            } else {
+                // When fragment is closing (popBackStack)
+                return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
+            }
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
+    }
+
     private void setupChildNavigation(View view) {
         View btnIngredients = view.findViewById(R.id.btn_ingredients);
         btnIngredients.setOnClickListener(v -> navigateToChild(view, R.id.action_detail_to_ingredient));
@@ -128,7 +144,7 @@ public class RecipeDetailFragment extends Fragment {
     }
 
     private void showPopupMenu(View view) {
-        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.getMenuInflater().inflate(R.menu.recipe_detail_menu, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(item -> {

@@ -43,17 +43,19 @@ public class FilterFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.PopupDialogAnimation);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.FilterDialogTheme);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Window window = getDialog().getWindow();
-        if (window != null) {
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            Window window = getDialog().getWindow();
             WindowManager.LayoutParams params = window.getAttributes();
+
             params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
             window.setAttributes(params);
             window.setBackgroundDrawableResource(android.R.color.transparent);
         }

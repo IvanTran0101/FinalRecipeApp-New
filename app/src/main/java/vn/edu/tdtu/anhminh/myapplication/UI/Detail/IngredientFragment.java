@@ -1,9 +1,13 @@
 package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -25,6 +29,30 @@ public class IngredientFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_ingredient, container, false);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.FilterDialogTheme);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog().getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams params = window.getAttributes();
+
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+            params.width = (int) (displayMetrics.widthPixels * 0.70);
+
+            params.height = (int) (displayMetrics.heightPixels * 0.50);
+
+            window.setAttributes(params);
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
     }
 
     @Override

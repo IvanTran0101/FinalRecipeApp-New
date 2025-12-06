@@ -114,8 +114,8 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
         Calendar weekEnd = (Calendar) weekStart.clone();
         weekEnd.add(Calendar.DAY_OF_YEAR, 6);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d", Locale.getDefault());
-        String title = sdf.format(weekStart.getTime()) + " -> " + sdf.format(weekEnd.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM", Locale.getDefault());
+        String title = sdf.format(weekStart.getTime()) + " - " + sdf.format(weekEnd.getTime());
         weekTitle.setText(title);
     }
 
