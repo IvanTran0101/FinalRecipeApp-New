@@ -9,7 +9,7 @@
     </style>
 
     <style name="FragmentBackground">
-        <item name="android:background">@color/orange_super_light</item>
+        <item name="android:background">@drawable/fragment_background_rounded</item>
     </style>
     <style name="MyNavIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/orange_medium</item>

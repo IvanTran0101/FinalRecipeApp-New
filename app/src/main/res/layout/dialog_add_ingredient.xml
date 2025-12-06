@@ -30,7 +30,8 @@
             android:id="@+id/spinner_dialog_ingredient_unit"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="8dp"
+            android:popupBackground="@drawable/spinner_background"/>
     </LinearLayout>
 
 </LinearLayout>

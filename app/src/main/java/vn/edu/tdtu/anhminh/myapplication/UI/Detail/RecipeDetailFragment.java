@@ -2,9 +2,12 @@ package vn.edu.tdtu.anhminh.myapplication.UI.Detail;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -30,6 +33,7 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFact
 import vn.edu.tdtu.anhminh.myapplication.Utils.NetworkUtils;
 
 public class RecipeDetailFragment extends Fragment {
+    private static final String TAG = "RecipeDetailFragment";
     private RecipeViewModel viewModel;
     private TextView tvTitle, tvCategory, tvDiet;
     // Store current recipe to handle Copy/Delete
@@ -56,7 +60,12 @@ public class RecipeDetailFragment extends Fragment {
         ivFavoriteToggle = view.findViewById(R.id.iv_favorite_toggle);
         View btnClose = view.findViewById(R.id.btn_close_detail);
         webViewVideo = view.findViewById(R.id.webview_video);
-        webViewVideo.getSettings().setJavaScriptEnabled(true); // REQUIRED for YouTube
+        
+        WebSettings webSettings = webViewVideo.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
         webViewVideo.setWebChromeClient(new WebChromeClient());
 
         btnClose.setOnClickListener(v -> Navigation.findNavController(view).popBackStack());
@@ -230,17 +239,17 @@ public class RecipeDetailFragment extends Fragment {
                 String videoLink = recipe.getVideoLink();
                 String videoId = NetworkUtils.getYouTubeId(videoLink);
 
-                View cardVideo = getView().findViewById(R.id.card_video); // The container
+                Log.d(TAG, "Video Link: " + videoLink);
+                Log.d(TAG, "Extracted Video ID: " + videoId);
 
-                if (videoId != null) {
+                View cardVideo = getView().findViewById(R.id.card_video);
+
+                if (videoId != null && !videoId.isEmpty()) {
                     cardVideo.setVisibility(View.VISIBLE);
-
-                    // The YouTube Embed Player HTML
-                    String embedHtml = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + videoId + "?autoplay=1\" frameborder=\"0\" allowfullscreen></iframe>";
-
-                    webViewVideo.loadData(embedHtml, "text/html", "utf-8");
+                    String embedUrl = "https://www.youtube.com/embed/" + videoId + "?playsinline=1&autoplay=0";
+                    webViewVideo.loadUrl(embedUrl);
                 } else {
-                    // Hide the video card if no valid link
+                    Log.d(TAG, "No valid video ID found, hiding video card");
                     cardVideo.setVisibility(View.GONE);
                 }
             }

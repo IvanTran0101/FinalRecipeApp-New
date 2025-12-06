@@ -55,7 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:entries="@array/category_array"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:popupBackground="@drawable/spinner_background"/>
 
         <!-- Diet Spinner -->
         <Spinner
@@ -63,7 +64,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:entries="@array/diet_array"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:popupBackground="@drawable/spinner_background"/>
 
         <!-- Add Ingredients -->
         <TextView

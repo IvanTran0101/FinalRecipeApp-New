@@ -1,14 +1,12 @@
 package vn.edu.tdtu.anhminh.myapplication.UI.Home;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,7 +42,7 @@ public class HomeFragment extends Fragment {
     private RecipeAdapter favoritesAdapter;
     private RecipeAdapter otherRecipesAdapter;
     private ActionMode actionMode;
-    private EditText searchBar;
+    private SearchView searchView;
     private ImageView filterButton;
     private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         @Override
@@ -134,21 +132,20 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupSearchAndFilter(View view) {
-        searchBar = view.findViewById(R.id.search_bar);
+        searchView = view.findViewById(R.id.search_view);
         filterButton = view.findViewById(R.id.btn_filter);
 
-        searchBar.addTextChangedListener(new TextWatcher() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public boolean onQueryTextSubmit(String query) {
+                viewModel.search(query);
+                return false;
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.search(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            public boolean onQueryTextChange(String newText) {
+                viewModel.search(newText);
+                return false;
             }
         });
 

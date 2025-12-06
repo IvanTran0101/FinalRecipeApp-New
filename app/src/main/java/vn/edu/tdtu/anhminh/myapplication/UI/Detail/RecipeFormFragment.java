@@ -241,7 +241,7 @@ public class RecipeFormFragment extends Fragment {
         }
         recipe.setCategory(spCategory.getSelectedItem().toString());
         recipe.setDietMode(spDiet.getSelectedItem().toString());
-        recipe.setVideoLink(etVideo.getText().toString());
+        recipe.setVideoLink(etVideo.getText().toString().trim());
 
         try {
             if(!etCal.getText().toString().isEmpty()) recipe.setCalories(Double.parseDouble(etCal.getText().toString()));

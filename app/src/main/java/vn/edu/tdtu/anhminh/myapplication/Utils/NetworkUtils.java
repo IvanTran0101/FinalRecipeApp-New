@@ -45,14 +45,32 @@ public final class NetworkUtils {
     }
 
     public static String getYouTubeId(String url) {
-        if (url == null || url.isEmpty()) return null;
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
 
-        String pattern = "((?<=(v=))|(?<=be/))([a-zA-Z0-9_-]{11})";
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(url);
+        if (url.contains("youtu.be/")) {
+            Pattern pattern = Pattern.compile("youtu\\.be/([a-zA-Z0-9_-]{11})");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
 
-        if (matcher.find()) {
-            return matcher.group();
+        if (url.contains("youtube.com/watch")) {
+            Pattern pattern = Pattern.compile("[?&]v=([a-zA-Z0-9_-]{11})");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+
+        if (url.contains("youtube.com/embed/")) {
+            Pattern pattern = Pattern.compile("embed/([a-zA-Z0-9_-]{11})");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
         }
         return null;
     }
