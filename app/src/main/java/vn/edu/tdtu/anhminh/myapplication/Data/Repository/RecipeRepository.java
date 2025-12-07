@@ -247,6 +247,14 @@ public class RecipeRepository {
     }
 
     public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
+        // Nếu userId không hợp lệ, trả về toàn bộ công thức (bao gồm dữ liệu seed từ GitHub/asset)
+        if (userId <= 0) {
+            return Transformations.map(
+                    recipeDAO.searchRecipes(searchQuery),
+                    RecipeMapper::toModelList
+            );
+        }
+
         return Transformations.map(
                 recipeDAO.searchRecipesForUser(searchQuery, userId),
                 RecipeMapper::toModelList
