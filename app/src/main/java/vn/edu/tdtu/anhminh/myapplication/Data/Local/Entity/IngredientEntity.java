@@ -2,6 +2,7 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.ForeignKey;
 import androidx.annotation.NonNull;
@@ -38,6 +39,9 @@ public class IngredientEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
+    public IngredientEntity() {
+    }
+    @Ignore
     public IngredientEntity(@NonNull Integer ingredientId, @NonNull Integer recipeId, @NonNull String name, @NonNull double quantity, @NonNull String unit) {
         this.ingredientId = ingredientId;
         this.recipeId = recipeId;

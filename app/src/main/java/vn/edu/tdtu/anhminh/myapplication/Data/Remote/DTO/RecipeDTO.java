@@ -1,7 +1,11 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO;
 
 
+import java.util.List;
+
 public class RecipeDTO {
+    private List<IngredientDTO> ingredients;
+    private List<InstructionDTO> instructions;
     private Integer recipeId;
     private Integer userId;
 
@@ -49,7 +53,21 @@ public class RecipeDTO {
         this.isPinned = isPinned;
 
     }
+    public List<IngredientDTO> getIngredients() {
+        return ingredients;
+    }
 
+    public void setIngredients(List<IngredientDTO> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public List<InstructionDTO> getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(List<InstructionDTO> instructions) {
+        this.instructions = instructions;
+    }
     public Integer getRecipeId() {
         return recipeId;
     }

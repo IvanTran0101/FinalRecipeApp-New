@@ -2,6 +2,7 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.ForeignKey;
 import androidx.annotation.NonNull;
@@ -35,6 +36,9 @@ public class InstructionEntity {
     // -------------------------------------------------------------------
     // --- CONSTRUCTOR (REQUIRED by Room) ---
     // -------------------------------------------------------------------
+    public InstructionEntity() {
+    }
+    @Ignore
     public InstructionEntity(
             @NonNull Integer instructionId,
             @NonNull Integer recipeId,

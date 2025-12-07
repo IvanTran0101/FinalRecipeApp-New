@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment; // Changed from BottomSheetDialogFragment
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
-// Change inheritance to DialogFragment
 public class FilterFragment extends DialogFragment {
 
     private RecipeViewModel viewModel;
@@ -66,12 +65,12 @@ public class FilterFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ViewModelFactory factory = Injection.provideViewModelFactory();
-        // Use requireActivity() so we share data with HomeFragment
+        // Sử dụng requireActivity() để chia sẻ ViewModel với HomeFragment
         viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
         initViews(view);
 
-        // Load previous data immediately when opening
+        // Load dữ liệu cũ ngay khi mở
         loadCurrentFilters();
 
         btnApplyFilter.setOnClickListener(v -> {
@@ -79,9 +78,11 @@ public class FilterFragment extends DialogFragment {
             dismiss();
         });
 
+        // CẬP NHẬT CHÍNH Ở ĐÂY:
         btnReset.setOnClickListener(v -> {
-            resetFilters();
-            applyFilters();
+            // Gọi trực tiếp hàm clearFilters trong ViewModel
+            viewModel.clearFilters();
+            // Đóng dialog ngay, không cần tốn công reset UI manually vì lần sau mở lại nó sẽ load state rỗng
             dismiss();
         });
     }
@@ -116,6 +117,9 @@ public class FilterFragment extends DialogFragment {
             cbDinner.setChecked(cats.contains("Dinner"));
             cbDessert.setChecked(cats.contains("Dessert"));
             cbSnack.setChecked(cats.contains("Snack"));
+        } else {
+            // Nếu null thì bỏ check hết (đề phòng trường hợp ViewModel chưa reset nhưng UI bị cache)
+            uncheckAllCategories();
         }
 
         List<String> modes = viewModel.getCurrentDietModes();
@@ -123,9 +127,11 @@ public class FilterFragment extends DialogFragment {
             cbVegan.setChecked(modes.contains("Vegan"));
             cbKeto.setChecked(modes.contains("Keto"));
             cbGlutenFree.setChecked(modes.contains("Gluten-Free"));
+        } else {
+            uncheckAllDiets();
         }
 
-        // Restore Numbers (Helper function to safely convert Integer to String)
+        // Restore Numbers
         setTextSafely(etCalMin, viewModel.getMinCalories());
         setTextSafely(etCalMax, viewModel.getMaxCalories());
         setTextSafely(etCarbMin, viewModel.getMinCarbs());
@@ -152,41 +158,47 @@ public class FilterFragment extends DialogFragment {
         if (cbDessert.isChecked()) categories.add("Dessert");
         if (cbSnack.isChecked()) categories.add("Snack");
 
-
         List<String> dietModes = new ArrayList<>();
         if (cbVegan.isChecked()) dietModes.add("Vegan");
         if (cbKeto.isChecked()) dietModes.add("Keto");
         if (cbGlutenFree.isChecked()) dietModes.add("Gluten-Free");
 
-        Integer minCalories = etCalMin.getText().toString().isEmpty() ? null : Integer.parseInt(etCalMin.getText().toString());
-        Integer maxCalories = etCalMax.getText().toString().isEmpty() ? null : Integer.parseInt(etCalMax.getText().toString());
-        Integer minCarbs = etCarbMin.getText().toString().isEmpty() ? null : Integer.parseInt(etCarbMin.getText().toString());
-        Integer maxCarbs = etCarbMax.getText().toString().isEmpty() ? null : Integer.parseInt(etCarbMax.getText().toString());
-        Integer minProtein = etProteinMin.getText().toString().isEmpty() ? null : Integer.parseInt(etProteinMin.getText().toString());
-        Integer maxProtein = etProteinMax.getText().toString().isEmpty() ? null : Integer.parseInt(etProteinMax.getText().toString());
-        Integer minFat = etFatMin.getText().toString().isEmpty() ? null : Integer.parseInt(etFatMin.getText().toString());
-        Integer maxFat = etFatMax.getText().toString().isEmpty() ? null : Integer.parseInt(etFatMax.getText().toString());
+        // Sử dụng helper function để parse an toàn hơn
+        Integer minCalories = parseInteger(etCalMin);
+        Integer maxCalories = parseInteger(etCalMax);
+        Integer minCarbs = parseInteger(etCarbMin);
+        Integer maxCarbs = parseInteger(etCarbMax);
+        Integer minProtein = parseInteger(etProteinMin);
+        Integer maxProtein = parseInteger(etProteinMax);
+        Integer minFat = parseInteger(etFatMin);
+        Integer maxFat = parseInteger(etFatMax);
 
         viewModel.setFilters(categories, dietModes, minCalories, maxCalories, minCarbs, maxCarbs, minProtein, maxProtein, minFat, maxFat);
     }
 
-    private void resetFilters() {
+    // Helper function để parse an toàn
+    private Integer parseInteger(EditText editText) {
+        String text = editText.getText().toString().trim();
+        if (text.isEmpty()) return null;
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return null; // Trả về null nếu số quá lớn hoặc lỗi định dạng
+        }
+    }
+
+    // Các hàm helper nhỏ để clean code UI
+    private void uncheckAllCategories() {
         cbBreakfast.setChecked(false);
         cbLunch.setChecked(false);
         cbDinner.setChecked(false);
         cbDessert.setChecked(false);
         cbSnack.setChecked(false);
+    }
+
+    private void uncheckAllDiets() {
         cbVegan.setChecked(false);
         cbKeto.setChecked(false);
         cbGlutenFree.setChecked(false);
-
-        etCalMin.setText("");
-        etCalMax.setText("");
-        etCarbMin.setText("");
-        etCarbMax.setText("");
-        etProteinMin.setText("");
-        etProteinMax.setText("");
-        etFatMin.setText("");
-        etFatMax.setText("");
     }
 }

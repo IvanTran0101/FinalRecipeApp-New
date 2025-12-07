@@ -44,6 +44,8 @@ public class HomeFragment extends Fragment {
     private ActionMode actionMode;
     private SearchView searchView;
     private ImageView filterButton;
+
+    // --- ACTION MODE CALLBACK ---
     private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -62,26 +64,32 @@ public class HomeFragment extends Fragment {
             List<Recipe> selectedRecipes = getSelectedRecipes();
             int itemId = item.getItemId();
 
+            if (selectedRecipes.isEmpty()) {
+                mode.finish();
+                return true;
+            }
+
             if (itemId == R.id.action_delete) {
+                // Xóa nhiều recipe
                 for (Recipe recipe : selectedRecipes) {
                     viewModel.deleteRecipe(recipe);
                 }
-                Toast.makeText(getContext(), "Recipes Deleted", Toast.LENGTH_SHORT).show();
-                mode.finish();
-                return true;
+                return true; // Action Mode sẽ được đóng trong Observer khi thành công
+
             } else if (itemId == R.id.action_copy) {
+                // Copy nhiều recipe
                 for (Recipe recipe : selectedRecipes) {
                     fetchAndCopyRecipe(recipe);
                 }
-                Toast.makeText(getContext(), "Recipes Copied", Toast.LENGTH_SHORT).show();
-                mode.finish();
+                Toast.makeText(getContext(), "Processing copy...", Toast.LENGTH_SHORT).show();
+                mode.finish(); // Copy tốn thời gian lấy dữ liệu, nên đóng luôn UI chọn
                 return true;
+
             } else if (itemId == R.id.action_pin) {
+                // Ghim/Bỏ ghim nhiều recipe
                 for (Recipe recipe : selectedRecipes) {
                     viewModel.toggleFavorite(recipe.getRecipeId());
                 }
-                Toast.makeText(getContext(), "Favorites Updated", Toast.LENGTH_SHORT).show();
-                mode.finish();
                 return true;
             }
 
@@ -104,11 +112,14 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Setup UI components
+        // 1. Setup UI
         setupRecyclerViews(view);
         setupSearchAndFilter(view);
+
+        // 2. Setup Logic
         setupViewModel();
 
+        // 3. Setup FAB
         View fab = view.findViewById(R.id.fab_add);
         if (fab != null) {
             fab.setOnClickListener(v -> {
@@ -118,13 +129,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecyclerViews(View view) {
-        // Setup Favorites RecyclerView
+        // Favorites
         RecyclerView favoritesRecyclerView = view.findViewById(R.id.recycler_favorites);
         favoritesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         favoritesAdapter = new RecipeAdapter(new ArrayList<>(), this::onRecipeClick, this::onRecipeLongClick);
         favoritesRecyclerView.setAdapter(favoritesAdapter);
 
-        // Setup Other Recipes RecyclerView
+        // Other Recipes
         RecyclerView otherRecipesRecyclerView = view.findViewById(R.id.recycler_recipes);
         otherRecipesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         otherRecipesAdapter = new RecipeAdapter(new ArrayList<>(), this::onRecipeClick, this::onRecipeLongClick);
@@ -139,6 +150,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 viewModel.search(query);
+                searchView.clearFocus(); // Ẩn bàn phím
                 return false;
             }
 
@@ -159,12 +171,14 @@ public class HomeFragment extends Fragment {
         ViewModelFactory factory = Injection.provideViewModelFactory();
         viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
+        // Set User ID context
         UserPrefs prefs = UserPrefs.getInstance(requireContext());
-        int userId = prefs.getUserId();
+        viewModel.setCurrentUserId(prefs.getUserId());
 
-        viewModel.setCurrentUserId(userId);
-
+        // 1. Observe Search Results
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), recipes -> {
+            if (recipes == null) return;
+
             List<Recipe> favoriteRecipes = recipes.stream()
                     .filter(r -> r.getPinned() != null && r.getPinned())
                     .collect(Collectors.toList());
@@ -177,8 +191,32 @@ public class HomeFragment extends Fragment {
             otherRecipesAdapter.setRecipes(otherRecipes);
         });
 
-        viewModel.search(""); // Initial search
+        // 2. Observe Operations Status (Success)
+        viewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                // Nếu đang ở trong chế độ chọn (Action Mode), hãy đóng nó lại khi thao tác xong
+                if (actionMode != null) {
+                    actionMode.finish();
+                    Toast.makeText(getContext(), "Operation Successful", Toast.LENGTH_SHORT).show();
+                }
+                // Reset status để tránh Toast hiện lại khi xoay màn hình
+                viewModel.resetStatus();
+            }
+        });
+
+        // 3. Observe Error Messages
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                viewModel.resetStatus();
+            }
+        });
+
+        // Initial load (Refresh list)
+        viewModel.search("");
     }
+
+    // --- INTERACTION LOGIC ---
 
     private void onRecipeClick(Recipe recipe) {
         if (actionMode != null) {
@@ -220,26 +258,24 @@ public class HomeFragment extends Fragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_home_to_recipeDetail, bundle);
     }
 
-    private void fetchAndCopyRecipe(Recipe original) {
-        // 1. Capture the LiveData instance in a variable
-        LiveData<List<Ingredient>> ingredientsLiveData = viewModel.getIngredients(original.getRecipeId());
+    // --- COPY LOGIC (DEEP COPY) ---
 
+    private void fetchAndCopyRecipe(Recipe original) {
+        // Lấy Ingredients
+        LiveData<List<Ingredient>> ingredientsLiveData = viewModel.getIngredients(original.getRecipeId());
         ingredientsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Ingredient>>() {
             @Override
             public void onChanged(List<Ingredient> ingredients) {
-                // 2. Remove observer from the SAME variable
-                ingredientsLiveData.removeObserver(this);
+                ingredientsLiveData.removeObserver(this); // Quan trọng: Ngắt lắng nghe ngay sau khi lấy được
 
-                // 3. Do the same for Instructions
+                // Lấy Instructions
                 LiveData<List<Instruction>> instructionsLiveData = viewModel.getInstructions(original.getRecipeId());
-
                 instructionsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Instruction>>() {
                     @Override
                     public void onChanged(List<Instruction> instructions) {
-                        // Remove observer from the SAME variable
-                        instructionsLiveData.removeObserver(this);
+                        instructionsLiveData.removeObserver(this); // Ngắt lắng nghe
 
-                        // 4. Perform the copy
+                        // Thực hiện copy
                         performDeepCopy(original, ingredients, instructions);
                     }
                 });
@@ -248,27 +284,27 @@ public class HomeFragment extends Fragment {
     }
 
     private void performDeepCopy(Recipe original, List<Ingredient> ingredients, List<Instruction> instructions) {
-        // 1. Copy Basic Recipe Info
+        // 1. Copy thông tin cơ bản
         Recipe copy = new Recipe();
         copy.setTitle(original.getTitle() + " (Copy)");
-
-        if (original.getRecipeImage() != null) {
-            copy.setRecipeImage(original.getRecipeImage());
-        }
+        copy.setRecipeImage(original.getRecipeImage());
         copy.setCategory(original.getCategory());
         copy.setDietMode(original.getDietMode());
         copy.setVideoLink(original.getVideoLink());
 
-        // Null checks for numerical values (Safeguard)
+        // Null checks
         copy.setCalories(original.getCalories() != null ? original.getCalories() : 0.0);
         copy.setProtein(original.getProtein() != null ? original.getProtein() : 0.0);
         copy.setFat(original.getFat() != null ? original.getFat() : 0.0);
         copy.setCarb(original.getCarb() != null ? original.getCarb() : 0.0);
-        copy.setPinned(original.getPinned());
 
-        copy.setUserId(original.getUserId());
+        copy.setPinned(false); // Bản copy không nên tự động Pin
 
-        // 2. Deep Copy Ingredients (Create NEW objects so they don't share IDs)
+        // UserId sẽ được ViewModel tự set, nhưng set ở đây cũng an toàn
+        UserPrefs prefs = UserPrefs.getInstance(requireContext());
+        copy.setUserId(prefs.getUserId());
+
+        // 2. Copy Ingredients (Tạo object mới hoàn toàn)
         List<Ingredient> newIngredients = new ArrayList<>();
         if (ingredients != null) {
             for (Ingredient ing : ingredients) {
@@ -276,32 +312,34 @@ public class HomeFragment extends Fragment {
                 newIng.setName(ing.getName());
                 newIng.setQuantity(ing.getQuantity());
                 newIng.setUnit(ing.getUnit());
-                // Do NOT copy the IngredientID, let Room generate a new one
                 newIngredients.add(newIng);
             }
         }
 
-        // 3. Deep Copy Instructions
+        // 3. Copy Instructions (Tạo object mới hoàn toàn)
         List<Instruction> newInstructions = new ArrayList<>();
         if (instructions != null) {
             for (Instruction inst : instructions) {
                 Instruction newInst = new Instruction();
                 newInst.setInstruction(inst.getInstruction());
                 newInst.setStepNumber(inst.getStepNumber());
-                // Do NOT copy the InstructionID
                 newInstructions.add(newInst);
             }
         }
 
-        // 4. Send to ViewModel to save
+        // 4. Gọi ViewModel để lưu
         viewModel.createRecipe(copy, newIngredients, newInstructions);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        // Không cần gọi viewModel.search("") ở đây nếu ViewModel giữ trạng thái tốt.
+        // Tuy nhiên, để đảm bảo list update khi quay lại từ màn hình Detail (ví dụ: đã xóa ở màn Detail),
+        // ta có thể gọi lại search để refresh dữ liệu từ DB.
         if (viewModel != null) {
-            viewModel.search("");
+            // Dùng chuỗi rỗng để giữ nguyên bộ lọc hiện tại, chỉ refresh data
+            viewModel.search(searchView != null ? searchView.getQuery().toString() : "");
         }
     }
 }
