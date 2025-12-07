@@ -82,39 +82,8 @@ public class RecipeViewModel extends ViewModel {
         });
     }
 
-    public void ensureInitialRecipes() {
-        if (seedRequested) return;
-        seedRequested = true;
 
-        manageRecipeUseCase.seedRecipesIfEmpty(new ManageRecipeUseCase.SyncStatusCallback() {
-            @Override
-            public void onSuccess() {
-                refreshSearch();
-            }
 
-            @Override
-            public void onError(String message) {
-                handleError(message);
-            }
-        });
-    }
-
-    public void ensureInitialRecipes() {
-        if (seedRequested) return;
-        seedRequested = true;
-
-        manageRecipeUseCase.seedRecipesIfEmpty(new ManageRecipeUseCase.SyncStatusCallback() {
-            @Override
-            public void onSuccess() {
-                refreshSearch();
-            }
-
-            @Override
-            public void onError(String message) {
-                handleError(message);
-            }
-        });
-    }
 
     // --- GETTERS (OBSERVABLES) ---
     public LiveData<Boolean> isSyncing() { return isSyncing; } // <-- THÊM GETTER

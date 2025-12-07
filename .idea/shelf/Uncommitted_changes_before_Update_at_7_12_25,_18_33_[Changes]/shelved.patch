@@ -1,0 +1,684 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\n    id 'com.android.application'\n    id 'org.jetbrains.kotlin.android'\n}\n\nandroid {\n    namespace 'vn.edu.tdtu.anhminh.myapplication'\n    compileSdk 36\n\n    defaultConfig {\n        applicationId \"vn.edu.tdtu.anhminh.myapplication\"\n        minSdk 30\n        targetSdk 36\n        versionCode 1\n        versionName \"1.0\"\n\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\n    }\n\n    buildTypes {\n        release {\n            minifyEnabled false\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\n        }\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_11\n        targetCompatibility JavaVersion.VERSION_11\n    }\n    kotlinOptions {\n        jvmTarget = '11'\n    }\n}\n\ndependencies {\n    // Reverting to standard dependencies since 'libs' is broken\n    implementation 'androidx.appcompat:appcompat:1.7.0'\n    implementation 'com.google.android.material:material:1.12.0'\n    implementation 'androidx.activity:activity-ktx:1.9.0'\n    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'\n\n    // Volley\n    implementation 'com.android.volley:volley:1.2.1'\n    implementation 'androidx.navigation:navigation-fragment:2.9.6'\n    implementation 'androidx.navigation:navigation-ui:2.9.6'\n    implementation 'androidx.media3:media3-effect:1.8.0'\n    implementation 'androidx.activity:activity-ktx:1.9.3'\n\n    // Room\n    def room_version = \"2.6.1\"\n    implementation \"androidx.room:room-runtime:$room_version\"\n    annotationProcessor \"androidx.room:room-compiler:$room_version\"\n\n    // Test\n    testImplementation 'junit:junit:4.13.2'\n    androidTestImplementation 'androidx.test.ext:junit:1.1.5'\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'\n\n    // Glide for image loading\n    implementation 'com.github.bumptech.glide:glide:4.16.0'\n    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'\n\n    //Map\n    implementation 'org.osmdroid:osmdroid-android:6.1.16'\n\n    // YouTube Player\n    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0'\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/build.gradle	(date 1765106506082)
+@@ -38,6 +38,7 @@
+     implementation 'com.google.android.material:material:1.12.0'
+     implementation 'androidx.activity:activity-ktx:1.9.0'
+     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
++    implementation 'com.google.code.gson:gson:2.10.1'
+ 
+     // Volley
+     implementation 'com.android.volley:volley:1.2.1'
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Main/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package vn.edu.tdtu.anhminh.myapplication.UI.Main;\n\nimport android.content.Intent;\nimport android.os.Bundle;\nimport android.view.GestureDetector;\nimport android.view.Menu;\nimport android.view.MotionEvent;\n\nimport androidx.appcompat.app.AppCompatActivity;\nimport androidx.navigation.NavController;\nimport androidx.navigation.NavDestination;\nimport androidx.navigation.NavOptions;\nimport androidx.navigation.fragment.NavHostFragment;\n\nimport com.google.android.material.bottomnavigation.BottomNavigationView;\n\nimport vn.edu.tdtu.anhminh.myapplication.R;\n\npublic class MainActivity extends AppCompatActivity {\n\n    private GestureDetector gestureDetector;\n    private NavController navController;\n\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n\n        BottomNavigationView navView = findViewById(R.id.nav_view);\n\n        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()\n                .findFragmentById(R.id.nav_host_fragment);\n\n        if (navHostFragment != null) {\n            navController = navHostFragment.getNavController();\n\n            gestureDetector = new GestureDetector(this, new SwipeGestureListener(navView));\n\n            navView.setOnItemSelectedListener(item -> {\n                NavOptions.Builder builder = new NavOptions.Builder()\n                        .setLaunchSingleTop(true)\n                        .setRestoreState(false);\n\n                builder.setPopUpTo(navController.getGraph().getStartDestinationId(), false);\n\n                Menu menu = navView.getMenu();\n                int currentOrder = -1;\n                int newOrder = -1;\n\n                if (navController.getCurrentDestination() != null) {\n                    for (int i = 0; i < menu.size(); i++) {\n                        if (menu.getItem(i).getItemId() == navController.getCurrentDestination().getId()) {\n                            currentOrder = i;\n                        }\n                        if (menu.getItem(i).getItemId() == item.getItemId()) {\n                            newOrder = i;\n                        }\n                    }\n                }\n\n                if (currentOrder != -1 && newOrder != -1) {\n                    if (newOrder > currentOrder) {\n                        builder.setEnterAnim(R.anim.slide_in_right)\n                                .setExitAnim(R.anim.slide_out_left)\n                                .setPopEnterAnim(R.anim.slide_in_left)\n                                .setPopExitAnim(R.anim.slide_out_right);\n                    } else if (newOrder < currentOrder) {\n                        builder.setEnterAnim(R.anim.slide_in_left)\n                                .setExitAnim(R.anim.slide_out_right)\n                                .setPopEnterAnim(R.anim.slide_in_right)\n                                .setPopExitAnim(R.anim.slide_out_left);\n                    }\n                }\n\n                try {\n                    navController.navigate(item.getItemId(), null, builder.build());\n                    return true;\n                } catch (IllegalArgumentException e) {\n                    return false;\n                }\n            });\n\n            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {\n                if (navView.getMenu().findItem(destination.getId()) != null) {\n                    navView.getMenu().findItem(destination.getId()).setChecked(true);\n                }\n            });\n\n            handleNotificationNavigation(navController);\n        }\n    }\n\n    @Override\n    public boolean dispatchTouchEvent(MotionEvent event) {\n        NavDestination currentDest = navController != null ? navController.getCurrentDestination() : null;\n        boolean isMapFragment = (currentDest != null && currentDest.getId() == R.id.navigation_groceries);\n        boolean isStartCookingFragment = (currentDest != null && currentDest.getId() == R.id.startCookingFragment);\n        boolean isRecipeDetailFragment = (currentDest != null && currentDest.getId() == R.id.recipeDetailFragment);\n\n        if (gestureDetector != null && !isMapFragment && !isStartCookingFragment && !isRecipeDetailFragment) {\n            gestureDetector.onTouchEvent(event);\n        }\n\n        return super.dispatchTouchEvent(event);\n    }\n\n    @Override\n    protected void onNewIntent(Intent intent) {\n        super.onNewIntent(intent);\n        setIntent(intent);\n        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()\n                .findFragmentById(R.id.nav_host_fragment);\n        if (navHostFragment != null) {\n            handleNotificationNavigation(navHostFragment.getNavController());\n        }\n    }\n\n    private void handleNotificationNavigation(NavController navController) {\n        if (getIntent() != null && getIntent().hasExtra(\"NAVIGATE_TO\")) {\n            String destination = getIntent().getStringExtra(\"NAVIGATE_TO\");\n            if (\"COOKING_TIMER\".equals(destination)) {\n                navController.navigate(R.id.cookingTimerFragment);\n                getIntent().removeExtra(\"NAVIGATE_TO\");\n            }\n        }\n    }\n\n    private static class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {\n        private static final int SWIPE_THRESHOLD = 100;\n        private static final int SWIPE_VELOCITY_THRESHOLD = 100;\n        private final BottomNavigationView navView;\n\n        SwipeGestureListener(BottomNavigationView navView) {\n            this.navView = navView;\n        }\n\n        @Override\n        public boolean onDown(MotionEvent e) {\n            return true;\n        }\n\n        @Override\n        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {\n            if (e1 == null || e2 == null) return false;\n\n            float diffX = e2.getX() - e1.getX();\n            float diffY = e2.getY() - e1.getY();\n\n            if (Math.abs(diffX) > Math.abs(diffY)) {\n                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {\n                    if (diffX > 0) {\n                        selectPreviousTab();\n                    } else {\n                        selectNextTab();\n                    }\n                    return true;\n                }\n            }\n            return false;\n        }\n\n        private void selectNextTab() {\n            Menu menu = navView.getMenu();\n            int currentItemId = navView.getSelectedItemId();\n            for (int i = 0; i < menu.size() - 1; i++) {\n                if (menu.getItem(i).getItemId() == currentItemId) {\n                    navView.setSelectedItemId(menu.getItem(i + 1).getItemId());\n                    break;\n                }\n            }\n        }\n\n        private void selectPreviousTab() {\n            Menu menu = navView.getMenu();\n            int currentItemId = navView.getSelectedItemId();\n            for (int i = 1; i < menu.size(); i++) {\n                if (menu.getItem(i).getItemId() == currentItemId) {\n                    navView.setSelectedItemId(menu.getItem(i - 1).getItemId());\n                    break;\n                }\n            }\n        }\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Main/MainActivity.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Main/MainActivity.java
+--- a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Main/MainActivity.java	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Main/MainActivity.java	(date 1765106506084)
+@@ -7,6 +7,7 @@
+ import android.view.MotionEvent;
+ 
+ import androidx.appcompat.app.AppCompatActivity;
++import androidx.lifecycle.ViewModelProvider; // <-- 1. THÊM IMPORT
+ import androidx.navigation.NavController;
+ import androidx.navigation.NavDestination;
+ import androidx.navigation.NavOptions;
+@@ -14,23 +15,46 @@
+ 
+ import com.google.android.material.bottomnavigation.BottomNavigationView;
+ 
++import vn.edu.tdtu.anhminh.myapplication.Data.Repository.IngredientRepository;
++import vn.edu.tdtu.anhminh.myapplication.Data.Repository.InstructionRepository;
++import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
++import vn.edu.tdtu.anhminh.myapplication.Data.Repository.UserRepository;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.R;
++import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel; // <-- 1. THÊM IMPORT
++import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.UserViewModel;   // <-- 1. THÊM IMPORT
++import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory; // <-- 1. THÊM IMPORT
+ 
+ public class MainActivity extends AppCompatActivity {
+ 
+     private GestureDetector gestureDetector;
+     private NavController navController;
+ 
++    // <-- 2. KHAI BÁO VIEWMODELS
++    private RecipeViewModel recipeViewModel;
++    private UserViewModel userViewModel;
++
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+ 
++        // <-- 3. GỌI HÀM KHỞI TẠO VIEWMODELS
++        initViewModels();
++
+         BottomNavigationView navView = findViewById(R.id.nav_view);
+ 
+         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                 .findFragmentById(R.id.nav_host_fragment);
+ 
++        // ... phần còn lại của onCreate không thay đổi ...
++
+         if (navHostFragment != null) {
+             navController = navHostFragment.getNavController();
+ 
+@@ -90,6 +114,51 @@
+         }
+     }
+ 
++    // <-- 4. THÊM PHƯƠNG THỨC KHỞI TẠO VIEWMODELS
++    private void initViewModels() {
++        // --- Khởi tạo Repository ---
++        RecipeRepository recipeRepository = new RecipeRepository(getApplication());
++        IngredientRepository ingredientRepository = new IngredientRepository(getApplication());
++        InstructionRepository instructionRepository = new InstructionRepository(getApplication());
++        UserRepository userRepository = new UserRepository(getApplication());
++
++        // --- Khởi tạo tất cả các UseCase ---
++        ManageRecipeUseCase manageRecipeUseCase = new ManageRecipeUseCase(recipeRepository, ingredientRepository, instructionRepository);
++        SearchRecipesUseCase searchRecipesUseCase = new SearchRecipesUseCase(recipeRepository);
++        ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase = new ToggleFavoriteRecipeUseCase(recipeRepository);
++        SyncRecipesUseCase syncRecipesUseCase = new SyncRecipesUseCase(recipeRepository);
++
++        AuthenticateUserUseCase authenticateUserUseCase = new AuthenticateUserUseCase(userRepository);
++        UpdateAccountUseCase updateAccountUseCase = new UpdateAccountUseCase(userRepository);
++
++        // --- Tạo Factory với đầy đủ các UseCase ---
++        ViewModelFactory factory = new ViewModelFactory(
++                manageRecipeUseCase,
++                searchRecipesUseCase,
++                toggleFavoriteRecipeUseCase,
++                syncRecipesUseCase,
++                authenticateUserUseCase,
++                updateAccountUseCase
++        );
++
++        // --- Lấy ViewModel từ factory ---
++        // ViewModelProvider sẽ đảm bảo ViewModel tồn tại qua các thay đổi cấu hình (như xoay màn hình)
++        this.recipeViewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
++        this.userViewModel = new ViewModelProvider(this, factory).get(UserViewModel.class);
++
++        // Bây giờ, bạn có thể bắt đầu theo dõi dữ liệu từ ViewModel nếu cần
++        // Ví dụ: Hiển thị loading bar khi đang đồng bộ
++        recipeViewModel.isSyncing().observe(this, isSyncing -> {
++            if (isSyncing) {
++                // Hiển thị một ProgressBar
++            } else {
++                // Ẩn ProgressBar
++            }
++        });
++    }
++
++    // ... các phương thức còn lại không thay đổi ...
++
+     @Override
+     public boolean dispatchTouchEvent(MotionEvent event) {
+         NavDestination currentDest = navController != null ? navController.getCurrentDestination() : null;
+@@ -181,4 +250,4 @@
+             }
+         }
+     }
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/ViewModelFactory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel;\n\nimport androidx.annotation.NonNull;\nimport androidx.lifecycle.ViewModel;\nimport androidx.lifecycle.ViewModelProvider;\n\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;\n\npublic class ViewModelFactory implements ViewModelProvider.Factory {\n\n    private final ManageRecipeUseCase manageRecipeUseCase;\n    private final SearchRecipesUseCase searchRecipesUseCase;\n    private final AuthenticateUserUseCase authenticateUserUseCase;\n    private final UpdateAccountUseCase updateAccountUseCase;\n    private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;\n\n\n    public ViewModelFactory(ManageRecipeUseCase manageRecipeUseCase,\n                            AuthenticateUserUseCase authenticateUserUseCase,\n                            UpdateAccountUseCase updateAccountUseCase,\n                            SearchRecipesUseCase searchRecipesUseCase,\n                            ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase) {\n        this.manageRecipeUseCase = manageRecipeUseCase;\n        this.searchRecipesUseCase = searchRecipesUseCase;\n        this.authenticateUserUseCase = authenticateUserUseCase;\n        this.updateAccountUseCase = updateAccountUseCase;\n        this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;\n    }\n\n    @NonNull\n    @Override\n    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {\n        if (modelClass.isAssignableFrom(RecipeViewModel.class)) {\n            return (T) new RecipeViewModel(manageRecipeUseCase, searchRecipesUseCase, toggleFavoriteRecipeUseCase);\n        }\n        else if (modelClass.isAssignableFrom(UserViewModel.class)) {\n            return (T) new UserViewModel(authenticateUserUseCase, updateAccountUseCase);\n        }\n\n        throw new IllegalArgumentException(\"Unknown ViewModel class: \" + modelClass.getName());\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/ViewModelFactory.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/ViewModelFactory.java
+--- a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/ViewModelFactory.java	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/ViewModelFactory.java	(date 1765106506088)
+@@ -8,6 +8,7 @@
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase; // <-- 1. THÊM IMPORT
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
+ 
+ public class ViewModelFactory implements ViewModelProvider.Factory {
+@@ -17,30 +18,40 @@
+     private final AuthenticateUserUseCase authenticateUserUseCase;
+     private final UpdateAccountUseCase updateAccountUseCase;
+     private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;
++    private final SyncRecipesUseCase syncRecipesUseCase; // <-- 2. THÊM THUỘC TÍNH
+ 
+-
++    // <-- 3. CẬP NHẬT CONSTRUCTOR
+     public ViewModelFactory(ManageRecipeUseCase manageRecipeUseCase,
+-                            AuthenticateUserUseCase authenticateUserUseCase,
+-                            UpdateAccountUseCase updateAccountUseCase,
+                             SearchRecipesUseCase searchRecipesUseCase,
+-                            ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase) {
++                            ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase,
++                            SyncRecipesUseCase syncRecipesUseCase,
++                            AuthenticateUserUseCase authenticateUserUseCase,
++                            UpdateAccountUseCase updateAccountUseCase) {
+         this.manageRecipeUseCase = manageRecipeUseCase;
+         this.searchRecipesUseCase = searchRecipesUseCase;
++        this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;
++        this.syncRecipesUseCase = syncRecipesUseCase; // <-- GÁN GIÁ TRỊ
+         this.authenticateUserUseCase = authenticateUserUseCase;
+         this.updateAccountUseCase = updateAccountUseCase;
+-        this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;
+     }
+ 
+     @NonNull
+     @Override
+     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+         if (modelClass.isAssignableFrom(RecipeViewModel.class)) {
+-            return (T) new RecipeViewModel(manageRecipeUseCase, searchRecipesUseCase, toggleFavoriteRecipeUseCase);
++            // <-- 4. CẬP NHẬT CÁCH TẠO RECIPE VIEWMODEL
++            // Đảm bảo truyền đủ 4 UseCase theo đúng thứ tự trong constructor của RecipeViewModel
++            return (T) new RecipeViewModel(
++                    manageRecipeUseCase,
++                    searchRecipesUseCase,
++                    toggleFavoriteRecipeUseCase,
++                    syncRecipesUseCase);
+         }
+         else if (modelClass.isAssignableFrom(UserViewModel.class)) {
++            // Phần này không thay đổi
+             return (T) new UserViewModel(authenticateUserUseCase, updateAccountUseCase);
+         }
+ 
+         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
+     }
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/RecipeViewModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel;\n\nimport androidx.core.util.Pair;\nimport androidx.lifecycle.LiveData;\nimport androidx.lifecycle.MutableLiveData;\nimport androidx.lifecycle.Transformations;\nimport androidx.lifecycle.ViewModel;\n\nimport java.util.List;\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\n\nimport vn.edu.tdtu.anhminh.myapplication.Domain.Model.Ingredient;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.Model.Instruction;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;\n\npublic class RecipeViewModel extends ViewModel {\n    // Dependencies\n    private final ManageRecipeUseCase manageRecipeUseCase;\n    private final SearchRecipesUseCase searchRecipesUseCase;\n    private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;\n\n    // Executor for background threads\n    private final ExecutorService executor = Executors.newSingleThreadExecutor();\n\n    // --- STATUS LIVEDATA ---\n    // Dùng để thông báo cho View (Activity/Fragment) về kết quả thao tác\n    private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();\n    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();\n\n    // --- SEARCH & FILTER DATA ---\n    // Input: Pair<Query String, Filter Options>\n    private final MutableLiveData<Pair<String, SearchRecipesUseCase.FilterOptions>> searchInput = new MutableLiveData<>();\n    // Output: List of Recipes (Tự động cập nhật khi searchInput thay đổi)\n    private final LiveData<List<Recipe>> searchResults;\n\n    // Local State: Single source of truth for filters\n    private SearchRecipesUseCase.FilterOptions currentFilterOptions = new SearchRecipesUseCase.FilterOptions();\n    private int currentUserId = -1;\n\n    // --- CONSTRUCTOR ---\n    public RecipeViewModel(ManageRecipeUseCase manageRecipeUseCase,\n                           SearchRecipesUseCase searchRecipesUseCase,\n                           ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase) {\n        this.manageRecipeUseCase = manageRecipeUseCase;\n        this.searchRecipesUseCase = searchRecipesUseCase;\n        this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;\n\n        // Khởi tạo trạng thái ban đầu: query rỗng, filter mặc định\n        searchInput.setValue(new Pair<>(\"\", currentFilterOptions));\n\n        // Reactive: Khi searchInput thay đổi -> gọi UseCase -> cập nhật searchResults\n        searchResults = Transformations.switchMap(searchInput, input ->\n                searchRecipesUseCase.execute(input.first, currentUserId, input.second)\n        );\n    }\n\n    // --- GETTERS (OBSERVABLES) ---\n    public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }\n    public LiveData<String> getErrorMessage() { return errorMessage; }\n    public LiveData<List<Recipe>> getSearchResults() { return searchResults; }\n\n    public LiveData<Recipe> getRecipeById(int recipeId) {\n        return manageRecipeUseCase.getRecipeById(recipeId);\n    }\n\n    public LiveData<List<Instruction>> getInstructions(int recipeId) {\n        return manageRecipeUseCase.getInstructions(recipeId);\n    }\n\n    public LiveData<List<Ingredient>> getIngredients(int recipeId) {\n        return manageRecipeUseCase.getIngredients(recipeId);\n    }\n\n    // --- USER CONTEXT ---\n    public void setCurrentUserId(int userId) {\n        this.currentUserId = userId;\n        // Reload lại kết quả tìm kiếm nếu User ID thay đổi (ví dụ để update trạng thái Favorite)\n        refreshSearch();\n    }\n\n    // --- SEARCH & FILTER ACTIONS ---\n\n    // 1. Chỉ update từ khóa tìm kiếm\n    public void search(String query) {\n        searchInput.setValue(new Pair<>(query, currentFilterOptions));\n    }\n\n    // 2. Update bộ lọc đầy đủ\n    public void setFilters(List<String> categories, List<String> dietModes,\n                           Integer minCalories, Integer maxCalories,\n                           Integer minCarbs, Integer maxCarbs,\n                           Integer minProtein, Integer maxProtein,\n                           Integer minFat, Integer maxFat) {\n\n        currentFilterOptions.categories = categories;\n        currentFilterOptions.dietModes = dietModes;\n        currentFilterOptions.minCalories = minCalories;\n        currentFilterOptions.maxCalories = maxCalories;\n        currentFilterOptions.minCarbs = minCarbs;\n        currentFilterOptions.maxCarbs = maxCarbs;\n        currentFilterOptions.minProtein = minProtein;\n        currentFilterOptions.maxProtein = maxProtein;\n        currentFilterOptions.minFat = minFat;\n        currentFilterOptions.maxFat = maxFat;\n\n        refreshSearch();\n    }\n\n    // 3. Xóa bộ lọc (Reset về mặc định)\n    public void clearFilters() {\n        this.currentFilterOptions = new SearchRecipesUseCase.FilterOptions(); // Reset object\n        refreshSearch();\n    }\n\n    // Helper: Trigger lại LiveData với giá trị hiện tại\n    private void refreshSearch() {\n        String currentQuery = searchInput.getValue() != null ? searchInput.getValue().first : \"\";\n        searchInput.setValue(new Pair<>(currentQuery, currentFilterOptions));\n    }\n\n    // --- DATA RESTORATION (GETTERS FOR UI) ---\n    public List<String> getCurrentCategories() { return currentFilterOptions.categories; }\n    public List<String> getCurrentDietModes() { return currentFilterOptions.dietModes; }\n    public Integer getMinCalories() { return currentFilterOptions.minCalories; }\n    public Integer getMaxCalories() { return currentFilterOptions.maxCalories; }\n    public Integer getMinCarbs() { return currentFilterOptions.minCarbs; }\n    public Integer getMaxCarbs() { return currentFilterOptions.maxCarbs; }\n    public Integer getMinProtein() { return currentFilterOptions.minProtein; }\n    public Integer getMaxProtein() { return currentFilterOptions.maxProtein; }\n    public Integer getMinFat() { return currentFilterOptions.minFat; }\n    public Integer getMaxFat() { return currentFilterOptions.maxFat; }\n\n    // --- CUD OPERATIONS (CREATE / UPDATE / DELETE) ---\n\n    public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {\n        if (currentUserId == -1) {\n            handleError(\"User not logged in\");\n            return;\n        }\n        recipe.setUserId(currentUserId);\n\n        executor.execute(() -> manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {\n            @Override public void onSuccess() { handleSuccess(); }\n            @Override public void onError() { handleError(\"Failed to create recipe\"); }\n        }));\n    }\n\n    public void updateRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {\n        executor.execute(() -> manageRecipeUseCase.updateRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {\n            @Override public void onSuccess() { handleSuccess(); }\n            @Override public void onError() { handleError(\"Failed to update recipe\"); }\n        }));\n    }\n\n    public void deleteRecipe(Recipe recipe) {\n        executor.execute(() -> manageRecipeUseCase.deleteRecipe(recipe, new ManageRecipeUseCase.Callback() {\n            @Override public void onSuccess() { handleSuccess(); }\n            @Override public void onError() { handleError(\"Failed to delete recipe\"); }\n        }));\n    }\n\n    public void toggleFavorite(int recipeId) {\n        // Lưu ý: Nếu UseCase cần UserId, hãy đảm bảo UseCase tự lấy hoặc truyền thêm vào đây\n        executor.execute(() -> toggleFavoriteRecipeUseCase.execute(recipeId, new ToggleFavoriteRecipeUseCase.Callback() {\n            @Override public void onSuccess() {\n                // Không cần postSuccess(true) ở đây nếu chỉ là like/unlike để tránh reload màn hình không cần thiết\n                // Nhưng nếu UI cần biết để hiển thị Toast, hãy giữ nguyên.\n                handleSuccess();\n                // Opsional: Refresh lại list để cập nhật icon trái tim\n                // refreshSearch();\n            }\n            @Override public void onError() { handleError(\"Failed to toggle favorite status\"); }\n        }));\n    }\n\n    // --- HELPER METHODS FOR STATUS ---\n    // Gom nhóm xử lý kết quả để code gọn hơn\n    private void handleSuccess() {\n        operationSuccess.postValue(true);\n    }\n\n    private void handleError(String message) {\n        errorMessage.postValue(message);\n    }\n\n    // Reset status sau khi UI đã xử lý xong (tránh hiển thị lại thông báo khi xoay màn hình)\n    public void resetStatus() {\n        operationSuccess.setValue(false);\n        errorMessage.setValue(null);\n    }\n\n    @Override\n    protected void onCleared() {\n        super.onCleared();\n        executor.shutdown(); // Dọn dẹp thread khi ViewModel bị hủy\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/RecipeViewModel.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/RecipeViewModel.java
+--- a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/RecipeViewModel.java	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Presentation/ViewModel/RecipeViewModel.java	(date 1765106506071)
+@@ -15,6 +15,7 @@
+ import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase; // <-- THÊM IMPORT
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
+ 
+ public class RecipeViewModel extends ViewModel {
+@@ -22,32 +23,33 @@
+     private final ManageRecipeUseCase manageRecipeUseCase;
+     private final SearchRecipesUseCase searchRecipesUseCase;
+     private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;
++    private final SyncRecipesUseCase syncRecipesUseCase; // <-- THÊM DEPENDENCY
+ 
+     // Executor for background threads
+     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+ 
+     // --- STATUS LIVEDATA ---
+-    // Dùng để thông báo cho View (Activity/Fragment) về kết quả thao tác
++    private final MutableLiveData<Boolean> isSyncing = new MutableLiveData<>(false); // <-- THÊM LIVEDATA CHO TRẠNG THÁI SYNC
+     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
+     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+ 
+     // --- SEARCH & FILTER DATA ---
+-    // Input: Pair<Query String, Filter Options>
+     private final MutableLiveData<Pair<String, SearchRecipesUseCase.FilterOptions>> searchInput = new MutableLiveData<>();
+-    // Output: List of Recipes (Tự động cập nhật khi searchInput thay đổi)
+     private final LiveData<List<Recipe>> searchResults;
+ 
+-    // Local State: Single source of truth for filters
++    // Local State
+     private SearchRecipesUseCase.FilterOptions currentFilterOptions = new SearchRecipesUseCase.FilterOptions();
+     private int currentUserId = -1;
+ 
+     // --- CONSTRUCTOR ---
+     public RecipeViewModel(ManageRecipeUseCase manageRecipeUseCase,
+                            SearchRecipesUseCase searchRecipesUseCase,
+-                           ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase) {
++                           ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase,
++                           SyncRecipesUseCase syncRecipesUseCase) { // <-- THÊM THAM SỐ
+         this.manageRecipeUseCase = manageRecipeUseCase;
+         this.searchRecipesUseCase = searchRecipesUseCase;
+         this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;
++        this.syncRecipesUseCase = syncRecipesUseCase; // <-- GÁN GIÁ TRỊ
+ 
+         // Khởi tạo trạng thái ban đầu: query rỗng, filter mặc định
+         searchInput.setValue(new Pair<>("", currentFilterOptions));
+@@ -56,9 +58,13 @@
+         searchResults = Transformations.switchMap(searchInput, input ->
+                 searchRecipesUseCase.execute(input.first, currentUserId, input.second)
+         );
++
++        // Tự động đồng bộ dữ liệu từ cloud khi ViewModel được tạo lần đầu
++        syncData(); // <-- GỌI HÀM ĐỒNG BỘ
+     }
+ 
+     // --- GETTERS (OBSERVABLES) ---
++    public LiveData<Boolean> isSyncing() { return isSyncing; } // <-- THÊM GETTER
+     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
+     public LiveData<String> getErrorMessage() { return errorMessage; }
+     public LiveData<List<Recipe>> getSearchResults() { return searchResults; }
+@@ -75,27 +81,47 @@
+         return manageRecipeUseCase.getIngredients(recipeId);
+     }
+ 
++    // --- DATA SYNC ACTION ---  // <-- THÊM PHƯƠNG THỨC MỚI
++    /**
++     * Kích hoạt quá trình đồng bộ dữ liệu từ cloud.
++     * Báo cho UI biết khi nào bắt đầu và kết thúc.
++     */
++    public void syncData() {
++        isSyncing.setValue(true); // Báo cho UI: Bắt đầu đồng bộ (hiện loading...)
++
++        syncRecipesUseCase.execute(new SyncRecipesUseCase.SyncCallback() {
++            @Override
++            public void onSyncSuccess() {
++                // Khi đồng bộ thành công, LiveData `searchResults` sẽ tự động cập nhật
++                // do dữ liệu trong DB đã thay đổi.
++                isSyncing.postValue(false); // Báo cho UI: Đồng bộ đã xong
++            }
++
++            @Override
++            public void onSyncError(String error) {
++                // Nếu có lỗi, thông báo cho UI và ghi log
++                handleError("Sync failed: " + error);
++                isSyncing.postValue(false); // Báo cho UI: Đồng bộ đã xong (dù thất bại)
++            }
++        });
++    }
++
+     // --- USER CONTEXT ---
+     public void setCurrentUserId(int userId) {
+         this.currentUserId = userId;
+-        // Reload lại kết quả tìm kiếm nếu User ID thay đổi (ví dụ để update trạng thái Favorite)
+         refreshSearch();
+     }
+ 
+     // --- SEARCH & FILTER ACTIONS ---
+-
+-    // 1. Chỉ update từ khóa tìm kiếm
+     public void search(String query) {
+         searchInput.setValue(new Pair<>(query, currentFilterOptions));
+     }
+ 
+-    // 2. Update bộ lọc đầy đủ
+     public void setFilters(List<String> categories, List<String> dietModes,
+                            Integer minCalories, Integer maxCalories,
+                            Integer minCarbs, Integer maxCarbs,
+                            Integer minProtein, Integer maxProtein,
+                            Integer minFat, Integer maxFat) {
+-
+         currentFilterOptions.categories = categories;
+         currentFilterOptions.dietModes = dietModes;
+         currentFilterOptions.minCalories = minCalories;
+@@ -106,17 +132,14 @@
+         currentFilterOptions.maxProtein = maxProtein;
+         currentFilterOptions.minFat = minFat;
+         currentFilterOptions.maxFat = maxFat;
+-
+         refreshSearch();
+     }
+ 
+-    // 3. Xóa bộ lọc (Reset về mặc định)
+     public void clearFilters() {
+-        this.currentFilterOptions = new SearchRecipesUseCase.FilterOptions(); // Reset object
++        this.currentFilterOptions = new SearchRecipesUseCase.FilterOptions();
+         refreshSearch();
+     }
+ 
+-    // Helper: Trigger lại LiveData với giá trị hiện tại
+     private void refreshSearch() {
+         String currentQuery = searchInput.getValue() != null ? searchInput.getValue().first : "";
+         searchInput.setValue(new Pair<>(currentQuery, currentFilterOptions));
+@@ -135,14 +158,12 @@
+     public Integer getMaxFat() { return currentFilterOptions.maxFat; }
+ 
+     // --- CUD OPERATIONS (CREATE / UPDATE / DELETE) ---
+-
+     public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
+         if (currentUserId == -1) {
+             handleError("User not logged in");
+             return;
+         }
+         recipe.setUserId(currentUserId);
+-
+         executor.execute(() -> manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
+             @Override public void onSuccess() { handleSuccess(); }
+             @Override public void onError() { handleError("Failed to create recipe"); }
+@@ -164,21 +185,13 @@
+     }
+ 
+     public void toggleFavorite(int recipeId) {
+-        // Lưu ý: Nếu UseCase cần UserId, hãy đảm bảo UseCase tự lấy hoặc truyền thêm vào đây
+         executor.execute(() -> toggleFavoriteRecipeUseCase.execute(recipeId, new ToggleFavoriteRecipeUseCase.Callback() {
+-            @Override public void onSuccess() {
+-                // Không cần postSuccess(true) ở đây nếu chỉ là like/unlike để tránh reload màn hình không cần thiết
+-                // Nhưng nếu UI cần biết để hiển thị Toast, hãy giữ nguyên.
+-                handleSuccess();
+-                // Opsional: Refresh lại list để cập nhật icon trái tim
+-                // refreshSearch();
+-            }
++            @Override public void onSuccess() { handleSuccess(); }
+             @Override public void onError() { handleError("Failed to toggle favorite status"); }
+         }));
+     }
+ 
+     // --- HELPER METHODS FOR STATUS ---
+-    // Gom nhóm xử lý kết quả để code gọn hơn
+     private void handleSuccess() {
+         operationSuccess.postValue(true);
+     }
+@@ -187,7 +200,6 @@
+         errorMessage.postValue(message);
+     }
+ 
+-    // Reset status sau khi UI đã xử lý xong (tránh hiển thị lại thông báo khi xoay màn hình)
+     public void resetStatus() {
+         operationSuccess.setValue(false);
+         errorMessage.setValue(null);
+@@ -196,6 +208,6 @@
+     @Override
+     protected void onCleared() {
+         super.onCleared();
+-        executor.shutdown(); // Dọn dẹp thread khi ViewModel bị hủy
++        executor.shutdown();
+     }
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Data/Remote/Api/RecipeApiService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package vn.edu.tdtu.anhminh.myapplication.Data.Remote.Api;\n\nimport android.content.Context;\n\nimport com.android.volley.Request;\nimport com.android.volley.RequestQueue;\nimport com.android.volley.toolbox.StringRequest;\nimport com.android.volley.toolbox.Volley;\n\nimport org.json.JSONArray;\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n// Import đầy đủ các DTO\nimport vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.IngredientDTO;\nimport vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.InstructionDTO;\nimport vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;\n\npublic class RecipeApiService {\n    // URL raw từ GitHub của bạn\n    private static final String SAMPLE_URL = \"https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/refs/heads/main/recipes.json\";\n\n    private final RequestQueue queue;\n\n    public RecipeApiService(Context context){\n        this.queue = Volley.newRequestQueue(context.getApplicationContext());\n    }\n\n    public interface ApiCallback<T>{\n        void onSuccess(T data);\n        void onError(String error);\n    }\n\n    public void getSampleRecipe(ApiCallback<List<RecipeDTO>> callback){\n        StringRequest req = new StringRequest(\n                Request.Method.GET,\n                SAMPLE_URL,\n                response -> {\n                    try {\n                        JSONObject root = new JSONObject(response);\n                        JSONArray recipes =  root.getJSONArray(\"recipes\");\n                        List<RecipeDTO> list =  new ArrayList<>();\n                        for (int i = 0; i < recipes.length(); i++) {\n                            JSONObject json = recipes.getJSONObject(i);\n\n                            RecipeDTO dto = new RecipeDTO();\n\n                            // Map dữ liệu cơ bản\n                            dto.setRecipeId(json.getInt(\"recipe_id\"));\n                            dto.setTitle(json.getString(\"title\"));\n                            dto.setCalories(json.getInt(\"calories\"));\n                            dto.setRecipeImage(json.getString(\"recipe_image\"));\n                            dto.setCarb(json.getInt(\"carb\"));\n                            dto.setFat(json.getInt(\"fat\"));\n                            dto.setCategory(json.getString(\"category\"));\n                            dto.setDietMode(json.getString(\"diet_mode\"));\n                            // Kiểm tra null cho videoLink nếu cần, hoặc để mặc định như JSON\n                            dto.setVideoLink(json.optString(\"video_link\", \"\"));\n                            dto.setProtein(json.getInt(\"protein\"));\n                            dto.setPinned(json.getBoolean(\"is_pinned\"));\n\n                            // Map Ingredients (Nguyên liệu)\n                            if (json.has(\"ingredients\")) {\n                                JSONArray ingArr = json.getJSONArray(\"ingredients\");\n                                List<IngredientDTO> ingList = new ArrayList<>();\n                                for (int j = 0; j < ingArr.length(); j++) {\n                                    JSONObject ingJson = ingArr.getJSONObject(j);\n                                    IngredientDTO ingDto = new IngredientDTO();\n\n                                    ingDto.setName(ingJson.getString(\"name\"));\n                                    ingDto.setQuantity(ingJson.getDouble(\"quantity\"));\n                                    ingDto.setUnit(ingJson.getString(\"unit\"));\n                                    // Set tạm ID recipe cho ingredient nếu cần logic xử lý sau này\n                                    ingDto.setRecipeId(dto.getRecipeId());\n\n                                    ingList.add(ingDto);\n                                }\n                                dto.setIngredients(ingList);\n                            }\n\n                            // Map Instructions (Hướng dẫn)\n                            if (json.has(\"instructions\")) {\n                                JSONArray instArr = json.getJSONArray(\"instructions\");\n                                List<InstructionDTO> instList = new ArrayList<>();\n                                for (int k = 0; k < instArr.length(); k++) {\n                                    JSONObject instJson = instArr.getJSONObject(k);\n                                    InstructionDTO instDto = new InstructionDTO();\n\n                                    instDto.setStepNumber(instJson.getInt(\"step_number\"));\n                                    instDto.setInstruction(instJson.getString(\"instruction\"));\n                                    // Set tạm ID recipe\n                                    instDto.setRecipeId(dto.getRecipeId());\n\n                                    instList.add(instDto);\n                                }\n                                dto.setInstructions(instList);\n                            }\n\n                            list.add(dto);\n                        }\n                        callback.onSuccess(list);\n                    } catch (JSONException e) {\n                        e.printStackTrace(); // In lỗi ra Logcat để dễ debug\n                        callback.onError(\"JSON parse error: \" + e.getMessage());\n                    }\n                },\n                volleyError -> {\n                    volleyError.printStackTrace();\n                    callback.onError(\"Volley error: \" + volleyError.getMessage());\n                }\n        );\n        queue.add(req);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Data/Remote/Api/RecipeApiService.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Data/Remote/Api/RecipeApiService.java
+--- a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Data/Remote/Api/RecipeApiService.java	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Data/Remote/Api/RecipeApiService.java	(date 1765106857052)
+@@ -21,7 +21,7 @@
+ 
+ public class RecipeApiService {
+     // URL raw từ GitHub của bạn
+-    private static final String SAMPLE_URL = "https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/refs/heads/main/recipes.json";
++    private static final String SAMPLE_URL = "https://github.com/IvanTran0101/FinalRecipeApp-New/blob/main/app/src/main/recipes.json";
+ 
+     private final RequestQueue queue;
+ 
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Injection.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package vn.edu.tdtu.anhminh.myapplication.UI;\n\nimport android.content.Context;\n\nimport vn.edu.tdtu.anhminh.myapplication.Data.Repository.*;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateMealFrequencyReportUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.GenerateShoppingListUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.MealPlan.ManageMealPlanUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;\nimport vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;\n\npublic class Injection {\n    private static RecipeRepository recipeRepo;\n    private static IngredientRepository ingredientRepo;\n    private static InstructionRepository instructionRepo;\n    private static UserRepository userRepo;\n    private static PlanRepository planRepository;\n\n    public static void init(Context context) {\n        recipeRepo = new RecipeRepository(context);\n        ingredientRepo = new IngredientRepository(context);\n        instructionRepo = new InstructionRepository(context);\n        userRepo = new UserRepository(context);\n        planRepository = new PlanRepository(context);\n    }\n\n    public static ManageRecipeUseCase provideManageRecipeUseCase() {\n        return new ManageRecipeUseCase(recipeRepo, ingredientRepo, instructionRepo);\n    }\n\n    public static SearchRecipesUseCase provideSearchRecipesUseCase() {\n        return new SearchRecipesUseCase(recipeRepo);\n    }\n\n    public static ToggleFavoriteRecipeUseCase provideToggleFavoriteRecipeUseCase() {\n        return new ToggleFavoriteRecipeUseCase(recipeRepo);\n    }\n\n    public static ManageMealPlanUseCase provideManageMealPlanUseCase() {\n        return new ManageMealPlanUseCase(planRepository);\n    }\n\n    public static GenerateShoppingListUseCase provideGenerateShoppingListUseCase() {\n        return new GenerateShoppingListUseCase(planRepository, ingredientRepo);\n    }\n\n    public static GenerateMealFrequencyReportUseCase provideGenerateMealFrequencyReportUseCase() {\n        return new GenerateMealFrequencyReportUseCase();\n    }\n\n    public static AuthenticateUserUseCase provideAuthenticateUserUseCase() {\n        return new AuthenticateUserUseCase(userRepo);\n    }\n\n    public static UpdateAccountUseCase provideUpdateAccountUseCase() {\n        return new UpdateAccountUseCase(userRepo);\n    }\n\n    public static ViewModelFactory provideViewModelFactory() {\n        return new ViewModelFactory(\n                provideManageRecipeUseCase(),\n                provideAuthenticateUserUseCase(),\n                provideUpdateAccountUseCase(),\n                provideSearchRecipesUseCase(),\n                provideToggleFavoriteRecipeUseCase()\n        );\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Injection.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Injection.java
+--- a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Injection.java	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/UI/Injection.java	(date 1765106506093)
+@@ -12,6 +12,7 @@
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
+ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
++import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase;
+ 
+ public class Injection {
+     private static RecipeRepository recipeRepo;
+@@ -27,7 +28,10 @@
+         userRepo = new UserRepository(context);
+         planRepository = new PlanRepository(context);
+     }
+-
++    public static SyncRecipesUseCase provideSyncRecipesUseCase() {
++        // SyncRecipesUseCase chỉ cần RecipeRepository, rất đơn giản
++        return new SyncRecipesUseCase(recipeRepo);
++    }
+     public static ManageRecipeUseCase provideManageRecipeUseCase() {
+         return new ManageRecipeUseCase(recipeRepo, ingredientRepo, instructionRepo);
+     }
+@@ -63,10 +67,11 @@
+     public static ViewModelFactory provideViewModelFactory() {
+         return new ViewModelFactory(
+                 provideManageRecipeUseCase(),
++                provideSearchRecipesUseCase(), // Di chuyển lên cho đúng thứ tự
++                provideToggleFavoriteRecipeUseCase(), // Di chuyển lên cho đúng thứ tự
++                provideSyncRecipesUseCase(), // <-- THÊM USE CASE CÒN THIẾU
+                 provideAuthenticateUserUseCase(),
+-                provideUpdateAccountUseCase(),
+-                provideSearchRecipesUseCase(),
+-                provideToggleFavoriteRecipeUseCase()
++                provideUpdateAccountUseCase()
+         );
+     }
+ }
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"deploymentTargetSelector\">\n    <selectionStates>\n      <SelectionState runConfigName=\"app\">\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\n        <DropdownSelection timestamp=\"2025-12-03T13:12:43.882085800Z\">\n          <Target type=\"DEFAULT_BOOT\">\n            <handle>\n              <DeviceId pluginId=\"PhysicalDevice\" identifier=\"serial=RF8N71SXXYH\" />\n            </handle>\n          </Target>\n        </DropdownSelection>\n        <DialogSelection />\n      </SelectionState>\n    </selectionStates>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+--- a/.idea/deploymentTargetSelector.xml	(revision d84932dc660bda7509571a78a27a09e645012337)
++++ b/.idea/deploymentTargetSelector.xml	(date 1765106506079)
+@@ -4,10 +4,10 @@
+     <selectionStates>
+       <SelectionState runConfigName="app">
+         <option name="selectionMode" value="DROPDOWN" />
+-        <DropdownSelection timestamp="2025-12-03T13:12:43.882085800Z">
++        <DropdownSelection timestamp="2025-12-07T11:19:36.522138Z">
+           <Target type="DEFAULT_BOOT">
+             <handle>
+-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RF8N71SXXYH" />
++              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/trananhminh/.android/avd/Pixel_4a.avd" />
+             </handle>
+           </Target>
+         </DropdownSelection>
+Index: app/src/main/assets/recipes.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/assets/recipes.json b/app/src/main/assets/recipes.json
+new file mode 100644
+--- /dev/null	(date 1765106506092)
++++ b/app/src/main/assets/recipes.json	(date 1765106506092)
+@@ -0,0 +1,131 @@
++{
++  "recipes": [
++    {
++      "recipe_id": 1,
++      "title": "Spaghetti Carbonara",
++      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pasta",
++      "category": "Dinner",
++      "diet_mode": "None",
++      "video_link": "",
++      "calories": 600,
++      "protein": 25,
++      "fat": 30,
++      "carb": 55,
++      "is_pinned": false,
++      "ingredients": [
++        { "name": "Spaghetti", "quantity": 200, "unit": "g" },
++        { "name": "Pancetta", "quantity": 100, "unit": "g" },
++        { "name": "Eggs", "quantity": 2, "unit": "pcs" },
++        { "name": "Parmesan Cheese", "quantity": 50, "unit": "g" },
++        { "name": "Black Pepper", "quantity": 1, "unit": "tsp" }
++      ],
++      "instructions": [
++        { "step_number": 1, "instruction": "Cook spaghetti according to package directions." },
++        { "step_number": 2, "instruction": "Fry pancetta until crisp." },
++        { "step_number": 3, "instruction": "Whisk eggs and cheese." },
++        { "step_number": 4, "instruction": "Drain spaghetti and combine with pancetta, egg mixture, and pepper." }
++      ]
++    },
++    {
++      "recipe_id": 2,
++      "title": "Glazed Donuts",
++      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_donut",
++      "category": "Dessert",
++      "diet_mode": "None",
++      "video_link": "",
++      "calories": 300,
++      "protein": 4,
++      "fat": 15,
++      "carb": 35,
++      "is_pinned": false,
++      "ingredients": [
++        { "name": "Flour", "quantity": 2, "unit": "cups" },
++        { "name": "Sugar", "quantity": 0.5, "unit": "cups" },
++        { "name": "Milk", "quantity": 1, "unit": "cup" },
++        { "name": "Butter", "quantity": 0.25, "unit": "cups" },
++        { "name": "Yeast", "quantity": 1, "unit": "tbsp" }
++      ],
++      "instructions": [
++        { "step_number": 1, "instruction": "Mix all ingredients to form a dough." },
++        { "step_number": 2, "instruction": "Let the dough rise for 1 hour." },
++        { "step_number": 3, "instruction": "Cut out donut shapes and fry until golden brown." },
++        { "step_number": 4, "instruction": "Glaze with a mixture of powdered sugar and milk." }
++      ]
++    },
++    {
++      "recipe_id": 3,
++      "title": "Pho Bo",
++      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pho",
++      "category": "Lunch",
++      "diet_mode": "None",
++      "video_link": "",
++      "calories": 400,
++      "protein": 30,
++      "fat": 10,
++      "carb": 45,
++      "is_pinned": true,
++      "ingredients": [
++        { "name": "Beef Bones", "quantity": 1, "unit": "kg" },
++        { "name": "Rice Noodles", "quantity": 200, "unit": "g" },
++        { "name": "Beef Sirloin", "quantity": 200, "unit": "g" },
++        { "name": "Onion", "quantity": 1, "unit": "pcs" },
++        { "name": "Ginger", "quantity": 1, "unit": "pcs" }
++      ],
++      "instructions": [
++        { "step_number": 1, "instruction": "Simmer beef bones for 6-8 hours to make the broth." },
++        { "step_number": 2, "instruction": "Cook rice noodles according to package directions." },
++        { "step_number": 3, "instruction": "Slice beef sirloin thinly." },
++        { "step_number": 4, "instruction": "Assemble the bowl with noodles, beef, and broth." }
++      ]
++    },
++    {
++      "recipe_id": 4,
++      "title": "Caesar Salad",
++      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_salad",
++      "category": "Breakfast",
++      "diet_mode": "Vegetarian",
++      "video_link": "",
++      "calories": 250,
++      "protein": 10,
++      "fat": 15,
++      "carb": 20,
++      "is_pinned": false,
++      "ingredients": [
++        { "name": "Romaine Lettuce", "quantity": 1, "unit": "head" },
++        { "name": "Croutons", "quantity": 1, "unit": "cup" },
++        { "name": "Parmesan Cheese", "quantity": 0.5, "unit": "cups" },
++        { "name": "Caesar Dressing", "quantity": 0.25, "unit": "cups" }
++      ],
++      "instructions": [
++        { "step_number": 1, "instruction": "Wash and chop the romaine lettuce." },
++        { "step_number": 2, "instruction": "Toss lettuce with croutons, parmesan cheese, and Caesar dressing." },
++        { "step_number": 3, "instruction": "Serve immediately." }
++      ]
++    },
++    {
++      "recipe_id": 5,
++      "title": "Hawaiian Pizza",
++      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pizza",
++      "category": "Dinner",
++      "diet_mode": "None",
++      "video_link": "",
++      "calories": 800,
++      "protein": 30,
++      "fat": 35,
++      "carb": 90,
++      "is_pinned": false,
++      "ingredients": [
++        { "name": "Pizza Dough", "quantity": 1, "unit": "ball" },
++        { "name": "Tomato Sauce", "quantity": 0.5, "unit": "cup" },
++        { "name": "Mozzarella Cheese", "quantity": 200, "unit": "g" },
++        { "name": "Basil", "quantity": 1, "unit": "bunch" }
++      ],
++      "instructions": [
++        { "step_number": 1, "instruction": "Preheat oven to 475°F (245°C)." },
++        { "step_number": 2, "instruction": "Roll out pizza dough and spread tomato sauce on top." },
++        { "step_number": 3, "instruction": "Top with mozzarella cheese and fresh basil." },
++        { "step_number": 4, "instruction": "Bake for 10-12 minutes, or until crust is golden and cheese is bubbly." }
++      ]
++    }
++  ]
++}
+\ No newline at end of file
+Index: app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Domain/UseCase/Recipe/SyncRecipesUseCase.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Domain/UseCase/Recipe/SyncRecipesUseCase.java b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Domain/UseCase/Recipe/SyncRecipesUseCase.java
+new file mode 100644
+--- /dev/null	(date 1765106506087)
++++ b/app/src/main/java/vn/edu/tdtu/anhminh/myapplication/Domain/UseCase/Recipe/SyncRecipesUseCase.java	(date 1765106506087)
+@@ -0,0 +1,36 @@
++// Trong thư mục Domain/UseCase/Sync/ hoặc tương tự
++package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
++
++import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
++
++public class SyncRecipesUseCase {
++    private final RecipeRepository repository;
++
++    public SyncRecipesUseCase(RecipeRepository repository) {
++        this.repository = repository;
++    }
++
++    // Định nghĩa callback để ViewModel biết khi nào xong
++    public interface SyncCallback {
++        void onSyncSuccess();
++        void onSyncError(String error);
++    }
++
++    public void execute(SyncCallback callback) {
++        repository.syncRecipesFromCloud(new RecipeRepository.SyncCallback() {
++            @Override
++            public void onSuccess() {
++                if (callback != null) {
++                    callback.onSyncSuccess();
++                }
++            }
++
++            @Override
++            public void onError(String message) {
++                if (callback != null) {
++                    callback.onSyncError(message);
++                }
++            }
++        });
++    }
++}
