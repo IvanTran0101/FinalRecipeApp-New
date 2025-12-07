@@ -60,6 +60,10 @@ public class RecipeRepository {
         });
     }
 
+    public void syncRecipesIfEmpty(SyncCallback callback) {
+        new CheckEmptyAndSyncTask(recipeDAO, this, callback).execute();
+    }
+
     /**
      * AsyncTask để lưu danh sách Recipe + Ingredients + Instructions vào DB
      */
@@ -121,6 +125,32 @@ public class RecipeRepository {
         @Override
         protected void onPostExecute(Void unused) {
             if (callback != null) callback.onSuccess();
+        }
+    }
+
+    private static class CheckEmptyAndSyncTask extends AsyncTask<Void, Void, Boolean> {
+        private final RecipeDAO recipeDAO;
+        private final RecipeRepository repository;
+        private final SyncCallback callback;
+
+        CheckEmptyAndSyncTask(RecipeDAO recipeDAO, RecipeRepository repository, SyncCallback callback) {
+            this.recipeDAO = recipeDAO;
+            this.repository = repository;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return recipeDAO.countRecipes() == 0;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isEmpty) {
+            if (isEmpty) {
+                repository.syncRecipesFromCloud(callback);
+            } else if (callback != null) {
+                callback.onSuccess();
+            }
         }
     }
 
@@ -217,6 +247,14 @@ public class RecipeRepository {
     }
 
     public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
+        // Nếu userId không hợp lệ, trả về toàn bộ công thức (bao gồm dữ liệu seed từ GitHub/asset)
+        if (userId <= 0) {
+            return Transformations.map(
+                    recipeDAO.searchRecipes(searchQuery),
+                    RecipeMapper::toModelList
+            );
+        }
+
         return Transformations.map(
                 recipeDAO.searchRecipesForUser(searchQuery, userId),
                 RecipeMapper::toModelList
