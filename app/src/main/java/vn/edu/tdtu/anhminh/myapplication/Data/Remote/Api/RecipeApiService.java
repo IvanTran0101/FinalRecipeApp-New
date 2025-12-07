@@ -6,7 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
+import com.android.volley.DefaultRetryPolicy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,32 +50,28 @@ public class RecipeApiService {
                         callback.onSuccess(parseRecipes(recipes));
                     } catch (JSONException e) {
                         e.printStackTrace(); // In lỗi ra Logcat để dễ debug
-                        if (!loadFallbackFromAssets(callback)) {
-                            callback.onError("JSON parse error: " + e.getMessage());
-                        }
+                        callback.onError("JSON parse error: " + e.getMessage());
+                        loadFallbackFromAssets(callback);
                     }
                 },
                 volleyError -> {
                     volleyError.printStackTrace();
-                    if (!loadFallbackFromAssets(callback)) {
-                        callback.onError("Volley error: " + volleyError.getMessage());
-                    }
+                    callback.onError("Volley error: " + volleyError.getMessage());
+                    loadFallbackFromAssets(callback);
                 }
         );
+        // --- THÊM ĐOẠN CODE NÀY ---
+        // Tăng thời gian chờ lên 10000ms (10 giây)
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // ---------------------------
+
         queue.add(req);
     }
 
-    /**
-     * Đọc thẳng dữ liệu từ assets để dùng khi thiết bị không thể truy cập GitHub
-     * hoặc khi cần seed nhanh trong lúc kiểm tra nhánh main.
-     */
-    public void getRecipesFromAssets(ApiCallback<List<RecipeDTO>> callback) {
-        if (!loadFallbackFromAssets(callback) && callback != null) {
-            callback.onError("Local fallback JSON is missing or invalid");
-        }
-    }
-
-    private boolean loadFallbackFromAssets(ApiCallback<List<RecipeDTO>> callback) {
+    private void loadFallbackFromAssets(ApiCallback<List<RecipeDTO>> callback) {
         try {
             InputStream inputStream = context.getAssets().open("recipes.json");
             int size = inputStream.available();
@@ -88,13 +84,12 @@ public class RecipeApiService {
                 JSONObject root = new JSONObject(json);
                 JSONArray recipes = root.getJSONArray("recipes");
                 callback.onSuccess(parseRecipes(recipes));
-                return true;
+                return;
             }
             callback.onError("Local fallback JSON is empty");
         } catch (IOException | JSONException e) {
             callback.onError("Failed to read fallback recipes: " + e.getMessage());
         }
-        return false;
     }
 
     private List<RecipeDTO> parseRecipes(JSONArray recipes) throws JSONException {

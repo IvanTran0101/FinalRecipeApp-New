@@ -60,20 +60,6 @@ public class RecipeRepository {
         });
     }
 
-    public void syncRecipesFromAssets(SyncCallback callback) {
-        apiService.getRecipesFromAssets(new RecipeApiService.ApiCallback<List<RecipeDTO>>() {
-            @Override
-            public void onSuccess(List<RecipeDTO> data) {
-                new ImportRecipesTask(recipeDAO, ingredientDAO, instructionDAO, callback).execute(data);
-            }
-
-            @Override
-            public void onError(String error) {
-                if (callback != null) callback.onError(error);
-            }
-        });
-    }
-
     public void syncRecipesIfEmpty(SyncCallback callback) {
         new CheckEmptyAndSyncTask(recipeDAO, this, callback).execute();
     }
@@ -160,24 +146,11 @@ public class RecipeRepository {
 
         @Override
         protected void onPostExecute(Boolean isEmpty) {
-            if (!isEmpty) {
-                if (callback != null) callback.onSuccess();
-                return;
+            if (isEmpty) {
+                repository.syncRecipesFromCloud(callback);
+            } else if (callback != null) {
+                callback.onSuccess();
             }
-
-            // Ưu tiên seed từ assets để không phụ thuộc GitHub
-            repository.syncRecipesFromAssets(new SyncCallback() {
-                @Override
-                public void onSuccess() {
-                    if (callback != null) callback.onSuccess();
-                }
-
-                @Override
-                public void onError(String message) {
-                    // Nếu assets lỗi, tiếp tục thử GitHub
-                    repository.syncRecipesFromCloud(callback);
-                }
-            });
         }
     }
 

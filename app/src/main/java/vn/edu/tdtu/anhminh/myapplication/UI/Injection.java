@@ -12,6 +12,7 @@ import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCa
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase;
 
 public class Injection {
     private static RecipeRepository recipeRepo;
@@ -27,7 +28,10 @@ public class Injection {
         userRepo = new UserRepository(context);
         planRepository = new PlanRepository(context);
     }
-
+    public static SyncRecipesUseCase provideSyncRecipesUseCase() {
+        // SyncRecipesUseCase chỉ cần RecipeRepository, rất đơn giản
+        return new SyncRecipesUseCase(recipeRepo);
+    }
     public static ManageRecipeUseCase provideManageRecipeUseCase() {
         return new ManageRecipeUseCase(recipeRepo, ingredientRepo, instructionRepo);
     }
@@ -63,10 +67,11 @@ public class Injection {
     public static ViewModelFactory provideViewModelFactory() {
         return new ViewModelFactory(
                 provideManageRecipeUseCase(),
+                provideSearchRecipesUseCase(), // Di chuyển lên cho đúng thứ tự
+                provideToggleFavoriteRecipeUseCase(), // Di chuyển lên cho đúng thứ tự
+                provideSyncRecipesUseCase(), // <-- THÊM USE CASE CÒN THIẾU
                 provideAuthenticateUserUseCase(),
-                provideUpdateAccountUseCase(),
-                provideSearchRecipesUseCase(),
-                provideToggleFavoriteRecipeUseCase()
+                provideUpdateAccountUseCase()
         );
     }
 }

@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.NavOptions;
@@ -15,17 +16,55 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.Services.Sync.RecipeSyncService;
+import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.UserViewModel;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private GestureDetector gestureDetector;
     private NavController navController;
 
+    // ViewModels
+    private RecipeViewModel recipeViewModel;
+    private UserViewModel userViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 1. Khởi tạo Dependencies & ViewModels
+        initViewModels();
+
+        // 2. Trigger đồng bộ dữ liệu (Fix lỗi không load recipes.json)
+        syncData();
+
+        // 3. Setup Navigation & UI
+        setupNavigation();
+    }
+
+    private void initViewModels() {
+        // Đảm bảo Injection context đã được khởi tạo
+        Injection.init(this);
+
+        // Sử dụng Injection để lấy Factory chuẩn, không cần new thủ công từng UseCase ở đây
+        ViewModelFactory factory = Injection.provideViewModelFactory();
+
+        this.recipeViewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
+        // Kiểm tra xem UserViewModel có được hỗ trợ trong Factory chưa, nếu có thì uncomment dòng dưới
+        this.userViewModel = new ViewModelProvider(this, factory).get(UserViewModel.class);
+    }
+
+    private void syncData() {
+        // Gọi service để fetch data từ API Github
+        RecipeSyncService syncService = new RecipeSyncService(this);
+        syncService.syncSampleRecipes();
+    }
+
+    private void setupNavigation() {
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -41,36 +80,11 @@ public class MainActivity extends AppCompatActivity {
                         .setLaunchSingleTop(true)
                         .setRestoreState(false);
 
+                // Clear back stack để tránh chồng chất fragment
                 builder.setPopUpTo(navController.getGraph().getStartDestinationId(), false);
 
-                Menu menu = navView.getMenu();
-                int currentOrder = -1;
-                int newOrder = -1;
-
-                if (navController.getCurrentDestination() != null) {
-                    for (int i = 0; i < menu.size(); i++) {
-                        if (menu.getItem(i).getItemId() == navController.getCurrentDestination().getId()) {
-                            currentOrder = i;
-                        }
-                        if (menu.getItem(i).getItemId() == item.getItemId()) {
-                            newOrder = i;
-                        }
-                    }
-                }
-
-                if (currentOrder != -1 && newOrder != -1) {
-                    if (newOrder > currentOrder) {
-                        builder.setEnterAnim(R.anim.slide_in_right)
-                                .setExitAnim(R.anim.slide_out_left)
-                                .setPopEnterAnim(R.anim.slide_in_left)
-                                .setPopExitAnim(R.anim.slide_out_right);
-                    } else if (newOrder < currentOrder) {
-                        builder.setEnterAnim(R.anim.slide_in_left)
-                                .setExitAnim(R.anim.slide_out_right)
-                                .setPopEnterAnim(R.anim.slide_in_right)
-                                .setPopExitAnim(R.anim.slide_out_left);
-                    }
-                }
+                // Xử lý Animation trượt
+                handleNavigationAnimation(builder, navView.getMenu(), item.getItemId());
 
                 try {
                     navController.navigate(item.getItemId(), null, builder.build());
@@ -80,18 +94,51 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            // Đồng bộ trạng thái BottomNav khi đích thay đổi (ví dụ: back button)
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 if (navView.getMenu().findItem(destination.getId()) != null) {
                     navView.getMenu().findItem(destination.getId()).setChecked(true);
                 }
             });
 
+            // Xử lý điều hướng từ thông báo (Notification)
             handleNotificationNavigation(navController);
+        }
+    }
+
+    private void handleNavigationAnimation(NavOptions.Builder builder, Menu menu, int newItemId) {
+        int currentOrder = -1;
+        int newOrder = -1;
+
+        if (navController.getCurrentDestination() != null) {
+            for (int i = 0; i < menu.size(); i++) {
+                if (menu.getItem(i).getItemId() == navController.getCurrentDestination().getId()) {
+                    currentOrder = i;
+                }
+                if (menu.getItem(i).getItemId() == newItemId) {
+                    newOrder = i;
+                }
+            }
+        }
+
+        if (currentOrder != -1 && newOrder != -1) {
+            if (newOrder > currentOrder) {
+                builder.setEnterAnim(R.anim.slide_in_right)
+                        .setExitAnim(R.anim.slide_out_left)
+                        .setPopEnterAnim(R.anim.slide_in_left)
+                        .setPopExitAnim(R.anim.slide_out_right);
+            } else if (newOrder < currentOrder) {
+                builder.setEnterAnim(R.anim.slide_in_left)
+                        .setExitAnim(R.anim.slide_out_right)
+                        .setPopEnterAnim(R.anim.slide_in_right)
+                        .setPopExitAnim(R.anim.slide_out_left);
+            }
         }
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        // Tắt gesture vuốt ở các màn hình đặc biệt (Map, Nấu ăn, Chi tiết)
         NavDestination currentDest = navController != null ? navController.getCurrentDestination() : null;
         boolean isMapFragment = (currentDest != null && currentDest.getId() == R.id.navigation_groceries);
         boolean isStartCookingFragment = (currentDest != null && currentDest.getId() == R.id.startCookingFragment);
@@ -120,11 +167,13 @@ public class MainActivity extends AppCompatActivity {
             String destination = getIntent().getStringExtra("NAVIGATE_TO");
             if ("COOKING_TIMER".equals(destination)) {
                 navController.navigate(R.id.cookingTimerFragment);
+                // Xóa extra để tránh điều hướng lại khi xoay màn hình
                 getIntent().removeExtra("NAVIGATE_TO");
             }
         }
     }
 
+    // Class xử lý cử chỉ vuốt
     private static class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
@@ -146,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             float diffX = e2.getX() - e1.getX();
             float diffY = e2.getY() - e1.getY();
 
+            // Chỉ xử lý vuốt ngang
             if (Math.abs(diffX) > Math.abs(diffY)) {
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
