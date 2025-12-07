@@ -26,6 +26,8 @@ public class RecipeViewModel extends ViewModel {
     // Executor for background threads
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    private boolean seedRequested = false;
+
     // --- STATUS LIVEDATA ---
     // Dùng để thông báo cho View (Activity/Fragment) về kết quả thao tác
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
@@ -56,6 +58,23 @@ public class RecipeViewModel extends ViewModel {
         searchResults = Transformations.switchMap(searchInput, input ->
                 searchRecipesUseCase.execute(input.first, currentUserId, input.second)
         );
+    }
+
+    public void ensureInitialRecipes() {
+        if (seedRequested) return;
+        seedRequested = true;
+
+        manageRecipeUseCase.seedRecipesIfEmpty(new ManageRecipeUseCase.SyncStatusCallback() {
+            @Override
+            public void onSuccess() {
+                refreshSearch();
+            }
+
+            @Override
+            public void onError(String message) {
+                handleError(message);
+            }
+        });
     }
 
     // --- GETTERS (OBSERVABLES) ---
