@@ -7,12 +7,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import vn.edu.tdtu.anhminh.myapplication.Data.Local.DummyData;
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.UserRepository;
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.RegisterUserUseCase;
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -20,6 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private TextView tvLoginPrompt;
     private RegisterUserUseCase registerUserUseCase;
+    private RecipeViewModel recipeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         UserRepository userRepository = new UserRepository(this);
         registerUserUseCase = new RegisterUserUseCase(userRepository);
+
+        ViewModelFactory factory = Injection.provideViewModelFactory();
+        recipeViewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
 
         initViews();
         setupListeners();
@@ -67,8 +76,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerUserUseCase.execute(username, password, new UserRepository.RepositoryCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(int userId) {
                 Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                DummyData.createDummyRecipes(recipeViewModel, userId);
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

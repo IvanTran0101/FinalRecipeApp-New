@@ -30,7 +30,7 @@ public class UpdateAccountUseCase {
         // Pass the request to Repository
         userRepository.updateUserProfile(currentUser.getUserId(), newUsername, newAvatarUri, new UserRepository.RepositoryCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(int userId) {
                 // Now that DB is updated, we update the Model to return to UI
                 currentUser.setUsername(newUsername);
                 if (newAvatarUri != null) {

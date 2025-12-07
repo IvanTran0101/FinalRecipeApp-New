@@ -7,15 +7,16 @@
     android:padding="32dp"
     style="@style/FragmentBackground">
 
-    <View
+    <ImageView
         android:id="@+id/view_logo_bg"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:backgroundTint="#EEE"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/image_chef_hat"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="60dp"
+        />
 
     <TextView
         android:id="@+id/tv_login_title"

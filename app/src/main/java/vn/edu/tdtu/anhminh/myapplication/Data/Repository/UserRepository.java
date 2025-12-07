@@ -55,7 +55,7 @@ public class UserRepository {
         @Override
         protected void onPostExecute(Boolean success) {
             if (callback != null) {
-                if (success) callback.onSuccess();
+                if (success) callback.onSuccess(0);
                 else callback.onError("Failed to update user in database.");
             }
         }
@@ -67,7 +67,7 @@ public class UserRepository {
     }
 
     public interface RepositoryCallback {
-        void onSuccess();
+        void onSuccess(int userId);
         void onError(String message);
     }
 
@@ -87,24 +87,23 @@ public class UserRepository {
     }
 
     public void register(User user, RepositoryCallback callback) {
-        new AsyncTask<Void, Void, String>() {
+        new AsyncTask<Void, Void, Integer>() {
             @Override
-            protected String doInBackground(Void... voids) {
+            protected Integer doInBackground(Void... voids) {
                 if (userDAO.getUserByUsername(user.getUsername()) != null) {
-                    return "Username already exists!";
+                    return -1; // Error: Username already exists
                 }
                 UserEntity entity = UserMapper.toEntity(user, user.getPasswordHash());
-                userDAO.insert(entity);
-                return null; // null indicates success
+                return (int) userDAO.insert(entity);
             }
 
             @Override
-            protected void onPostExecute(String errorMessage) {
+            protected void onPostExecute(Integer userId) {
                 if (callback != null) {
-                    if (errorMessage == null) {
-                        callback.onSuccess();
+                    if (userId != -1) {
+                        callback.onSuccess(userId);
                     } else {
-                        callback.onError(errorMessage);
+                        callback.onError("Username already exists!");
                     }
                 }
             }
@@ -149,7 +148,7 @@ public class UserRepository {
             protected void onPostExecute(String errorMessage) {
                 if (callback != null) {
                     if (errorMessage == null) {
-                        callback.onSuccess();
+                        callback.onSuccess(0);
                     } else {
                         callback.onError(errorMessage);
                     }
