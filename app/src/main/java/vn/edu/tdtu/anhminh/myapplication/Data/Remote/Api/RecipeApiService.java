@@ -6,7 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
+import com.android.volley.DefaultRetryPolicy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +21,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
 
 public class RecipeApiService {
     // URL raw từ GitHub của bạn
-    private static final String SAMPLE_URL = "https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/main/app/src/main/recipes.json";
+    private static final String SAMPLE_URL = "https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/refs/heads/main/recipes.json";
 
     private final RequestQueue queue;
 
@@ -112,6 +112,14 @@ public class RecipeApiService {
                     callback.onError("Volley error: " + volleyError.getMessage());
                 }
         );
+        // --- THÊM ĐOẠN CODE NÀY ---
+        // Tăng thời gian chờ lên 10000ms (10 giây)
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // ---------------------------
+
         queue.add(req);
     }
 }
