@@ -1,0 +1,56 @@
+{
+  "recipes": [
+    {
+      "recipe_id": 1,
+      "title": "Grilled Chicken Salad",
+      "calories": 420,
+      "recipe_image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80",
+      "carb": 18,
+      "fat": 16,
+      "protein": 42,
+      "category": "Salad",
+      "diet_mode": "Low-carb",
+      "video_link": "https://www.youtube.com/watch?v=abcd1234",
+      "is_pinned": true,
+      "ingredients": [
+        { "name": "Chicken breast", "quantity": 200, "unit": "g" },
+        { "name": "Mixed greens", "quantity": 120, "unit": "g" },
+        { "name": "Cherry tomatoes", "quantity": 8, "unit": "pieces" },
+        { "name": "Olive oil", "quantity": 2, "unit": "tbsp" },
+        { "name": "Lemon juice", "quantity": 1, "unit": "tbsp" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Season chicken with salt and pepper, then grill until cooked through." },
+        { "step_number": 2, "instruction": "Slice the chicken and set aside." },
+        { "step_number": 3, "instruction": "Toss greens and tomatoes with olive oil and lemon juice." },
+        { "step_number": 4, "instruction": "Top the salad with grilled chicken slices and serve." }
+      ]
+    },
+    {
+      "recipe_id": 2,
+      "title": "Veggie Pasta Primavera",
+      "calories": 560,
+      "recipe_image": "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?auto=format&fit=crop&w=1200&q=80",
+      "carb": 72,
+      "fat": 18,
+      "protein": 20,
+      "category": "Pasta",
+      "diet_mode": "Vegetarian",
+      "video_link": "https://www.youtube.com/watch?v=efgh5678",
+      "is_pinned": false,
+      "ingredients": [
+        { "name": "Penne pasta", "quantity": 250, "unit": "g" },
+        { "name": "Broccoli florets", "quantity": 150, "unit": "g" },
+        { "name": "Bell pepper", "quantity": 1, "unit": "medium" },
+        { "name": "Garlic cloves", "quantity": 3, "unit": "pieces" },
+        { "name": "Parmesan cheese", "quantity": 30, "unit": "g" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Cook pasta until al dente and reserve some pasta water." },
+        { "step_number": 2, "instruction": "Sauté garlic and vegetables until tender-crisp." },
+        { "step_number": 3, "instruction": "Combine pasta with vegetables, add a splash of pasta water, and toss." },
+        { "step_number": 4, "instruction": "Finish with grated Parmesan and serve warm." }
+      ]
+    }
+  ]
+}
