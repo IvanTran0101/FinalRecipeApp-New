@@ -175,6 +175,9 @@ public class HomeFragment extends Fragment {
         UserPrefs prefs = UserPrefs.getInstance(requireContext());
         viewModel.setCurrentUserId(prefs.getUserId());
 
+        // Ensure remote/asset recipes are synced into the local DB before displaying
+        viewModel.ensureInitialRecipes();
+
         // 1. Observe Search Results
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), recipes -> {
             if (recipes == null) return;

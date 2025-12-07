@@ -20,6 +20,11 @@ public class ManageRecipeUseCase {
         void onSuccess();
         void onError();
     }
+
+    public interface SyncStatusCallback {
+        void onSuccess();
+        void onError(String message);
+    }
     public ManageRecipeUseCase(RecipeRepository recipeRepository,
                                IngredientRepository ingredientRepository,
                                InstructionRepository instructionRepository) {
@@ -103,5 +108,19 @@ public class ManageRecipeUseCase {
 
     public LiveData<List<Ingredient>> getIngredients(int recipeId) {
         return ingredientRepository.getQuantityAndUnitForRecipe(recipeId);
+    }
+
+    public void seedRecipesIfEmpty(SyncStatusCallback callback) {
+        recipeRepository.syncRecipesIfEmpty(new RecipeRepository.SyncCallback() {
+            @Override
+            public void onSuccess() {
+                if (callback != null) callback.onSuccess();
+            }
+
+            @Override
+            public void onError(String message) {
+                if (callback != null) callback.onError(message);
+            }
+        });
     }
 }
