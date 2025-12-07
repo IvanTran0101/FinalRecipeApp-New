@@ -6,7 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
+import com.android.volley.DefaultRetryPolicy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +60,14 @@ public class RecipeApiService {
                     loadFallbackFromAssets(callback);
                 }
         );
+        // --- THÊM ĐOẠN CODE NÀY ---
+        // Tăng thời gian chờ lên 10000ms (10 giây)
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // ---------------------------
+
         queue.add(req);
     }
 

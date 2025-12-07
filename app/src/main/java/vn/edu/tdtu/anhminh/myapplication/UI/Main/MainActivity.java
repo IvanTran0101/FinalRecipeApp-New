@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider; // <-- 1. THÊM IMPORT
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.NavOptions;
@@ -14,22 +15,45 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.IngredientRepository;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.InstructionRepository;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.UserRepository;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.AuthenticateUserUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Account.UpdateAccountUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ManageRecipeUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SearchRecipesUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.SyncRecipesUseCase;
+import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe.ToggleFavoriteRecipeUseCase;
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel; // <-- 1. THÊM IMPORT
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.UserViewModel;   // <-- 1. THÊM IMPORT
+import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory; // <-- 1. THÊM IMPORT
 
 public class MainActivity extends AppCompatActivity {
 
     private GestureDetector gestureDetector;
     private NavController navController;
 
+    // <-- 2. KHAI BÁO VIEWMODELS
+    private RecipeViewModel recipeViewModel;
+    private UserViewModel userViewModel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // <-- 3. GỌI HÀM KHỞI TẠO VIEWMODELS
+        initViewModels();
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+
+        // ... phần còn lại của onCreate không thay đổi ...
 
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
@@ -89,6 +113,51 @@ public class MainActivity extends AppCompatActivity {
             handleNotificationNavigation(navController);
         }
     }
+
+    // <-- 4. THÊM PHƯƠNG THỨC KHỞI TẠO VIEWMODELS
+    private void initViewModels() {
+        // --- Khởi tạo Repository ---
+        RecipeRepository recipeRepository = new RecipeRepository(getApplication());
+        IngredientRepository ingredientRepository = new IngredientRepository(getApplication());
+        InstructionRepository instructionRepository = new InstructionRepository(getApplication());
+        UserRepository userRepository = new UserRepository(getApplication());
+
+        // --- Khởi tạo tất cả các UseCase ---
+        ManageRecipeUseCase manageRecipeUseCase = new ManageRecipeUseCase(recipeRepository, ingredientRepository, instructionRepository);
+        SearchRecipesUseCase searchRecipesUseCase = new SearchRecipesUseCase(recipeRepository);
+        ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase = new ToggleFavoriteRecipeUseCase(recipeRepository);
+        SyncRecipesUseCase syncRecipesUseCase = new SyncRecipesUseCase(recipeRepository);
+
+        AuthenticateUserUseCase authenticateUserUseCase = new AuthenticateUserUseCase(userRepository);
+        UpdateAccountUseCase updateAccountUseCase = new UpdateAccountUseCase(userRepository);
+
+        // --- Tạo Factory với đầy đủ các UseCase ---
+        ViewModelFactory factory = new ViewModelFactory(
+                manageRecipeUseCase,
+                searchRecipesUseCase,
+                toggleFavoriteRecipeUseCase,
+                syncRecipesUseCase,
+                authenticateUserUseCase,
+                updateAccountUseCase
+        );
+
+        // --- Lấy ViewModel từ factory ---
+        // ViewModelProvider sẽ đảm bảo ViewModel tồn tại qua các thay đổi cấu hình (như xoay màn hình)
+        this.recipeViewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
+        this.userViewModel = new ViewModelProvider(this, factory).get(UserViewModel.class);
+
+        // Bây giờ, bạn có thể bắt đầu theo dõi dữ liệu từ ViewModel nếu cần
+        // Ví dụ: Hiển thị loading bar khi đang đồng bộ
+        recipeViewModel.isSyncing().observe(this, isSyncing -> {
+            if (isSyncing) {
+                // Hiển thị một ProgressBar
+            } else {
+                // Ẩn ProgressBar
+            }
+        });
+    }
+
+    // ... các phương thức còn lại không thay đổi ...
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
