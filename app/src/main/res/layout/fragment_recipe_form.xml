@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    style="@style/FragmentBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Recipe Title"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:paddingStart="16dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- Image Picker -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/img_recipe_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="center"
+                android:background="#EEE" />
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Category Spinner -->
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:entries="@array/category_array"
+            android:layout_marginBottom="8dp"
+            android:popupBackground="@drawable/popup_menu_background"/>
+
+        <!-- Diet Spinner -->
+        <Spinner
+            android:id="@+id/spinner_diet"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:entries="@array/diet_array"
+            android:layout_marginBottom="16dp"
+            android:popupBackground="@drawable/popup_menu_background"/>
+
+        <!-- Add Ingredients -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Ingredients"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_ingredient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/orange_primary"
+            android:layout_gravity="end"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Instructions -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Instructions"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:id="@+id/layout_instruction_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_step"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Step"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/orange_primary"
+            android:layout_gravity="end"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Nutrition Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nutrition"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <!-- Cal -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_cal"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Calo"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:paddingStart="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Protein -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_pro"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Pro"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:paddingStart="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Fat -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_fat"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Fat"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:paddingStart="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Carb -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_carb"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Carb"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:paddingStart="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+
+        <!-- Video Link -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_video_link"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Video Link"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:paddingStart="16dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save_recipe"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Save Recipe"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/orange_primary"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            android:layout_gravity="center"
+            />
+
+    </LinearLayout>
+</ScrollView>

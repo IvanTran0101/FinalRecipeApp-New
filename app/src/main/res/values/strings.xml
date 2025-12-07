@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Receta</string>
+    <string-array name="category_array">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+        <item>Dessert</item>
+    </string-array>
+    <string-array name="diet_array">
+        <item>None</item>
+        <item>Vegan</item>
+        <item>Gluten-Free</item>
+        <item>Ketogenic</item>
+    </string-array>
 </resources>

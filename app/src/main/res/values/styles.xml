@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="FilterDialogTheme" parent="Theme.MaterialComponents.Light.Dialog">
+    <item name="android:windowAnimationStyle">@style/FilterAnimationValues</item>
+
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowCloseOnTouchOutside">true</item>
+</style>
+
+    <style name="FilterAnimationValues">
+        <item name="android:windowEnterAnimation">@anim/zoom_in</item>
+        <item name="android:windowExitAnimation">@anim/zoom_out</item>
+    </style>
+
+    <style name="FragmentBackground">
+        <item name="android:background">@drawable/fragment_background_rounded</item>
+    </style>
+    <style name="MyNavIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/orange_medium</item>
+    </style>
+
+    <style name="MyCustomPopupTheme" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="popupMenuStyle">@style/MyRoundedPopupMenuStyle</item>
+        <item name="android:popupMenuStyle">@style/MyRoundedPopupMenuStyle</item>
+    </style>
+
+    <style name="MyRoundedPopupMenuStyle" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@drawable/popup_menu_background</item>
+
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="MyBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/MyBottomSheetStyle</item>
+        <item name="android:windowAnimationStyle">@style/BottomSheetAnimation</item>
+    </style>
+
+    <style name="BottomSheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
+    <style name="MyBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+</resources>

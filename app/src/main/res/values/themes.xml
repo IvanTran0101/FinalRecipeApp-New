@@ -1,9 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.MyApplication" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/orange_primary</item>
+        <item name="colorPrimaryVariant">@color/orange_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/orange_super_light</item>
+        <item name="actionModeStyle">@style/CustomActionMode</item>
+        <item name="chipStyle">@style/CustomChip</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+
+    <style name="CustomActionMode" parent="Widget.Material3.ActionMode">
+        <item name="background">@color/orange_primary</item> <!-- background of ActionMode bar -->
+        <item name="titleTextStyle">@style/ActionModeTitleText</item>
+    </style>
+
+    <style name="ActionModeTitleText" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/orange_light</item>
+    </style>
 </resources>

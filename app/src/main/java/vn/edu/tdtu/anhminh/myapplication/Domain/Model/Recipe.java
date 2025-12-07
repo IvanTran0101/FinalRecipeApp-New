@@ -7,7 +7,7 @@ public class Recipe {
     private Integer userId;
 
     private String title;
-    private String recipeImage; //uri duoi dang String
+    private String recipeImage;
     private String category;
     private String dietMode;
     private String videoLink; //uri

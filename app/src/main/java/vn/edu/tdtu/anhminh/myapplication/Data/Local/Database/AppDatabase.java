@@ -1,9 +1,15 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Local.Database;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+
+import java.util.concurrent.Executors;
+
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.IngredientDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.InstructionDAO;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.PlanDAO;
@@ -42,10 +48,34 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
                             .fallbackToDestructiveMigration()
+                            .addCallback(roomCallback)
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
+
+    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            Executors.newSingleThreadExecutor().execute(() -> {
+                UserDAO dao = INSTANCE.userDao();
+
+                // Add Admin Account
+                UserEntity admin = new UserEntity();
+                admin.setUsername("admin");
+                admin.setPasswordHash("1234");
+                // admin.setFullName("Administrator"); // If you have this field
+                dao.insert(admin);
+
+                // Add a standard User
+                UserEntity user = new UserEntity();
+                user.setUsername("user");
+                user.setPasswordHash("1234");
+                dao.insert(user);
+            });
+        }
+    };
 }

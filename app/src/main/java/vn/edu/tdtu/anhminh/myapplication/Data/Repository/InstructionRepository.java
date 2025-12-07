@@ -71,9 +71,9 @@ public class InstructionRepository {
     }
 
     //instruction
-    public LiveData<List<Instruction>> getInstructionsForRecipe(int recipeId) {
+    public LiveData<List<Instruction>> getInstructionsByRecipeId(int recipeId) {
         return Transformations.map(
-                instructionDAO.getInstructionsForRecipe(recipeId),
+                instructionDAO.getInstructionsByRecipeId(recipeId),
                 InstructionMapper::toModelList
         );
     }

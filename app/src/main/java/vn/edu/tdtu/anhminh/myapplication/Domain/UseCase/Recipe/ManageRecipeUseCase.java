@@ -1,5 +1,7 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Repository.IngredientRepository;
@@ -32,11 +34,21 @@ public class ManageRecipeUseCase {
                              List<Instruction> instructions,
                              Callback callback) {
         try{
-            recipeRepository.addRecipe(recipe);
+            long newRecipeId = recipeRepository.addRecipe(recipe);
+
+            // 2. Assign this ID to Ingredients
             if (ingredients != null && !ingredients.isEmpty()) {
+                for (Ingredient item : ingredients) {
+                    item.setRecipeId((int) newRecipeId); // <--- LINKING HAPPENS HERE
+                }
                 ingredientRepository.addMultipleIngredients(ingredients);
             }
-            if (instructions != null && !instructions.isEmpty()){
+
+            // 3. Assign this ID to Instructions
+            if (instructions != null && !instructions.isEmpty()) {
+                for (Instruction item : instructions) {
+                    item.setRecipeId((int) newRecipeId); // <--- LINKING HAPPENS HERE
+                }
                 instructionRepository.addMultipleInstructions(instructions);
             }
             if (callback != null ) callback.onSuccess();
@@ -81,4 +93,15 @@ public class ManageRecipeUseCase {
         }
     }
 
+    public LiveData<Recipe> getRecipeById(int recipeId) {
+        return recipeRepository.getRecipeByIdLiveData(recipeId);
+    }
+
+    public LiveData<List<Instruction>> getInstructions(int recipeId) {
+        return instructionRepository.getInstructionsByRecipeId(recipeId);
+    }
+
+    public LiveData<List<Ingredient>> getIngredients(int recipeId) {
+        return ingredientRepository.getQuantityAndUnitForRecipe(recipeId);
+    }
 }

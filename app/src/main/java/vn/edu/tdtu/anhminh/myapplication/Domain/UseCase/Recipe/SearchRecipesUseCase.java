@@ -1,7 +1,8 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,35 +19,87 @@ public class SearchRecipesUseCase {
     }
 
     public static class FilterOptions {
-        public String category;
-        public String dietMode;
+        public List<String> categories;
+        public List<String> dietModes;
+        public Integer minCalories;
+        public Integer maxCalories;
+        public Integer minCarbs;
+        public Integer maxCarbs;
+        public Integer minProtein;
+        public Integer maxProtein;
+        public Integer minFat;
+        public Integer maxFat;
         public Boolean pinned;
     }
 
-    public LiveData<List<Recipe>> execute(String query, FilterOptions filter){
-        MutableLiveData<List<Recipe>> result = new MutableLiveData<>();
+    public LiveData<List<Recipe>> execute(String query, int userId, FilterOptions filter) {
 
-        recipeRepository.searchRecipes(query).observeForever(recipes -> {
-            if (recipes == null) {
-                result.setValue(null);
-                return;
+        MediatorLiveData<List<Recipe>> result = new MediatorLiveData<>();
+        LiveData<List<Recipe>> source = recipeRepository.searchRecipes(query, userId);
+
+        result.addSource(source, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(List<Recipe> recipes) {
+                if (recipes == null) {
+                    result.setValue(null);
+                    return;
+                }
+
+                List<Recipe> filtered = new ArrayList<>(recipes);
+
+                if (filter != null) {
+                    // --- 1. CATEGORY & DIET (Safe to check as is) ---
+                    if (filter.categories != null && !filter.categories.isEmpty()) {
+                        filtered.removeIf(r -> !filter.categories.contains(r.getCategory()));
+                    }
+                    if (filter.dietModes != null && !filter.dietModes.isEmpty()) {
+                        filtered.removeIf(r -> !filter.dietModes.contains(r.getDietMode()));
+                    }
+
+                    // --- 2. NUMERIC FILTERS (Must handle NULLs) ---
+                    // Rule: If the recipe has NULL value, we treat it as 0.0 or exclude it based on logic.
+                    // Here, if recipe value is NULL, we assume it doesn't meet the "min" requirement.
+
+                    if (filter.minCalories != null) {
+                        filtered.removeIf(r -> r.getCalories() == null || r.getCalories() < filter.minCalories);
+                    }
+                    if (filter.maxCalories != null) {
+                        filtered.removeIf(r -> r.getCalories() != null && r.getCalories() > filter.maxCalories);
+                    }
+
+                    if (filter.minCarbs != null) {
+                        filtered.removeIf(r -> r.getCarb() == null || r.getCarb() < filter.minCarbs);
+                    }
+                    if (filter.maxCarbs != null) {
+                        filtered.removeIf(r -> r.getCarb() != null && r.getCarb() > filter.maxCarbs);
+                    }
+
+                    if (filter.minProtein != null) {
+                        filtered.removeIf(r -> r.getProtein() == null || r.getProtein() < filter.minProtein);
+                    }
+                    if (filter.maxProtein != null) {
+                        filtered.removeIf(r -> r.getProtein() != null && r.getProtein() > filter.maxProtein);
+                    }
+
+                    if (filter.minFat != null) {
+                        filtered.removeIf(r -> r.getFat() == null || r.getFat() < filter.minFat);
+                    }
+                    if (filter.maxFat != null) {
+                        filtered.removeIf(r -> r.getFat() != null && r.getFat() > filter.maxFat);
+                    }
+
+                    // --- 3. PINNED STATUS (Must handle NULL) ---
+                    if (filter.pinned != null) {
+                        filtered.removeIf(r -> {
+                            // If r.getPinned() is null, assume false
+                            boolean isPinned = r.getPinned() != null && r.getPinned();
+                            return isPinned != filter.pinned;
+                        });
+                    }
+                }
+
+                result.setValue(filtered);
             }
-
-            List<Recipe> filtered = new ArrayList<>(recipes);
-
-            if (filter != null){
-                if (filter.category != null && !filter.category.isEmpty()){
-                    filtered.removeIf(r -> !filter.category.equals(r.getCategory()));
-                }
-                if (filter.dietMode != null && !filter.dietMode.isEmpty()){
-                    filtered.removeIf(r -> !filter.dietMode.equals(r.getDietMode()));
-                }
-                if (filter.pinned != null){
-                    filtered.removeIf(r -> r.getPinned() != filter.pinned);
-                }
-            }
-
-            result.setValue(filtered);
         });
 
         return result;

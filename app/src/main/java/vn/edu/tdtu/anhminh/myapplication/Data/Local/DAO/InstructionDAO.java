@@ -26,7 +26,7 @@ public interface InstructionDAO {
 
 
     @Query("SELECT * FROM instruction WHERE recipe_id = :recipeId ORDER BY step_number ASC")
-    LiveData<List<InstructionEntity>> getInstructionsForRecipe(int recipeId);
+    LiveData<List<InstructionEntity>> getInstructionsByRecipeId(int recipeId);
 
     @Query("DELETE FROM instruction WHERE recipe_id = :recipeId")
     int deleteInstructionsByRecipeId(int recipeId);

@@ -280,4 +280,22 @@ public class IngredientRepository {
                 IngredientMapper::toModelList
         );
     }
+
+    public List<Ingredient> getIngredientsForRecipeSync(int recipeId) {
+        List<IngredientEntity> entities = ingredientDAO.getIngredientsForRecipeSync(recipeId);
+
+        // Map Entity -> Domain Model
+        // (Assuming you have IngredientMapper, or map manually like this:)
+        List<Ingredient> list = new ArrayList<>();
+        if (entities != null) {
+            for (IngredientEntity entity : entities) {
+                Ingredient ing = new Ingredient();
+                ing.setName(entity.getName());
+                ing.setQuantity(entity.getQuantity());
+                ing.setUnit(entity.getUnit());
+                list.add(ing);
+            }
+        }
+        return list;
+    }
 }

@@ -2,40 +2,39 @@ package vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Recipe;
 
 import java.util.List;
 
+import vn.edu.tdtu.anhminh.myapplication.Domain.Model.MealPlanItem;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 
 public class GenerateNutritionOverviewUseCase {
-    public static class NutritionOverview{
-        public double totalCalories;
-        public double totalProteins;
-        public double totalCarb;
-        public double totalFat;
-    }
+    public GenerateNutritionOverviewUseCase() {}
 
-    public NutritionOverview execute(Recipe recipe){
-        if (recipe == null) return null;
+    public Recipe execute(List<MealPlanItem> weeklyItems) {
+        Recipe totalStats = new Recipe();
 
-        NutritionOverview result = new NutritionOverview();
-        result.totalCalories = recipe.getCalories() != null ? recipe.getCalories() :0;
-        result.totalProteins = recipe.getProtein() != null ? recipe.getProtein() :0;
-        result.totalCarb = recipe.getCarb() != null ? recipe.getCarb() :0;
-        result.totalFat = recipe.getFat() != null ? recipe.getFat() :0;
-        return result;
-    }
+        double sumCal = 0;
+        double sumPro = 0;
+        double sumCarb = 0;
+        double sumFat = 0;
 
-    public NutritionOverview execute(List<Recipe> recipes){
-        if (recipes == null || recipes.isEmpty()) return null;
+        if (weeklyItems != null && !weeklyItems.isEmpty()) {
+            for (MealPlanItem item : weeklyItems) {
+                Recipe r = item.getRecipe();
+                if (r == null) continue;
 
-        NutritionOverview result = new NutritionOverview();
-
-        for (Recipe r : recipes){
-            if (r == null) continue;
-            if (r.getCalories() != null) result.totalCalories += r.getCalories();
-            if (r.getProtein() != null) result.totalProteins += r.getProtein();
-            if (r.getCarb() != null) result.totalCarb += r.getCarb();
-            if (r.getFat() != null) result.totalFat += r.getFat();
-
+                if (r.getCalories() != null) sumCal += r.getCalories();
+                if (r.getProtein() != null) sumPro += r.getProtein();
+                if (r.getCarb() != null) sumCarb += r.getCarb();
+                if (r.getFat() != null) sumFat += r.getFat();
+            }
         }
-        return result;
+
+        totalStats.setCalories(sumCal);
+        totalStats.setProtein(sumPro);
+        totalStats.setCarb(sumCarb);
+        totalStats.setFat(sumFat);
+
+        totalStats.setTitle("Weekly Totals");
+
+        return totalStats;
     }
 }

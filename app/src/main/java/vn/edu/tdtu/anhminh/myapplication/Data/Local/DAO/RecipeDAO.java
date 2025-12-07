@@ -33,6 +33,9 @@ public interface RecipeDAO {
     @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId LIMIT 1")
     RecipeEntity getRecipeById(int recipeId);
 
+    @Query("SELECT * FROM Recipe WHERE recipe_id = :recipeId LIMIT 1")
+    LiveData<RecipeEntity> getRecipeByIdLive(int recipeId);
+
     // SELECT BY USER ID (My Recipes)
     @Query("SELECT * FROM Recipe WHERE user_id = :userId ORDER BY title ASC")
     LiveData<List<RecipeEntity>> getRecipesByCreator(int userId);
@@ -67,4 +70,7 @@ public interface RecipeDAO {
     // SELECT PINNED (background thread)
     @Query("SELECT * FROM Recipe WHERE status = 1 ORDER BY title ASC")
     List<RecipeEntity> getPinnedRecipesSync();
+
+    @Query("SELECT * FROM Recipe WHERE user_id = :userId AND title LIKE '%' || :searchQuery || '%' ORDER BY title ASC")
+    LiveData<List<RecipeEntity>> searchRecipesForUser(String searchQuery, int userId);
 }

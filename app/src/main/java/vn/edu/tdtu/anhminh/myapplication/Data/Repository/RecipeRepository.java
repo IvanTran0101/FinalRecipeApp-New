@@ -62,9 +62,9 @@ public class RecipeRepository {
         return RecipeMapper.toModelList(entities);
     }
 
-    public void addRecipe(Recipe recipe){
+    public long addRecipe(Recipe recipe){
         RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new InsertRecipeTask(recipeDAO).execute(entity);
+        return recipeDAO.insert(entity);
     }
 
     public void importRecipesFromDtoList(List<RecipeDTO> dtos){
@@ -76,7 +76,7 @@ public class RecipeRepository {
 
     public void updateRecipe(Recipe recipe){
         RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new UpdateRecipeTask(recipeDAO).execute(entity);
+        recipeDAO.update(entity);
     }
 
     public void deleteRecipe(Recipe recipe) {
@@ -87,6 +87,13 @@ public class RecipeRepository {
     public Recipe getRecipeDetail(int recipeId){
         RecipeEntity entity = recipeDAO.getRecipeById(recipeId);
         return RecipeMapper.toModel(entity);
+    }
+
+    public LiveData<Recipe> getRecipeByIdLiveData(int recipeId) {
+        return Transformations.map(
+                recipeDAO.getRecipeByIdLive(recipeId),
+                RecipeMapper::toModel
+        );
     }
 
     public void togglePinned(int recipeId){
@@ -101,9 +108,9 @@ public class RecipeRepository {
     // ---------------------------------------------------
     // RECIPE: search by title
     // ---------------------------------------------------
-    public LiveData<List<Recipe>> searchRecipes(String searchQuery) {
+    public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
         return Transformations.map(
-                recipeDAO.searchRecipes(searchQuery),
+                recipeDAO.searchRecipesForUser(searchQuery, userId),
                 RecipeMapper::toModelList
         );
     }
