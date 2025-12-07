@@ -21,7 +21,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
 
 public class RecipeApiService {
     // URL raw từ GitHub của bạn
-    private static final String SAMPLE_URL = "https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/refs/heads/main/recipes.json";
+    private static final String SAMPLE_URL = "https://raw.githubusercontent.com/IvanTran0101/FinalRecipeApp-New/main/app/src/main/recipes.json";
 
     private final RequestQueue queue;
 
