@@ -1,0 +1,131 @@
+{
+  "recipes": [
+    {
+      "recipe_id": 1,
+      "title": "Spaghetti Carbonara",
+      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pasta",
+      "category": "Dinner",
+      "diet_mode": "None",
+      "video_link": "",
+      "calories": 600,
+      "protein": 25,
+      "fat": 30,
+      "carb": 55,
+      "is_pinned": false,
+      "ingredients": [
+        { "name": "Spaghetti", "quantity": 200, "unit": "g" },
+        { "name": "Pancetta", "quantity": 100, "unit": "g" },
+        { "name": "Eggs", "quantity": 2, "unit": "pcs" },
+        { "name": "Parmesan Cheese", "quantity": 50, "unit": "g" },
+        { "name": "Black Pepper", "quantity": 1, "unit": "tsp" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Cook spaghetti according to package directions." },
+        { "step_number": 2, "instruction": "Fry pancetta until crisp." },
+        { "step_number": 3, "instruction": "Whisk eggs and cheese." },
+        { "step_number": 4, "instruction": "Drain spaghetti and combine with pancetta, egg mixture, and pepper." }
+      ]
+    },
+    {
+      "recipe_id": 2,
+      "title": "Glazed Donuts",
+      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_donut",
+      "category": "Dessert",
+      "diet_mode": "None",
+      "video_link": "",
+      "calories": 300,
+      "protein": 4,
+      "fat": 15,
+      "carb": 35,
+      "is_pinned": false,
+      "ingredients": [
+        { "name": "Flour", "quantity": 2, "unit": "cups" },
+        { "name": "Sugar", "quantity": 0.5, "unit": "cups" },
+        { "name": "Milk", "quantity": 1, "unit": "cup" },
+        { "name": "Butter", "quantity": 0.25, "unit": "cups" },
+        { "name": "Yeast", "quantity": 1, "unit": "tbsp" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Mix all ingredients to form a dough." },
+        { "step_number": 2, "instruction": "Let the dough rise for 1 hour." },
+        { "step_number": 3, "instruction": "Cut out donut shapes and fry until golden brown." },
+        { "step_number": 4, "instruction": "Glaze with a mixture of powdered sugar and milk." }
+      ]
+    },
+    {
+      "recipe_id": 3,
+      "title": "Pho Bo",
+      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pho",
+      "category": "Lunch",
+      "diet_mode": "None",
+      "video_link": "",
+      "calories": 400,
+      "protein": 30,
+      "fat": 10,
+      "carb": 45,
+      "is_pinned": true,
+      "ingredients": [
+        { "name": "Beef Bones", "quantity": 1, "unit": "kg" },
+        { "name": "Rice Noodles", "quantity": 200, "unit": "g" },
+        { "name": "Beef Sirloin", "quantity": 200, "unit": "g" },
+        { "name": "Onion", "quantity": 1, "unit": "pcs" },
+        { "name": "Ginger", "quantity": 1, "unit": "pcs" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Simmer beef bones for 6-8 hours to make the broth." },
+        { "step_number": 2, "instruction": "Cook rice noodles according to package directions." },
+        { "step_number": 3, "instruction": "Slice beef sirloin thinly." },
+        { "step_number": 4, "instruction": "Assemble the bowl with noodles, beef, and broth." }
+      ]
+    },
+    {
+      "recipe_id": 4,
+      "title": "Caesar Salad",
+      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_salad",
+      "category": "Breakfast",
+      "diet_mode": "Vegetarian",
+      "video_link": "",
+      "calories": 250,
+      "protein": 10,
+      "fat": 15,
+      "carb": 20,
+      "is_pinned": false,
+      "ingredients": [
+        { "name": "Romaine Lettuce", "quantity": 1, "unit": "head" },
+        { "name": "Croutons", "quantity": 1, "unit": "cup" },
+        { "name": "Parmesan Cheese", "quantity": 0.5, "unit": "cups" },
+        { "name": "Caesar Dressing", "quantity": 0.25, "unit": "cups" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Wash and chop the romaine lettuce." },
+        { "step_number": 2, "instruction": "Toss lettuce with croutons, parmesan cheese, and Caesar dressing." },
+        { "step_number": 3, "instruction": "Serve immediately." }
+      ]
+    },
+    {
+      "recipe_id": 5,
+      "title": "Hawaiian Pizza",
+      "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pizza",
+      "category": "Dinner",
+      "diet_mode": "None",
+      "video_link": "",
+      "calories": 800,
+      "protein": 30,
+      "fat": 35,
+      "carb": 90,
+      "is_pinned": false,
+      "ingredients": [
+        { "name": "Pizza Dough", "quantity": 1, "unit": "ball" },
+        { "name": "Tomato Sauce", "quantity": 0.5, "unit": "cup" },
+        { "name": "Mozzarella Cheese", "quantity": 200, "unit": "g" },
+        { "name": "Basil", "quantity": 1, "unit": "bunch" }
+      ],
+      "instructions": [
+        { "step_number": 1, "instruction": "Preheat oven to 475°F (245°C)." },
+        { "step_number": 2, "instruction": "Roll out pizza dough and spread tomato sauce on top." },
+        { "step_number": 3, "instruction": "Top with mozzarella cheese and fresh basil." },
+        { "step_number": 4, "instruction": "Bake for 10-12 minutes, or until crust is golden and cheese is bubbly." }
+      ]
+    }
+  ]
+}
