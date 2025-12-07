@@ -17,9 +17,12 @@ public class RecipeMapper {
     public static RecipeEntity toEntity(RecipeDTO dto){
         if(dto == null) return null;
 
+        // Always assign recipes from JSON to user with ID 1 (admin)
+        Integer userId = 1;
+
         RecipeEntity entity = new RecipeEntity(
                 dto.getRecipeId(),
-                dto.getUserId(),
+                userId, // Hardcoded to 1
                 dto.getTitle(),
                 dto.getRecipeImage(),
                 dto.getCategory(),

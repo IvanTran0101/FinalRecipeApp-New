@@ -1,13 +1,13 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Local.Database;
 
 import android.content.Context;
-
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.DAO.IngredientDAO;
@@ -20,6 +20,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.InstructionEntity;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.PlanEntity;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.RecipeEntity;
 import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.UserEntity;
+import vn.edu.tdtu.anhminh.myapplication.Data.Repository.RecipeRepository;
 
 @Database(entities = {
                 RecipeEntity.class,
@@ -28,7 +29,7 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity.UserEntity;
                 IngredientEntity.class,
                 InstructionEntity.class
         },
-        version = 1,
+        version = 8, // Force a new database creation
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -48,7 +49,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
                             .fallbackToDestructiveMigration()
-                            .addCallback(roomCallback)
+                            .addCallback(getRoomCallback(context.getApplicationContext()))
                             .build();
                 }
             }
@@ -56,26 +57,40 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            Executors.newSingleThreadExecutor().execute(() -> {
-                UserDAO dao = INSTANCE.userDao();
+    private static RoomDatabase.Callback getRoomCallback(final Context context) {
+        return new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // 1. Populate initial users
+                    UserDAO userDao = INSTANCE.userDao();
+                    UserEntity admin = new UserEntity();
+                    admin.setUsername("admin");
+                    admin.setPasswordHash("1234");
+                    userDao.insert(admin);
 
-                // Add Admin Account
-                UserEntity admin = new UserEntity();
-                admin.setUsername("admin");
-                admin.setPasswordHash("1234");
-                // admin.setFullName("Administrator"); // If you have this field
-                dao.insert(admin);
+                    UserEntity user = new UserEntity();
+                    user.setUsername("user");
+                    user.setPasswordHash("1234");
+                    userDao.insert(user);
 
-                // Add a standard User
-                UserEntity user = new UserEntity();
-                user.setUsername("user");
-                user.setPasswordHash("1234");
-                dao.insert(user);
-            });
-        }
-    };
+                    // 2. Trigger online sync ONLY when the database is first created
+                    RecipeRepository recipeRepository = new RecipeRepository(context);
+                    recipeRepository.syncRecipesFromCloud(new RecipeRepository.SyncCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("AppDatabase", "Initial recipe sync successful.");
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            Log.e("AppDatabase", "Initial recipe sync failed: " + message);
+                        }
+                    });
+                });
+            }
+        };
+    }
 }

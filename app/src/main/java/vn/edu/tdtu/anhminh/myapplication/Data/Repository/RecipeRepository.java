@@ -36,10 +36,7 @@ public class RecipeRepository {
         this.apiService = new RecipeApiService(context);
     }
 
-    // =========================================================================================
-    // PHẦN 1: ĐỒNG BỘ DỮ LIỆU TỪ CLOUD (API / GITHUB)
-    // =========================================================================================
-
+    // Sync from Cloud
     public interface SyncCallback {
         void onSuccess();
         void onError(String message);
@@ -49,7 +46,6 @@ public class RecipeRepository {
         apiService.getSampleRecipe(new RecipeApiService.ApiCallback<List<RecipeDTO>>() {
             @Override
             public void onSuccess(List<RecipeDTO> data) {
-                // Tải thành công -> Lưu vào Database Local
                 new ImportRecipesTask(recipeDAO, ingredientDAO, instructionDAO, callback).execute(data);
             }
 
@@ -60,9 +56,6 @@ public class RecipeRepository {
         });
     }
 
-    /**
-     * AsyncTask để lưu danh sách Recipe + Ingredients + Instructions vào DB
-     */
     private static class ImportRecipesTask extends AsyncTask<List<RecipeDTO>, Void, Void> {
         private final RecipeDAO recipeDAO;
         private final IngredientDAO ingredientDAO;
@@ -82,34 +75,27 @@ public class RecipeRepository {
             List<RecipeDTO> dtos = lists[0];
 
             for (RecipeDTO dto : dtos) {
-                // 👇 [SỬA LỖI TẠI ĐÂY]: Dùng trực tiếp toEntity(dto) có sẵn trong Mapper
                 RecipeEntity entity = RecipeMapper.toEntity(dto);
-
                 if (entity != null) {
-                    // Insert Recipe và lấy về ID mới
                     long newRecipeId = recipeDAO.insert(entity);
 
-                    // 2. Lưu danh sách Nguyên liệu (Ingredients)
                     if (dto.getIngredients() != null && !dto.getIngredients().isEmpty()) {
                         for (IngredientDTO ingDto : dto.getIngredients()) {
                             IngredientEntity ingEntity = new IngredientEntity();
-                            ingEntity.setRecipeId((int) newRecipeId); // Quan trọng: Gán ID món ăn cha
+                            ingEntity.setRecipeId((int) newRecipeId);
                             ingEntity.setName(ingDto.getName());
                             ingEntity.setQuantity(ingDto.getQuantity());
                             ingEntity.setUnit(ingDto.getUnit());
-
                             ingredientDAO.insert(ingEntity);
                         }
                     }
 
-                    // 3. Lưu danh sách Hướng dẫn (Instructions)
                     if (dto.getInstructions() != null && !dto.getInstructions().isEmpty()) {
                         for (InstructionDTO instDto : dto.getInstructions()) {
                             InstructionEntity instEntity = new InstructionEntity();
-                            instEntity.setRecipeId((int) newRecipeId); // Quan trọng: Gán ID món ăn cha
+                            instEntity.setRecipeId((int) newRecipeId);
                             instEntity.setStepNumber(instDto.getStepNumber());
                             instEntity.setInstruction(instDto.getInstruction());
-
                             instructionDAO.insert(instEntity);
                         }
                     }
@@ -124,35 +110,40 @@ public class RecipeRepository {
         }
     }
 
-    // =========================================================================================
-    // PHẦN 2: CÁC TASK ASYNC CƠ BẢN (Insert, Update, Delete)
-    // =========================================================================================
-
-    private static class InsertRecipeTask extends AsyncTask<RecipeEntity, Void, Void> {
-        private final RecipeDAO dao;
-        InsertRecipeTask(RecipeDAO dao){ this.dao = dao; }
-        @Override protected Void doInBackground(RecipeEntity... entities){
-            if(entities!=null && entities.length>0){ dao.insert(entities[0]); }
-            return null;
-        }
+    // Synchronous CUD Operations for UseCases
+    public long addRecipeSync(Recipe recipe) {
+        RecipeEntity entity = RecipeMapper.toEntity(recipe);
+        return recipeDAO.insert(entity);
     }
 
-    private static class UpdateRecipeTask extends AsyncTask<RecipeEntity, Void, Void> {
-        private final RecipeDAO dao;
-        UpdateRecipeTask(RecipeDAO dao){ this.dao = dao; }
-        @Override protected Void doInBackground(RecipeEntity... entities){
-            if(entities!=null && entities.length>0){ dao.update(entities[0]); }
-            return null;
-        }
+    public void updateRecipe(Recipe recipe) {
+        RecipeEntity entity = RecipeMapper.toEntity(recipe);
+        recipeDAO.update(entity);
     }
 
-    private static class DeleteRecipeTask extends AsyncTask<RecipeEntity, Void, Void> {
-        private final RecipeDAO dao;
-        DeleteRecipeTask(RecipeDAO dao){ this.dao = dao; }
-        @Override protected Void doInBackground(RecipeEntity... entities){
-            if(entities!=null && entities.length>0){ dao.delete(entities[0]); }
-            return null;
-        }
+    public void deleteRecipe(Recipe recipe) {
+        RecipeEntity entity = RecipeMapper.toEntity(recipe);
+        recipeDAO.delete(entity);
+    }
+
+    // LiveData Getters for ViewModel
+    public LiveData<Recipe> getRecipeByIdLiveData(int recipeId) {
+        return Transformations.map(
+                recipeDAO.getRecipeByIdLive(recipeId),
+                RecipeMapper::toModel
+        );
+    }
+
+    public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
+        return Transformations.map(
+                recipeDAO.searchRecipesForUser(searchQuery, userId),
+                RecipeMapper::toModelList
+        );
+    }
+    
+    // AsyncTask for pinning
+    public void togglePinned(int recipeId){
+        new TogglePinnedTask(recipeDAO).execute(recipeId);
     }
 
     private static class TogglePinnedTask extends AsyncTask<Integer, Void, Void> {
@@ -162,64 +153,5 @@ public class RecipeRepository {
             if(ids!=null && ids.length>0){ dao.togglePinned(ids[0]); }
             return null;
         }
-    }
-
-    // =========================================================================================
-    // PHẦN 3: CÁC HÀM PUBLIC CHO VIEWMODEL GỌI
-    // =========================================================================================
-
-    public List<Recipe> getAllRecipeSync(){
-        List<RecipeEntity> entities = recipeDAO.getAllSync();
-        return RecipeMapper.toModelList(entities);
-    }
-
-    public long addRecipe(Recipe recipe){
-        RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        return recipeDAO.insert(entity);
-    }
-
-    public void importRecipesFromDtoList(List<RecipeDTO> dtos){
-        List<RecipeEntity> entities = RecipeMapper.toEntityList(dtos);
-        for (RecipeEntity entity : entities){
-            new InsertRecipeTask(recipeDAO).execute(entity);
-        }
-    }
-
-    public void updateRecipe(Recipe recipe){
-        RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new UpdateRecipeTask(recipeDAO).execute(entity);
-    }
-
-    public void deleteRecipe(Recipe recipe) {
-        RecipeEntity entity = RecipeMapper.toEntity(recipe);
-        new DeleteRecipeTask(recipeDAO).execute(entity);
-    }
-
-    public Recipe getRecipeDetail(int recipeId){
-        RecipeEntity entity = recipeDAO.getRecipeById(recipeId);
-        return RecipeMapper.toModel(entity);
-    }
-
-    public LiveData<Recipe> getRecipeByIdLiveData(int recipeId) {
-        return Transformations.map(
-                recipeDAO.getRecipeByIdLive(recipeId),
-                RecipeMapper::toModel
-        );
-    }
-
-    public void togglePinned(int recipeId){
-        new TogglePinnedTask(recipeDAO).execute(recipeId);
-    }
-
-    public List<Recipe> getPinnedRecipesSync() {
-        List<RecipeEntity> entities = recipeDAO.getPinnedRecipesSync();
-        return RecipeMapper.toModelList(entities);
-    }
-
-    public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
-        return Transformations.map(
-                recipeDAO.searchRecipesForUser(searchQuery, userId),
-                RecipeMapper::toModelList
-        );
     }
 }

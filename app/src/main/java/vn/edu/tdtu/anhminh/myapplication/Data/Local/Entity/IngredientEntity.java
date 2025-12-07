@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
         )
 )
 public class IngredientEntity {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "ingredient_id")
     private Integer ingredientId;
@@ -36,57 +36,34 @@ public class IngredientEntity {
     @ColumnInfo(name = "unit")
     private String unit;
 
-    // -------------------------------------------------------------------
-    // --- CONSTRUCTOR (REQUIRED by Room) ---
-    // -------------------------------------------------------------------
     public IngredientEntity() {
     }
+
     @Ignore
-    public IngredientEntity(@NonNull Integer ingredientId, @NonNull Integer recipeId, @NonNull String name, @NonNull double quantity, @NonNull String unit) {
-        this.ingredientId = ingredientId;
+    public IngredientEntity(@NonNull Integer recipeId, @NonNull String name, @NonNull double quantity, @NonNull String unit) {
         this.recipeId = recipeId;
         this.name = name;
         this.quantity = quantity;
-        this.unit = unit;
-    }
-
-    public void setIngredientId(@NonNull Integer ingredientId) {
-        this.ingredientId = ingredientId;
-    }
-
-    public void setRecipeId(@NonNull Integer recipeId) {
-        this.recipeId = recipeId;
-    }
-
-    @NonNull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(@NonNull String name) {
-        this.name = name;
-    }
-
-    @NonNull
-    public double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(@NonNull double quantity) {
-        this.quantity = quantity;
-    }
-
-    @NonNull
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(@NonNull String unit) {
         this.unit = unit;
     }
 
     @NonNull
     public Integer getIngredientId() { return ingredientId; }
+    public void setIngredientId(@NonNull Integer ingredientId) { this.ingredientId = ingredientId; }
+
     @NonNull
     public Integer getRecipeId() { return recipeId; }
+    public void setRecipeId(@NonNull Integer recipeId) { this.recipeId = recipeId; }
+
+    @NonNull
+    public String getName() { return name; }
+    public void setName(@NonNull String name) { this.name = name; }
+
+    @NonNull
+    public double getQuantity() { return quantity; }
+    public void setQuantity(@NonNull double quantity) { this.quantity = quantity; }
+
+    @NonNull
+    public String getUnit() { return unit; }
+    public void setUnit(@NonNull String unit) { this.unit = unit; }
 }

@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.Services.Sync.RecipeSyncService;
 
 public class MainActivity extends AppCompatActivity {
 

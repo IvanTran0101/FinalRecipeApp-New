@@ -27,14 +27,11 @@ public class RecipeViewModel extends ViewModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // --- STATUS LIVEDATA ---
-    // Dùng để thông báo cho View (Activity/Fragment) về kết quả thao tác
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     // --- SEARCH & FILTER DATA ---
-    // Input: Pair<Query String, Filter Options>
     private final MutableLiveData<Pair<String, SearchRecipesUseCase.FilterOptions>> searchInput = new MutableLiveData<>();
-    // Output: List of Recipes (Tự động cập nhật khi searchInput thay đổi)
     private final LiveData<List<Recipe>> searchResults;
 
     // Local State: Single source of truth for filters
@@ -49,10 +46,8 @@ public class RecipeViewModel extends ViewModel {
         this.searchRecipesUseCase = searchRecipesUseCase;
         this.toggleFavoriteRecipeUseCase = toggleFavoriteRecipeUseCase;
 
-        // Khởi tạo trạng thái ban đầu: query rỗng, filter mặc định
         searchInput.setValue(new Pair<>("", currentFilterOptions));
 
-        // Reactive: Khi searchInput thay đổi -> gọi UseCase -> cập nhật searchResults
         searchResults = Transformations.switchMap(searchInput, input ->
                 searchRecipesUseCase.execute(input.first, currentUserId, input.second)
         );
@@ -78,18 +73,14 @@ public class RecipeViewModel extends ViewModel {
     // --- USER CONTEXT ---
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
-        // Reload lại kết quả tìm kiếm nếu User ID thay đổi (ví dụ để update trạng thái Favorite)
         refreshSearch();
     }
 
     // --- SEARCH & FILTER ACTIONS ---
-
-    // 1. Chỉ update từ khóa tìm kiếm
     public void search(String query) {
         searchInput.setValue(new Pair<>(query, currentFilterOptions));
     }
 
-    // 2. Update bộ lọc đầy đủ
     public void setFilters(List<String> categories, List<String> dietModes,
                            Integer minCalories, Integer maxCalories,
                            Integer minCarbs, Integer maxCarbs,
@@ -110,13 +101,11 @@ public class RecipeViewModel extends ViewModel {
         refreshSearch();
     }
 
-    // 3. Xóa bộ lọc (Reset về mặc định)
     public void clearFilters() {
-        this.currentFilterOptions = new SearchRecipesUseCase.FilterOptions(); // Reset object
+        this.currentFilterOptions = new SearchRecipesUseCase.FilterOptions();
         refreshSearch();
     }
 
-    // Helper: Trigger lại LiveData với giá trị hiện tại
     private void refreshSearch() {
         String currentQuery = searchInput.getValue() != null ? searchInput.getValue().first : "";
         searchInput.setValue(new Pair<>(currentQuery, currentFilterOptions));
@@ -137,12 +126,8 @@ public class RecipeViewModel extends ViewModel {
     // --- CUD OPERATIONS (CREATE / UPDATE / DELETE) ---
 
     public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
-        if (currentUserId == -1) {
-            handleError("User not logged in");
-            return;
-        }
-        recipe.setUserId(currentUserId);
-
+        // The User ID should already be set on the recipe object by the Fragment.
+        // We trust the Fragment as the source of truth for the current user.
         executor.execute(() -> manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {
             @Override public void onSuccess() { handleSuccess(); }
             @Override public void onError() { handleError("Failed to create recipe"); }
@@ -164,21 +149,15 @@ public class RecipeViewModel extends ViewModel {
     }
 
     public void toggleFavorite(int recipeId) {
-        // Lưu ý: Nếu UseCase cần UserId, hãy đảm bảo UseCase tự lấy hoặc truyền thêm vào đây
         executor.execute(() -> toggleFavoriteRecipeUseCase.execute(recipeId, new ToggleFavoriteRecipeUseCase.Callback() {
             @Override public void onSuccess() {
-                // Không cần postSuccess(true) ở đây nếu chỉ là like/unlike để tránh reload màn hình không cần thiết
-                // Nhưng nếu UI cần biết để hiển thị Toast, hãy giữ nguyên.
                 handleSuccess();
-                // Opsional: Refresh lại list để cập nhật icon trái tim
-                // refreshSearch();
             }
             @Override public void onError() { handleError("Failed to toggle favorite status"); }
         }));
     }
 
     // --- HELPER METHODS FOR STATUS ---
-    // Gom nhóm xử lý kết quả để code gọn hơn
     private void handleSuccess() {
         operationSuccess.postValue(true);
     }
@@ -187,7 +166,6 @@ public class RecipeViewModel extends ViewModel {
         errorMessage.postValue(message);
     }
 
-    // Reset status sau khi UI đã xử lý xong (tránh hiển thị lại thông báo khi xoay màn hình)
     public void resetStatus() {
         operationSuccess.setValue(false);
         errorMessage.setValue(null);
@@ -196,6 +174,6 @@ public class RecipeViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        executor.shutdown(); // Dọn dẹp thread khi ViewModel bị hủy
+        executor.shutdown();
     }
 }

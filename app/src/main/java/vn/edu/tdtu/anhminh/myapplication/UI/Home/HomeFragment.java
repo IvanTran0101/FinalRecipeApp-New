@@ -172,8 +172,9 @@ public class HomeFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
         // Set User ID context
-        UserPrefs prefs = UserPrefs.getInstance(requireContext());
-        viewModel.setCurrentUserId(prefs.getUserId());
+        // For now, let's hardcode user ID 1 to see the sample recipes.
+        // A proper implementation would get this from a login session.
+        viewModel.setCurrentUserId(1);
 
         // 1. Observe Search Results
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), recipes -> {

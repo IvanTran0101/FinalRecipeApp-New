@@ -81,7 +81,7 @@ public class RecipeFormFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ViewModelFactory factory = Injection.provideViewModelFactory();
-        viewModel = new ViewModelProvider(this, factory).get(RecipeViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
         initViews(view);
 

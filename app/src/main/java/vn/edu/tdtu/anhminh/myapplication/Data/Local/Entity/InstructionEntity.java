@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
         indices = {@androidx.room.Index(value = {"recipe_id", "step_number"}, unique = true)}
 )
 public class InstructionEntity {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "instruction_id")
     private Integer instructionId;
@@ -33,19 +33,14 @@ public class InstructionEntity {
     @ColumnInfo(name = "instruction")
     private String instruction;
 
-    // -------------------------------------------------------------------
-    // --- CONSTRUCTOR (REQUIRED by Room) ---
-    // -------------------------------------------------------------------
     public InstructionEntity() {
     }
+
     @Ignore
     public InstructionEntity(
-            @NonNull Integer instructionId,
             @NonNull Integer recipeId,
             @NonNull Integer stepNumber,
             @NonNull String instruction) {
-
-        this.instructionId = instructionId;
         this.recipeId = recipeId;
         this.stepNumber = stepNumber;
         this.instruction = instruction;

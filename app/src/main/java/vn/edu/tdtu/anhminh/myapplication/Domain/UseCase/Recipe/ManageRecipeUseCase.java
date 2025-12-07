@@ -34,7 +34,7 @@ public class ManageRecipeUseCase {
                              List<Instruction> instructions,
                              Callback callback) {
         try{
-            long newRecipeId = recipeRepository.addRecipe(recipe);
+            long newRecipeId = recipeRepository.addRecipeSync(recipe);
 
             // 2. Assign this ID to Ingredients
             if (ingredients != null && !ingredients.isEmpty()) {
