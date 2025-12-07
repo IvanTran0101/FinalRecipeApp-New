@@ -2,7 +2,7 @@
   "recipes": [
     {
       "recipe_id": 1,
-      "title": "Spaghetti Carbonara",
+      "title": "Spaghetti BACH KHI",
       "recipe_image": "android.resource://vn.edu.tdtu.anhminh.myapplication/drawable/image_pasta",
       "category": "Dinner",
       "diet_mode": "None",
