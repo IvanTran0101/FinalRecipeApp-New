@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int userId) {
                 Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                DummyData.createDummyRecipes(recipeViewModel, userId);
+                //DummyData.createDummyRecipes(recipeViewModel, userId);
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

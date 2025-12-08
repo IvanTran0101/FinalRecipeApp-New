@@ -1,5 +1,6 @@
 package vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO;
 
+import java.util.List;
 
 public class RecipeDTO {
     private Integer recipeId;
@@ -19,6 +20,9 @@ public class RecipeDTO {
     //pin/unpin
     private Boolean isPinned;
 
+    private List<IngredientDTO> ingredients;
+    private List<InstructionDTO> instructions;
+
 
     public RecipeDTO(){
 
@@ -34,7 +38,9 @@ public class RecipeDTO {
                   Integer protein,
                   Integer carb,
                   Integer fat,
-                  Boolean isPinned){
+                  Boolean isPinned,
+                  List<IngredientDTO> ingredients,
+                  List<InstructionDTO> instructions){
         this.recipeId = recipeId;
         this.userId = userId;
         this.title = title;
@@ -47,7 +53,8 @@ public class RecipeDTO {
         this.carb = carb;
         this.fat = fat;
         this.isPinned = isPinned;
-
+        this.ingredients = ingredients;
+        this.instructions = instructions;
     }
 
     public Integer getRecipeId() {
@@ -145,5 +152,11 @@ public class RecipeDTO {
     public void setPinned(Boolean pinned) {
         isPinned = pinned;
     }
+
+    public List<IngredientDTO> getIngredients() { return ingredients; }
+    public void setIngredients(List<IngredientDTO> ingredients) { this.ingredients = ingredients; }
+
+    public List<InstructionDTO> getInstructions() { return instructions; }
+    public void setInstructions(List<InstructionDTO> instructions) { this.instructions = instructions; }
 
 }

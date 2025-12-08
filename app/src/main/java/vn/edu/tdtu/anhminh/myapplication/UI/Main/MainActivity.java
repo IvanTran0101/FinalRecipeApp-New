@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import vn.edu.tdtu.anhminh.myapplication.R;
+import vn.edu.tdtu.anhminh.myapplication.Services.Sync.RecipeSyncService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+// Sync sample recipes từ JSON online xuống Room
+        RecipeSyncService recipeSyncService = new RecipeSyncService(getApplicationContext());
+        recipeSyncService.syncSampleRecipes();
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()

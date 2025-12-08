@@ -77,4 +77,17 @@ public class IngredientMapper {
                 model.getUnit()
         );
     }
+    public static List<Ingredient> toModelListFromDto(List<IngredientDTO> dtos, int recipeId) {
+        List<Ingredient> result = new ArrayList<>();
+        if (dtos == null) return result;
+        for (IngredientDTO dto : dtos) {
+            Ingredient ing = new Ingredient();
+            ing.setRecipeId(recipeId);
+            ing.setName(dto.getName());
+            ing.setQuantity(dto.getQuantity());
+            ing.setUnit(dto.getUnit());
+            result.add(ing);
+        }
+        return result;
+    }
 }

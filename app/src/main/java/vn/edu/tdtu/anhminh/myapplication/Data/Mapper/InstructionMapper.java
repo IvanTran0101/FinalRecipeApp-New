@@ -74,4 +74,16 @@ public class InstructionMapper {
                 model.getInstruction()
         );
     }
+    public static List<Instruction> toModelListFromDto(List<InstructionDTO> dtos, int recipeId) {
+        List<Instruction> result = new ArrayList<>();
+        if (dtos == null) return result;
+        for (InstructionDTO dto : dtos) {
+            Instruction ins = new Instruction();
+            ins.setRecipeId(recipeId);
+            ins.setStepNumber(dto.getStepNumber());
+            ins.setInstruction(dto.getInstruction());
+            result.add(ins);
+        }
+        return result;
+    }
 }

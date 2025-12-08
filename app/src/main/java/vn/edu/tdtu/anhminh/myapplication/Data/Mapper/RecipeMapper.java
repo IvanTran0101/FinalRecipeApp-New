@@ -9,6 +9,8 @@ import vn.edu.tdtu.anhminh.myapplication.Data.Remote.DTO.RecipeDTO;
 import vn.edu.tdtu.anhminh.myapplication.Domain.Model.Recipe;
 
 public class RecipeMapper {
+    private static final Integer DEFAULT_SAMPLE_USER_ID = 0;
+
     private RecipeMapper() {
 
     }
@@ -17,9 +19,11 @@ public class RecipeMapper {
     public static RecipeEntity toEntity(RecipeDTO dto){
         if(dto == null) return null;
 
+        Integer userId = dto.getUserId() != null ? dto.getUserId() : DEFAULT_SAMPLE_USER_ID;
+
         RecipeEntity entity = new RecipeEntity(
                 dto.getRecipeId(),
-                dto.getUserId(),
+                userId,
                 dto.getTitle(),
                 dto.getRecipeImage(),
                 dto.getCategory(),

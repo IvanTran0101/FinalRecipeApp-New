@@ -2,23 +2,10 @@ package vn.edu.tdtu.anhminh.myapplication.Data.Local.Entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
-@Entity(
-    tableName = "Recipe",
-    foreignKeys = @ForeignKey(
-        entity = UserEntity.class,
-        parentColumns = "user_id",
-        childColumns = "user_id",
-        onDelete = ForeignKey.CASCADE
-    ),
-    indices = {
-        @Index(value = "user_id")
-    }
-)
+@Entity(tableName = "Recipe")
 public class RecipeEntity {
     @PrimaryKey
     @NonNull

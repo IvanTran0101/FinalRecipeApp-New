@@ -15,7 +15,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 public class InstructionRepository {
-    private final InstructionDAO instructionDAO;
+    private static InstructionDAO instructionDAO;
 
     public InstructionRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
@@ -74,7 +74,7 @@ public class InstructionRepository {
     public LiveData<List<Instruction>> getInstructionsByRecipeId(int recipeId) {
         return Transformations.map(
                 instructionDAO.getInstructionsByRecipeId(recipeId),
-                InstructionMapper::toModelList
+                entities -> InstructionMapper.toModelList(entities)
         );
     }
     private static class ReplaceInstructionsTask extends android.os.AsyncTask<Void, Void, Void> {

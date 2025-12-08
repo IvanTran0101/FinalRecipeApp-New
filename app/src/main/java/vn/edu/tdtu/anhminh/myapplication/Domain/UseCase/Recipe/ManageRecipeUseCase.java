@@ -62,18 +62,32 @@ public class ManageRecipeUseCase {
                              List<Ingredient> ingredients,
                              List<Instruction> instructions,
                              Callback callback) {
-        try{
+        try {
+            if (recipe == null) {
+                if (callback != null) callback.onError();
+                return;
+            }
+
+            int recipeId = recipe.getRecipeId();
+
+            // 1. Update phần header Recipe
             recipeRepository.updateRecipe(recipe);
-            if (ingredients != null && !ingredients.isEmpty()) {
-                ingredientRepository.replaceIngredientsForRecipe(recipe.getRecipeId(), ingredients);
+
+            // 2. Chuẩn hoá list: nếu null coi như list rỗng (clear hết)
+            if (ingredients == null) {
+                ingredients = java.util.Collections.emptyList();
             }
-            if (instructions != null && !instructions.isEmpty()){
-                instructionRepository.replaceInstructionsForRecipe(recipe.getRecipeId(), instructions);
+            if (instructions == null) {
+                instructions = java.util.Collections.emptyList();
             }
-            if (callback != null ) callback.onSuccess();
+
+            // 3. Replace toàn bộ Ingredients / Instructions cho recipe này
+            ingredientRepository.replaceIngredientsForRecipe(recipeId, ingredients);
+            instructionRepository.replaceInstructionsForRecipe(recipeId, instructions);
+
+            if (callback != null) callback.onSuccess();
         } catch (Exception e) {
             if (callback != null) callback.onError();
-
         }
     }
 
