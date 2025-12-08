@@ -39,7 +39,6 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.ViewHo
     }
 
     public void setMealData(List<MealPlanItem> allPlans, Calendar weekStart) {
-        // 1. Prepare the new data map
         Map<String, List<MealPlanItem>> newMealData = new HashMap<>();
         if (allPlans != null) {
             for (MealPlanItem item : allPlans) {
@@ -147,7 +146,6 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.ViewHo
                 for (MealPlanItem item : items) {
                     Chip chip = new Chip(itemView.getContext());
 
-                    // Safe access to Recipe Domain Model
                     if (item.getRecipe() != null) {
                         chip.setText(item.getRecipe().getTitle());
                     } else {

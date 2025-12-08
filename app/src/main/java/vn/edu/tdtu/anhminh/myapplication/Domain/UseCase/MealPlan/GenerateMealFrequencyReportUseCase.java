@@ -20,7 +20,6 @@ public class GenerateMealFrequencyReportUseCase {
             Recipe recipe = item.getRecipe();
             if (recipe != null) {
                 String name = recipe.getTitle();
-                // Count: Get current count (default 0) and add 1
                 frequencyMap.put(name, frequencyMap.getOrDefault(name, 0) + 1);
             }
         }

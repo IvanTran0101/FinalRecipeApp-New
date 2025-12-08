@@ -10,14 +10,7 @@ public class SyncSampleRecipesUseCase {
         this.recipeSyncService = recipeSyncService;
     }
 
-    /**
-     * Gọi sync sample recipes từ remote -> lưu xuống Room.
-     * Volley + AsyncTask đã chạy nền sẵn trong RecipeSyncService.
-     */
     public void execute() {
         recipeSyncService.syncSampleRecipes();
     }
-
-    // Nếu sau này muốn callback:
-    // public void execute(Callback cb) { ... }
 }

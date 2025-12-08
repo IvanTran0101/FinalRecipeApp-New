@@ -104,7 +104,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Setup UI components
         setupRecyclerViews(view);
         setupSearchAndFilter(view);
         setupViewModel();
@@ -175,7 +174,7 @@ public class HomeFragment extends Fragment {
             otherRecipesAdapter.setRecipes(otherRecipes);
         });
 
-        viewModel.search(""); // Initial search
+        viewModel.search("");
     }
 
     private void onRecipeClick(Recipe recipe) {

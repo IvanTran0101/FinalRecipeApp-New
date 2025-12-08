@@ -139,7 +139,7 @@ public class InstructionRepository {
             for (Instruction instruction : newInstructions) {
                 InstructionEntity entity = InstructionMapper.toEntity(instruction);
                 if (entity != null) {
-                    entity.setRecipeId(recipeId); // Quan trọng: Gán ID recipe
+                    entity.setRecipeId(recipeId);
                     entities.add(entity);
                 }
             }

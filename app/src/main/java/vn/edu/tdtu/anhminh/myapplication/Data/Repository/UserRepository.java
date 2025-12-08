@@ -61,7 +61,6 @@ public class UserRepository {
         }
     }
 
-    // 1. Định nghĩa Callback
     public interface LoginCallback {
         void onResult(User user);
     }
@@ -71,7 +70,6 @@ public class UserRepository {
         void onError(String message);
     }
 
-    // 2. Sửa hàm login
     public void login(String username, String passwordHash, LoginCallback callback) {
         new AsyncTask<Void, Void, User>() {
             @Override
@@ -114,29 +112,23 @@ public class UserRepository {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
-                // 1. Check if Username is taken by ANOTHER user
                 UserEntity existingUser = userDAO.getUserByUsername(newUsername);
 
-                // Check collision:
-                // A user exists with this name AND it is not the current user
                 if (existingUser != null && existingUser.getUserId() != userId) {
                     return "Username already exists!";
                 }
 
-                // 2. If valid, proceed to update
-                // Fetch the existing entity to ensure we have the correct record
                 UserEntity currentEntity = userDAO.getUserById(userId);
 
                 if (currentEntity != null) {
                     currentEntity.setUsername(newUsername);
-                    // Only update avatar if a new one is provided
                     if(newAvatarUri != null) {
                         currentEntity.setAvatarImage(newAvatarUri);
                     }
 
                     int rows = userDAO.update(currentEntity);
                     if (rows > 0) {
-                        return null; // Null indicates success
+                        return null;
                     } else {
                         return "Database update failed.";
                     }
@@ -161,7 +153,6 @@ public class UserRepository {
         return userDAO.getUserById(userId);
     }
 
-    // Get user profile as domain model for UI
     public User getUserProfile(int userId) {
         UserEntity entity = getUserByIdInternal(userId);
         return UserMapper.toModel(entity);

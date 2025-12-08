@@ -30,7 +30,6 @@ public class AlarmScheduler {
         );
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            // Android 12+ cần check quyền exact alarm
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                 if (!alarmManager.canScheduleExactAlarms()) {
                     return;

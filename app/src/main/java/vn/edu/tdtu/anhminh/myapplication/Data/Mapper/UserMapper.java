@@ -63,8 +63,6 @@ public class UserMapper {
     // Model -> Entity (Saving/Updating from Domain/UI to Room)
     public static UserEntity toEntity(User model, String existingPasswordHash) {
         if (model == null) return null;
-        //Use the existingPasswordHash provided by the Repository
-        // to avoid overwriting a secure value.
         return new UserEntity(
                 model.getUserId(),
                 model.getUsername(),

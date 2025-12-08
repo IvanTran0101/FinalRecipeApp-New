@@ -33,7 +33,6 @@ public class DisplayNearbyStoreUseCase {
 
     public void execute(Context context, double lat, double lon, Callback callback) {
         try {
-            // Find supermarkets/convenience stores within 2000m
             String query = "[out:json];" +
                     "(" +
                     "node[\"shop\"=\"supermarket\"](around:2000," + lat + "," + lon + ");" +

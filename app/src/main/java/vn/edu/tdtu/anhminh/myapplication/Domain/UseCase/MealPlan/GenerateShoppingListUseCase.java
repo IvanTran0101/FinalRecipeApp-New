@@ -27,21 +27,18 @@ public class GenerateShoppingListUseCase {
             return new ArrayList<>();
         }
 
-        // 1. Get Weekly Plans
         List<Plan> weeklyPlans = planRepository.getPlanForWeekSync(userId, weekId);
         if (weeklyPlans == null || weeklyPlans.isEmpty()) {
             return new ArrayList<>();
         }
 
-        // 2. Get Distinct Recipe IDs
         List<Integer> distinctRecipeIds = weeklyPlans.stream()
                 .map(Plan::getRecipeId)
                 .distinct()
                 .collect(Collectors.toList());
 
-        // 3. Aggregate Ingredients
         Map<String, Double> aggregatedQuantities = new HashMap<>();
-        Map<String, String> unitMap = new HashMap<>(); // Keeps the original unit string
+        Map<String, String> unitMap = new HashMap<>();
 
         for (int recipeId : distinctRecipeIds) {
             List<Ingredient> ingredients = ingredientRepository.getIngredientsForRecipeSync(recipeId);
@@ -55,13 +52,11 @@ public class GenerateShoppingListUseCase {
                     unitMap.put(key, ingredient.getUnit());
                 }
 
-                // Sum quantities
                 double currentTotal = aggregatedQuantities.getOrDefault(key, 0.0);
                 aggregatedQuantities.put(key, currentTotal + ingredient.getQuantity());
             }
         }
 
-        // 4. Create Final List
         List<ShoppingListItem> finalShoppingList = new ArrayList<>();
 
         for (Map.Entry<String, Double> entry : aggregatedQuantities.entrySet()) {

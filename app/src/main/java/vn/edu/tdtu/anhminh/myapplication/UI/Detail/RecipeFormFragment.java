@@ -133,10 +133,8 @@ public class RecipeFormFragment extends Fragment {
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (nextAnim == 0) {
             if (enter) {
-                // When fragment is opening
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
             } else {
-                // When fragment is closing (popBackStack)
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
             }
         }

@@ -81,27 +81,21 @@ public class PlanRepository {
         }
     }
 
-    // Get full week as domain models
     public LiveData<List<MealPlanItem>> getPlanForWeek(int userId, int weekId) {
-        // 1. Get raw DB data (PlanWithRecipe contains Entities)
         LiveData<List<PlanWithRecipe>> dbData = planDAO.getPlansWithRecipesForWeek(userId, weekId);
 
-        // 2. Map Database Entities -> Domain Models
         return Transformations.map(dbData, dbList -> {
             List<MealPlanItem> domainList = new ArrayList<>();
             if (dbList != null) {
                 for (PlanWithRecipe item : dbList) {
 
-                    // USE YOUR PLAN MAPPER HERE
                     Plan planModel = PlanMapper.toModel(item.plan);
 
-                    // USE RECIPE MAPPER HERE
                     Recipe recipeModel = null;
                     if (item.recipe != null) {
                         recipeModel = RecipeMapper.toModel(item.recipe);
                     }
 
-                    // Create the Clean Domain Wrapper
                     domainList.add(new MealPlanItem(planModel, recipeModel));
                 }
             }
@@ -114,7 +108,6 @@ public class PlanRepository {
         return PlanMapper.toModelList(entities);
     }
 
-    // Get all recipes in a given day as domain models
     public List<Plan> getPlanSlotsForDay(int userId, int weekId, int weekDay) {
         List<PlanEntity> entities = planDAO.getPlanSlotsForDay(userId, weekId, weekDay);
         return PlanMapper.toModelList(entities);
@@ -132,7 +125,6 @@ public class PlanRepository {
         new InsertPlanTask(planDAO).execute(plan);
     }
 
-    // Overload: add plan slot from domain model
     public void addPlanSlot(Plan planModel) {
         if (planModel == null) return;
         PlanEntity entity = PlanMapper.toEntity(planModel);
@@ -155,20 +147,17 @@ public class PlanRepository {
     }
 
     public List<MealPlanItem> getPlanForWeekSync_Domain(int userId, int weekId) {
-        // 1. Fetch Entities (Filtered by Week ID)
         List<PlanWithRecipe> dbList = planDAO.getPlansWithRecipesForWeekSync(userId, weekId);
 
         List<MealPlanItem> domainList = new ArrayList<>();
         if (dbList != null) {
             for (PlanWithRecipe item : dbList) {
-                // 2. Map Entities -> Domain Models
                 Plan planModel = PlanMapper.toModel(item.plan);
                 Recipe recipeModel = null;
                 if (item.recipe != null) {
                     recipeModel = RecipeMapper.toModel(item.recipe);
                 }
 
-                // 3. Wrap in MealPlanItem
                 domainList.add(new MealPlanItem(planModel, recipeModel));
             }
         }
