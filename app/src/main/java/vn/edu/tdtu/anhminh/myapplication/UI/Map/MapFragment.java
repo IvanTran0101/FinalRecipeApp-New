@@ -27,7 +27,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.List;
 
-// Use the internal class
 import vn.edu.tdtu.anhminh.myapplication.Domain.UseCase.Map.DisplayNearbyStoreUseCase;
 import vn.edu.tdtu.anhminh.myapplication.R;
 

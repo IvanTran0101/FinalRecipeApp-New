@@ -36,18 +36,16 @@ public class ManageRecipeUseCase {
         try{
             long newRecipeId = recipeRepository.addRecipe(recipe);
 
-            // 2. Assign this ID to Ingredients
             if (ingredients != null && !ingredients.isEmpty()) {
                 for (Ingredient item : ingredients) {
-                    item.setRecipeId((int) newRecipeId); // <--- LINKING HAPPENS HERE
+                    item.setRecipeId((int) newRecipeId);
                 }
                 ingredientRepository.addMultipleIngredients(ingredients);
             }
 
-            // 3. Assign this ID to Instructions
             if (instructions != null && !instructions.isEmpty()) {
                 for (Instruction item : instructions) {
-                    item.setRecipeId((int) newRecipeId); // <--- LINKING HAPPENS HERE
+                    item.setRecipeId((int) newRecipeId);
                 }
                 instructionRepository.addMultipleInstructions(instructions);
             }
@@ -70,10 +68,8 @@ public class ManageRecipeUseCase {
 
             int recipeId = recipe.getRecipeId();
 
-            // 1. Update phần header Recipe
             recipeRepository.updateRecipe(recipe);
 
-            // 2. Chuẩn hoá list: nếu null coi như list rỗng (clear hết)
             if (ingredients == null) {
                 ingredients = java.util.Collections.emptyList();
             }
@@ -81,7 +77,6 @@ public class ManageRecipeUseCase {
                 instructions = java.util.Collections.emptyList();
             }
 
-            // 3. Replace toàn bộ Ingredients / Instructions cho recipe này
             ingredientRepository.replaceIngredientsForRecipe(recipeId, ingredients);
             instructionRepository.replaceInstructionsForRecipe(recipeId, instructions);
 

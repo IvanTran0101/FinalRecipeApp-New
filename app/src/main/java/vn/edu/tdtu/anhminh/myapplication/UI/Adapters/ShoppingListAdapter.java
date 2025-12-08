@@ -33,13 +33,11 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShoppingListItem item = items.get(position);
 
-        // Format decimal (2.0 -> 2, 2.5 -> 2.5)
         String qtyStr = (item.getQuantity() % 1 == 0) ?
                 String.valueOf((int) item.getQuantity()) : String.valueOf(item.getQuantity());
 
         holder.tvDetails.setText(item.getName() + " : " + qtyStr + " " + item.getUnit());
 
-        // Handle Checkbox State
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(item.isChecked());
         toggleStrikeThrough(holder.tvDetails, item.isChecked());

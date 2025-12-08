@@ -27,7 +27,6 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Injection;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.RecipeViewModel;
 import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.ViewModelFactory;
 
-// 1. Extend BottomSheetDialogFragment
 public class AddMealDialogFragment extends BottomSheetDialogFragment {
 
     private static final String ARG_DAY = "ARG_DAY";
@@ -56,7 +55,6 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Apply the Custom Slide-Up Theme
         setStyle(DialogFragment.STYLE_NORMAL, R.style.MyBottomSheetDialogTheme);
     }
 

@@ -42,7 +42,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.recipeList = recipeList;
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
-        this.isSimpleMode = false; // Default: Card View
+        this.isSimpleMode = false;
     }
 
     public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener clickListener, boolean isSimpleMode) {

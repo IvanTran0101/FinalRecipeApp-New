@@ -23,7 +23,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
     private CountDownTimer uiTimer;
     private final int NOTIFICATION_ID = 1001;
 
-    // LiveData for UI
     private final MutableLiveData<String> timeLeftText = new MutableLiveData<>("00:00:00");
     private final MutableLiveData<Integer> progress = new MutableLiveData<>(100);
     private final MutableLiveData<Boolean> isTimerRunning = new MutableLiveData<>(false);
@@ -39,7 +38,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
         Channels.createChannels(application);
     }
 
-    // Getters
     public LiveData<String> getTimeLeftText() { return timeLeftText; }
     public LiveData<Integer> getProgress() { return progress; }
     public LiveData<Boolean> getIsTimerRunning() { return isTimerRunning; }

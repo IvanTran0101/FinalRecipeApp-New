@@ -39,8 +39,6 @@ public class UserProfileFragment extends Fragment {
     private ImageView imgAvatar;
     private Button btnSave;
     private Button btnLogout;
-
-    // State
     private User currentUser;
     private String selectedAvatarUri = null;
     private ActivityResultLauncher<String> pickImageLauncher;

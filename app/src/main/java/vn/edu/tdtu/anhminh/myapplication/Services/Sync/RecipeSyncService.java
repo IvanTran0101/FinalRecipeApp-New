@@ -47,22 +47,18 @@ public class RecipeSyncService {
                         if (dtos == null || dtos.isEmpty()) return;
 
                         for (RecipeDTO dto : dtos) {
-                            // 1. Insert Recipe
-                            // dùng DAO sync vì đang ở background thread
                             RecipeEntity recipeEntity = RecipeMapper.toEntity(dto);
                             long recipeRowId = recipeRepository.addRecipe(
                                     RecipeMapper.toModel(recipeEntity)
                             );
-                            int recipeId = recipeEntity.getRecipeId(); // bạn đang dùng id từ JSON
+                            int recipeId = recipeEntity.getRecipeId();
 
-                            // 2. Insert Ingredients
                             if (dto.getIngredients() != null) {
                                 List<Ingredient> ingModels =
                                         IngredientMapper.toModelListFromDto(dto.getIngredients(), recipeId);
                                 ingredientRepository.addMultipleIngredients(ingModels);
                             }
 
-                            // 3. Insert Instructions
                             if (dto.getInstructions() != null) {
                                 List<Instruction> insModels =
                                         InstructionMapper.toModelListFromDto(dto.getInstructions(), recipeId);

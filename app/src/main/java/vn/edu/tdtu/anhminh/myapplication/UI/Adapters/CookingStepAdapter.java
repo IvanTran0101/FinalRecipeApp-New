@@ -29,7 +29,6 @@ public class CookingStepAdapter extends RecyclerView.Adapter<CookingStepAdapter.
         Instruction step = instructionList.get(position);
         holder.tvTitle.setText("Step " + step.getStepNumber());
 
-        // CHECK THIS LINE: Does your Instruction.java have getInstruction() or getDescription()?
         holder.tvContent.setText(step.getInstruction());
     }
 

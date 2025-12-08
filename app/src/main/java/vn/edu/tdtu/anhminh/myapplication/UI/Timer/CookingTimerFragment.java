@@ -31,7 +31,6 @@ public class CookingTimerFragment extends Fragment {
     private ProgressBar progressBar;
     private Button btnStart, btnCancel;
 
-    // Pickers
     private NumberPicker npHours, npMinutes, npSeconds;
     private FrameLayout layoutRunning;
     private LinearLayout layoutPicker;
@@ -134,10 +133,8 @@ public class CookingTimerFragment extends Fragment {
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (nextAnim == 0) {
             if (enter) {
-                // When fragment is opening
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_in);
             } else {
-                // When fragment is closing (popBackStack)
                 return AnimationUtils.loadAnimation(getContext(), R.anim.zoom_out);
             }
         }
