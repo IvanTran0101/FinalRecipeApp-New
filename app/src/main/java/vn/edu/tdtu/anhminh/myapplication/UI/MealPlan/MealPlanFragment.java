@@ -61,7 +61,6 @@ public class MealPlanFragment extends Fragment implements AddMealDialogFragment.
         });
 
         btnCart.setOnClickListener(v -> {
-            // Navigate to Shopping List
             Navigation.findNavController(view).navigate(R.id.action_mealPlan_to_shoppingList);
         });
 

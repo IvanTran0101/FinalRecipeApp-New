@@ -27,16 +27,12 @@ import vn.edu.tdtu.anhminh.myapplication.UI.Presentation.ViewModel.CookingTimerV
 public class CookingTimerFragment extends Fragment {
 
     private CookingTimerViewModel viewModel;
-
-    // UI Components
     private TextView tvCountdown;
     private ProgressBar progressBar;
     private Button btnStart, btnCancel;
 
     // Pickers
     private NumberPicker npHours, npMinutes, npSeconds;
-
-    // Containers for toggling visibility
     private FrameLayout layoutRunning;
     private LinearLayout layoutPicker;
 
@@ -52,7 +48,6 @@ public class CookingTimerFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(CookingTimerViewModel.class);
 
-        // Bind Views
         tvCountdown = view.findViewById(R.id.tv_countdown);
         progressBar = view.findViewById(R.id.progress_bar_timer);
         btnStart = view.findViewById(R.id.btn_start_timer);
@@ -66,10 +61,8 @@ public class CookingTimerFragment extends Fragment {
         npMinutes = view.findViewById(R.id.np_minutes);
         npSeconds = view.findViewById(R.id.np_seconds);
 
-        // Setup Pickers
         setupPickers();
 
-        // --- OBSERVE LIVE DATA ---
         viewModel.getTimeLeftText().observe(getViewLifecycleOwner(), text ->
                 tvCountdown.setText(text)
         );
@@ -82,7 +75,6 @@ public class CookingTimerFragment extends Fragment {
             updateUIState(isRunning);
         });
 
-        // --- LISTENERS ---
         btnStart.setOnClickListener(v -> {
             int hours = npHours.getValue();
             int minutes = npMinutes.getValue();
@@ -108,17 +100,14 @@ public class CookingTimerFragment extends Fragment {
     }
 
     private void setupPickers() {
-        // Hours: 0 to 99
         npHours.setMinValue(0);
         npHours.setMaxValue(99);
         npHours.setFormatter(i -> String.format("%02d", i));
 
-        // Minutes: 0 to 59
         npMinutes.setMinValue(0);
         npMinutes.setMaxValue(59);
         npMinutes.setFormatter(i -> String.format("%02d", i));
 
-        // Seconds: 0 to 59
         npSeconds.setMinValue(0);
         npSeconds.setMaxValue(59);
         npSeconds.setFormatter(i -> String.format("%02d", i));
@@ -126,14 +115,12 @@ public class CookingTimerFragment extends Fragment {
 
     private void updateUIState(boolean isRunning) {
         if (isRunning) {
-            // Running: Show Progress Circle, Hide Pickers
             layoutRunning.setVisibility(View.VISIBLE);
             layoutPicker.setVisibility(View.GONE);
 
             btnStart.setEnabled(false);
             btnCancel.setEnabled(true);
         } else {
-            // Stopped: Hide Progress Circle, Show Pickers
             layoutRunning.setVisibility(View.GONE);
             layoutPicker.setVisibility(View.VISIBLE);
 

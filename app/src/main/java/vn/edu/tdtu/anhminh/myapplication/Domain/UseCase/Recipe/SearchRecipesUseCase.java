@@ -48,17 +48,12 @@ public class SearchRecipesUseCase {
                 List<Recipe> filtered = new ArrayList<>(recipes);
 
                 if (filter != null) {
-                    // --- 1. CATEGORY & DIET (Safe to check as is) ---
                     if (filter.categories != null && !filter.categories.isEmpty()) {
                         filtered.removeIf(r -> !filter.categories.contains(r.getCategory()));
                     }
                     if (filter.dietModes != null && !filter.dietModes.isEmpty()) {
                         filtered.removeIf(r -> !filter.dietModes.contains(r.getDietMode()));
                     }
-
-                    // --- 2. NUMERIC FILTERS (Must handle NULLs) ---
-                    // Rule: If the recipe has NULL value, we treat it as 0.0 or exclude it based on logic.
-                    // Here, if recipe value is NULL, we assume it doesn't meet the "min" requirement.
 
                     if (filter.minCalories != null) {
                         filtered.removeIf(r -> r.getCalories() == null || r.getCalories() < filter.minCalories);
@@ -88,10 +83,8 @@ public class SearchRecipesUseCase {
                         filtered.removeIf(r -> r.getFat() != null && r.getFat() > filter.maxFat);
                     }
 
-                    // --- 3. PINNED STATUS (Must handle NULL) ---
                     if (filter.pinned != null) {
                         filtered.removeIf(r -> {
-                            // If r.getPinned() is null, assume false
                             boolean isPinned = r.getPinned() != null && r.getPinned();
                             return isPinned != filter.pinned;
                         });

@@ -33,7 +33,6 @@ public class AlarmScheduler {
             // Android 12+ cần check quyền exact alarm
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                 if (!alarmManager.canScheduleExactAlarms()) {
-                    // TODO: có thể log hoặc báo UI để xin user bật quyền trong Settings
                     return;
                 }
             }

@@ -37,7 +37,6 @@ public class AnalyticsFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(MealPlanViewModel.class);
 
-        // Bind Views
         pieChart = view.findViewById(R.id.pie_chart);
         tvTotalCal = view.findViewById(R.id.tv_total_cal);
         tvSummary = view.findViewById(R.id.tv_recipes_summary);
@@ -66,24 +65,20 @@ public class AnalyticsFragment extends Fragment {
         Recipe totals = result.first;
         Map<String, Integer> frequencies = result.second;
 
-        // 1. Update Nutrition
         if (totals != null) {
             double cal = totals.getCalories() != null ? totals.getCalories() : 0;
             double pro = totals.getProtein() != null ? totals.getProtein() : 0;
             double carb = totals.getCarb() != null ? totals.getCarb() : 0;
             double fat = totals.getFat() != null ? totals.getFat() : 0;
 
-            // Set Text
             tvTotalCal.setText("Total Calories: " + (int)cal);
             tvP.setText("Total Protein: " + (int)pro + "g");
             tvC.setText("Total Carb: " + (int)carb + "g");
             tvF.setText("Total Fat: " + (int)fat + "g");
 
-            // UPDATE CHART
             pieChart.setData(pro, carb, fat);
         }
 
-        // 2. Update List (Name: Count Times)
         StringBuilder sb = new StringBuilder();
         if (frequencies == null || frequencies.isEmpty()) {
             sb.append("No recipes planned.");

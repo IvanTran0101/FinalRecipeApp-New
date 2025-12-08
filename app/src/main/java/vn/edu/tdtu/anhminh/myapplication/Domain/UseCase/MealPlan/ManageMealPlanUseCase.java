@@ -24,7 +24,6 @@ public class ManageMealPlanUseCase {
         if (userId <= 0 || weekId <= 0) {
             return new ArrayList<>();
         }
-        // This calls the synchronous method we added to PlanRepository earlier
         return planRepository.getPlanForWeekSync_Domain(userId, weekId);
     }
 

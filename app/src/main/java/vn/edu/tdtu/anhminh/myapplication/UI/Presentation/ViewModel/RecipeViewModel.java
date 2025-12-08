@@ -23,18 +23,14 @@ public class RecipeViewModel extends ViewModel {
     private final SearchRecipesUseCase searchRecipesUseCase;
     private final ToggleFavoriteRecipeUseCase toggleFavoriteRecipeUseCase;
 
-    // Executor for background threads
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    // Status LiveData
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
-    // --- SEARCH LOGIC ---
     private final MutableLiveData<Pair<String, SearchRecipesUseCase.FilterOptions>> searchInput = new MutableLiveData<>();
     private final LiveData<List<Recipe>> searchResults;
 
-    // CLEANER: Single source of truth for filters
     private SearchRecipesUseCase.FilterOptions currentFilterOptions = new SearchRecipesUseCase.FilterOptions();
     private int currentUserId = -1;
 
@@ -53,7 +49,6 @@ public class RecipeViewModel extends ViewModel {
         );
     }
 
-    // --- GETTERS ---
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<List<Recipe>> getSearchResults() { return searchResults; }
@@ -75,7 +70,6 @@ public class RecipeViewModel extends ViewModel {
         refreshSearch();
     }
 
-    // --- SEARCH & FILTER ACTIONS ---
 
     public void search(String query) {
         // Reuse the existing filter object
@@ -88,7 +82,6 @@ public class RecipeViewModel extends ViewModel {
                            Integer minProtein, Integer maxProtein,
                            Integer minFat, Integer maxFat) {
 
-        // Update the Single Source of Truth
         currentFilterOptions.categories = categories;
         currentFilterOptions.dietModes = dietModes;
         currentFilterOptions.minCalories = minCalories;
@@ -100,18 +93,14 @@ public class RecipeViewModel extends ViewModel {
         currentFilterOptions.minFat = minFat;
         currentFilterOptions.maxFat = maxFat;
 
-        // Get current query and trigger update
         refreshSearch();
     }
 
-    // Helper to refresh search with current state
     private void refreshSearch() {
         String currentQuery = searchInput.getValue() != null ? searchInput.getValue().first : "";
         searchInput.setValue(new Pair<>(currentQuery, currentFilterOptions));
     }
 
-    // --- CLEANER GETTERS FOR UI RESTORATION ---
-    // These now read directly from the main object
     public List<String> getCurrentCategories() { return currentFilterOptions.categories; }
     public List<String> getCurrentDietModes() { return currentFilterOptions.dietModes; }
     public Integer getMinCalories() { return currentFilterOptions.minCalories; }
@@ -123,8 +112,6 @@ public class RecipeViewModel extends ViewModel {
     public Integer getMinFat() { return currentFilterOptions.minFat; }
     public Integer getMaxFat() { return currentFilterOptions.maxFat; }
 
-    // --- CUD OPERATIONS ---
-    // (These remain exactly the same as before)
     public void createRecipe(Recipe recipe, List<Ingredient> ingredients, List<Instruction> instructions) {
         if (currentUserId != -1) recipe.setUserId(currentUserId);
         executor.execute(() -> manageRecipeUseCase.createRecipe(recipe, ingredients, instructions, new ManageRecipeUseCase.Callback() {

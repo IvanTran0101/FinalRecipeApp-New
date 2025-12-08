@@ -118,13 +118,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecyclerViews(View view) {
-        // Setup Favorites RecyclerView
         RecyclerView favoritesRecyclerView = view.findViewById(R.id.recycler_favorites);
         favoritesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         favoritesAdapter = new RecipeAdapter(new ArrayList<>(), this::onRecipeClick, this::onRecipeLongClick);
         favoritesRecyclerView.setAdapter(favoritesAdapter);
 
-        // Setup Other Recipes RecyclerView
         RecyclerView otherRecipesRecyclerView = view.findViewById(R.id.recycler_recipes);
         otherRecipesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         otherRecipesAdapter = new RecipeAdapter(new ArrayList<>(), this::onRecipeClick, this::onRecipeLongClick);
@@ -221,25 +219,20 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchAndCopyRecipe(Recipe original) {
-        // 1. Capture the LiveData instance in a variable
         LiveData<List<Ingredient>> ingredientsLiveData = viewModel.getIngredients(original.getRecipeId());
 
         ingredientsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Ingredient>>() {
             @Override
             public void onChanged(List<Ingredient> ingredients) {
-                // 2. Remove observer from the SAME variable
                 ingredientsLiveData.removeObserver(this);
 
-                // 3. Do the same for Instructions
                 LiveData<List<Instruction>> instructionsLiveData = viewModel.getInstructions(original.getRecipeId());
 
                 instructionsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Instruction>>() {
                     @Override
                     public void onChanged(List<Instruction> instructions) {
-                        // Remove observer from the SAME variable
                         instructionsLiveData.removeObserver(this);
 
-                        // 4. Perform the copy
                         performDeepCopy(original, ingredients, instructions);
                     }
                 });
@@ -248,7 +241,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void performDeepCopy(Recipe original, List<Ingredient> ingredients, List<Instruction> instructions) {
-        // 1. Copy Basic Recipe Info
         Recipe copy = new Recipe();
         copy.setTitle(original.getTitle() + " (Copy)");
 
@@ -259,7 +251,6 @@ public class HomeFragment extends Fragment {
         copy.setDietMode(original.getDietMode());
         copy.setVideoLink(original.getVideoLink());
 
-        // Null checks for numerical values (Safeguard)
         copy.setCalories(original.getCalories() != null ? original.getCalories() : 0.0);
         copy.setProtein(original.getProtein() != null ? original.getProtein() : 0.0);
         copy.setFat(original.getFat() != null ? original.getFat() : 0.0);
@@ -268,7 +259,6 @@ public class HomeFragment extends Fragment {
 
         copy.setUserId(original.getUserId());
 
-        // 2. Deep Copy Ingredients (Create NEW objects so they don't share IDs)
         List<Ingredient> newIngredients = new ArrayList<>();
         if (ingredients != null) {
             for (Ingredient ing : ingredients) {
@@ -276,24 +266,20 @@ public class HomeFragment extends Fragment {
                 newIng.setName(ing.getName());
                 newIng.setQuantity(ing.getQuantity());
                 newIng.setUnit(ing.getUnit());
-                // Do NOT copy the IngredientID, let Room generate a new one
                 newIngredients.add(newIng);
             }
         }
 
-        // 3. Deep Copy Instructions
         List<Instruction> newInstructions = new ArrayList<>();
         if (instructions != null) {
             for (Instruction inst : instructions) {
                 Instruction newInst = new Instruction();
                 newInst.setInstruction(inst.getInstruction());
                 newInst.setStepNumber(inst.getStepNumber());
-                // Do NOT copy the InstructionID
                 newInstructions.add(newInst);
             }
         }
 
-        // 4. Send to ViewModel to save
         viewModel.createRecipe(copy, newIngredients, newInstructions);
     }
 

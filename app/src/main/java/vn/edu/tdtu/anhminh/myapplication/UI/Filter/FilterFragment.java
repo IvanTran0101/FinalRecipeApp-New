@@ -66,12 +66,10 @@ public class FilterFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ViewModelFactory factory = Injection.provideViewModelFactory();
-        // Use requireActivity() so we share data with HomeFragment
         viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
         initViews(view);
 
-        // Load previous data immediately when opening
         loadCurrentFilters();
 
         btnApplyFilter.setOnClickListener(v -> {
@@ -108,7 +106,6 @@ public class FilterFragment extends DialogFragment {
     }
 
     private void loadCurrentFilters() {
-        // Restore Checkboxes
         List<String> cats = viewModel.getCurrentCategories();
         if (cats != null) {
             cbBreakfast.setChecked(cats.contains("Breakfast"));
@@ -125,7 +122,6 @@ public class FilterFragment extends DialogFragment {
             cbGlutenFree.setChecked(modes.contains("Gluten-Free"));
         }
 
-        // Restore Numbers (Helper function to safely convert Integer to String)
         setTextSafely(etCalMin, viewModel.getMinCalories());
         setTextSafely(etCalMax, viewModel.getMaxCalories());
         setTextSafely(etCarbMin, viewModel.getMinCarbs());

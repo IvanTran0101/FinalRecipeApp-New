@@ -118,7 +118,6 @@ public class IngredientRepository {
         }
     }
 
-    // Task mới: Gộp Xóa và Thêm vào làm một để tránh xung đột
     private static class ReplaceIngredientsTask extends android.os.AsyncTask<Void, Void, Void> {
         private final IngredientDAO dao;
         private final int recipeId;
@@ -143,9 +142,6 @@ public class IngredientRepository {
         }
     }
 
-    // ---------------------------------------------------
-    // INGREDIENTS for a recipe
-    // ---------------------------------------------------
     public LiveData<List<Ingredient>> getIngredientsForRecipe(int recipeId) {
         return Transformations.map(
                 ingredientDAO.getIngredientsForRecipe(recipeId),
@@ -153,18 +149,12 @@ public class IngredientRepository {
         );
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: thêm 1 nguyên liệu cho recipe
-    // ---------------------------------------------------
     public void addIngredient(Ingredient ingredient) {
         if (ingredient == null) return;
         IngredientEntity entity = IngredientMapper.toEntity(ingredient);
         new InsertIngredientTask(ingredientDAO).execute(entity);
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: thêm nhiều nguyên liệu cùng lúc
-    // ---------------------------------------------------
     public void addMultipleIngredients(List<Ingredient> ingredients) {
         if(ingredients == null || ingredients.isEmpty())return;
         List<IngredientEntity> entities = new ArrayList<>();
@@ -179,30 +169,16 @@ public class IngredientRepository {
         }
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: xóa 1 nguyên liệu cụ thể
-    // ---------------------------------------------------
     public void deleteIngredient(Ingredient ingredient) {
         if (ingredient == null) return;
         IngredientEntity entity = IngredientMapper.toEntity(ingredient);
         new DeleteIngredientTask(ingredientDAO).execute(entity);
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: delete all ingredients for a recipe
-    // (used by ManageRecipeUseCase when deleting a recipe)
-    // ---------------------------------------------------
     public void deleteIngredientsForRecipe(int recipeId) {
         new DeleteIngredientsByRecipeTask(ingredientDAO).execute(recipeId);
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: thay toàn bộ nguyên liệu của 1 recipe
-    // (dùng khi user edit list ingredient rồi bấm Save)
-    // ---------------------------------------------------
-    // ---------------------------------------------------
-    // INGREDIENT: thay toàn bộ nguyên liệu của 1 recipe
-    // ---------------------------------------------------
     public void replaceIngredientsForRecipe(int recipeId, List<Ingredient> newIngredients) {
         // 1. Chuẩn bị dữ liệu Entity
         List<IngredientEntity> entities = new ArrayList<>();
@@ -217,42 +193,25 @@ public class IngredientRepository {
             }
         }
 
-        // 2. Gọi Task gộp để thực thi an toàn
         new ReplaceIngredientsTask(ingredientDAO, recipeId, entities).execute();
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: update quantity
-    // ---------------------------------------------------
     public void updateIngredientQuantity(int ingredientId, double newQuantity) {
         new UpdateIngredientQuantityTask(ingredientDAO, ingredientId, newQuantity).execute();
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: update unit
-    // ---------------------------------------------------
     public void updateIngredientUnit(int ingredientId, String newUnit) {
         new UpdateIngredientUnitTask(ingredientDAO, ingredientId, newUnit).execute();
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: update name
-    // ---------------------------------------------------
     public void updateIngredientName(int ingredientId, String newName) {
         new UpdateIngredientNameTask(ingredientDAO, ingredientId, newName).execute();
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: get ingredient by ID
-    // ---------------------------------------------------
     public Ingredient getIngredientById(int ingredientId) {
         IngredientEntity entity = ingredientDAO.getIngredientById(ingredientId);
         return IngredientMapper.toModel(entity);
     }
-
-    // ---------------------------------------------------
-    // INGREDIENT: get all ingredients (debug/admin)
-    // ---------------------------------------------------
     public List<Ingredient> getAllIngredients() {
         List<IngredientEntity> entities = ingredientDAO.getAllIngredients();
         return IngredientMapper.toModelList(entities);
@@ -263,16 +222,10 @@ public class IngredientRepository {
         return IngredientMapper.toModelList(entities);
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: count ingredients
-    // ---------------------------------------------------
     public int countIngredients() {
         return ingredientDAO.countIngredients();
     }
 
-    // ---------------------------------------------------
-    // INGREDIENT: get quantity + unit for recipe
-    // ---------------------------------------------------
 
     public LiveData<List<Ingredient>> getQuantityAndUnitForRecipe(int recipeId) {
         return Transformations.map(
@@ -285,7 +238,6 @@ public class IngredientRepository {
         List<IngredientEntity> entities = ingredientDAO.getIngredientsForRecipeSync(recipeId);
 
         // Map Entity -> Domain Model
-        // (Assuming you have IngredientMapper, or map manually like this:)
         List<Ingredient> list = new ArrayList<>();
         if (entities != null) {
             for (IngredientEntity entity : entities) {

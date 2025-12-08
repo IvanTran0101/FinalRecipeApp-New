@@ -11,8 +11,6 @@ public class RegisterUserUseCase {
     }
 
     public void execute(String username, String password, UserRepository.RepositoryCallback callback) {
-        // In a real app, you'd hash the password here.
-        // For this example, we're storing it as-is.
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPasswordHash(password);
