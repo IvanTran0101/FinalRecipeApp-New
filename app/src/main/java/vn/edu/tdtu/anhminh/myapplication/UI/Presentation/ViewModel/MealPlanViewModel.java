@@ -52,7 +52,6 @@ public class MealPlanViewModel extends AndroidViewModel {
             return cachedPlanData;
         }
 
-        // If it's a new week (or first load), fetch from DB and save it
         lastLoadedWeekId = weekId;
         cachedPlanData = manageMealPlanUseCase.getWeeklyPlan(userId, weekId);
         return cachedPlanData;
@@ -87,16 +86,11 @@ public class MealPlanViewModel extends AndroidViewModel {
 
     public void loadAnalytics(int userId, int weekId) {
         executor.execute(() -> {
-            // 1. Fetch Data (Filtered by Week ID in Repository/DAO)
             List<MealPlanItem> weeklyItems = manageMealPlanUseCase.getWeeklyPlanSync(userId, weekId);
-            // OR call Repository directly if you added the method there:
-            // List<MealPlanItem> weeklyItems = planRepository.getPlanForWeekSync_Domain(userId, weekId);
 
-            // 2. Logic
             Map<String, Integer> freqMap = frequencyUseCase.executeReport(weeklyItems);
             Recipe totalNutrition = nutritionUseCase.execute(weeklyItems);
 
-            // 3. Post Combined Result
             analyticsData.postValue(new Pair<>(totalNutrition, freqMap));
         });
     }

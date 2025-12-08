@@ -18,7 +18,6 @@ public class UserViewModel extends ViewModel {
     private final MutableLiveData<String> updateMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-    // Constructor (Injected via Factory)
     public UserViewModel(AuthenticateUserUseCase authenticateUserUseCase,
                          UpdateAccountUseCase updateAccountUseCase) {
         this.authenticateUserUseCase = authenticateUserUseCase;

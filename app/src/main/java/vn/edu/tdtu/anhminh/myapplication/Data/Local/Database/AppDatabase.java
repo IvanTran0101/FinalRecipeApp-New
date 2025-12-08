@@ -63,14 +63,11 @@ public abstract class AppDatabase extends RoomDatabase {
             Executors.newSingleThreadExecutor().execute(() -> {
                 UserDAO dao = INSTANCE.userDao();
 
-                // Add Admin Account
                 UserEntity admin = new UserEntity();
                 admin.setUsername("admin");
                 admin.setPasswordHash("1234");
-                // admin.setFullName("Administrator"); // If you have this field
                 dao.insert(admin);
 
-                // Add a standard User
                 UserEntity user = new UserEntity();
                 user.setUsername("user");
                 user.setPasswordHash("1234");

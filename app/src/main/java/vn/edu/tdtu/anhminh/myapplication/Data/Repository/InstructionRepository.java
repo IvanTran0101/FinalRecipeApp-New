@@ -77,7 +77,6 @@ public class InstructionRepository {
                 InstructionMapper::toModelList
         );
     }
-    // Task mới: Gộp Xóa và Thêm vào làm một để tránh xung đột
     private static class ReplaceInstructionsTask extends android.os.AsyncTask<Void, Void, Void> {
         private final InstructionDAO dao;
         private final int recipeId;
@@ -100,9 +99,7 @@ public class InstructionRepository {
             return null;
         }
     }
-    // ---------------------------------------------------
-    // INSTRUCTION: thêm 1 bước cho recipe
-    // ---------------------------------------------------
+
     public void addInstruction(Instruction instruction) {
         if (instruction == null) return;
 
@@ -111,9 +108,6 @@ public class InstructionRepository {
         new InsertInstructionTask(instructionDAO).execute(entity);
     }
 
-    // ---------------------------------------------------
-    // INSTRUCTION: thêm nhiều bước cùng lúc
-    // ---------------------------------------------------
     public void addMultipleInstructions(List<Instruction> instructions) {
         if (instructions == null || instructions.isEmpty()) return;
         List<InstructionEntity> entities = new ArrayList<>();
@@ -129,27 +123,16 @@ public class InstructionRepository {
         }
     }
 
-    // ---------------------------------------------------
-    // INSTRUCTION: xóa 1 bước cụ thể
-    // ---------------------------------------------------
     public void deleteInstruction(Instruction instruction) {
         if(instruction == null) return;
         InstructionEntity entity = InstructionMapper.toEntity(instruction);
         new DeleteInstructionTask(instructionDAO).execute(entity);
     }
 
-    // ---------------------------------------------------
-    // INSTRUCTION: delete all steps for a recipe
-    // (used by ManageRecipeUseCase when deleting a recipe)
-    // ---------------------------------------------------
     public void deleteInstructionsForRecipe(int recipeId) {
         new DeleteInstructionsByRecipeTask(instructionDAO).execute(recipeId);
     }
 
-    // ---------------------------------------------------
-    // INSTRUCTION: thay toàn bộ steps của 1 recipe
-    // (dùng khi user edit list step rồi bấm Save)
-    // ---------------------------------------------------
     public void replaceInstructionsForRecipe(int recipeId, List<Instruction> newInstructions) {
         List<InstructionEntity> entities = new ArrayList<>();
         if (newInstructions != null && !newInstructions.isEmpty()) {
@@ -161,7 +144,6 @@ public class InstructionRepository {
                 }
             }
         }
-        // Gọi Task gộp mới tạo
         new ReplaceInstructionsTask(instructionDAO, recipeId, entities).execute();
     }
 }

@@ -21,14 +21,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private final OnItemClickListener clickListener;
     private OnItemLongClickListener longClickListener;
 
-    // Selection Logic (Home Screen)
     private final SparseBooleanArray selectedItems = new SparseBooleanArray();
     private OnFavoriteClickListener favoriteClickListener;
 
-    // --- NEW: Mode Flag ---
     private boolean isSimpleMode = false;
 
-    // --- INTERFACES ---
     public interface OnItemClickListener {
         void onItemClick(Recipe recipe);
     }
@@ -41,7 +38,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         void onFavoriteClick(Recipe recipe);
     }
 
-    // --- CONSTRUCTOR 1: Normal Mode (Home Fragment) ---
     public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
         this.recipeList = recipeList;
         this.clickListener = clickListener;
@@ -49,12 +45,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.isSimpleMode = false; // Default: Card View
     }
 
-    // --- CONSTRUCTOR 2: Simple Mode (Add Meal Dialog) ---
     public RecipeAdapter(List<Recipe> recipeList, OnItemClickListener clickListener, boolean isSimpleMode) {
         this.recipeList = recipeList;
         this.clickListener = clickListener;
-        this.longClickListener = null; // No long click in dialog
-        this.isSimpleMode = isSimpleMode; // True = Simple List View
+        this.longClickListener = null;
+        this.isSimpleMode = isSimpleMode;
     }
 
     public void setOnFavoriteClickListener(OnFavoriteClickListener listener) {
@@ -71,10 +66,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layoutId;
         if (isSimpleMode) {
-            // Use the simple wireframe layout
             layoutId = R.layout.item_recipe_for_mealplan;
         } else {
-            // Use the card layout
             layoutId = R.layout.item_recipe_card;
         }
 
@@ -86,26 +79,20 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Recipe currentRecipe = recipeList.get(position);
 
-        // 1. Bind Title (Common to both)
         if (holder.title != null) {
             holder.title.setText(currentRecipe.getTitle());
         }
 
-        // --- MODE A: SIMPLE LIST (Dialog) ---
         if (isSimpleMode) {
-            // Logic: Show Star if pinned, Hide otherwise
             if (holder.pinIcon != null) {
                 boolean isPinned = currentRecipe.getPinned() != null && currentRecipe.getPinned();
                 holder.pinIcon.setVisibility(isPinned ? View.VISIBLE : View.GONE);
             }
 
-            // Simple Click Listener
             holder.itemView.setOnClickListener(v -> clickListener.onItemClick(currentRecipe));
         }
 
-        // --- MODE B: CARD VIEW (Home) ---
         else {
-            // Logic: Images, Glide, Hearts, Overlays
             String imagePath = currentRecipe.getRecipeImage();
             if (holder.image != null) {
                 if (imagePath != null && !imagePath.isEmpty()) {
@@ -119,7 +106,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 }
             }
 
-            // Heart Icon Logic
             if (holder.favoriteIcon != null) {
                 if (currentRecipe.getPinned() != null && currentRecipe.getPinned()) {
                     holder.favoriteIcon.setImageResource(R.drawable.ic_favorite);
@@ -131,7 +117,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 });
             }
 
-            // Overlay / Selection Logic
             if (selectedItems.get(currentRecipe.getRecipeId(), false)) {
                 if (holder.overlay != null) holder.overlay.setVisibility(View.VISIBLE);
                 if (holder.checkIcon != null) holder.checkIcon.setVisibility(View.VISIBLE);
@@ -140,7 +125,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 if (holder.checkIcon != null) holder.checkIcon.setVisibility(View.GONE);
             }
 
-            // Click Listeners
             holder.itemView.setOnClickListener(v -> clickListener.onItemClick(currentRecipe));
             holder.itemView.setOnLongClickListener(v -> {
                 if (longClickListener != null) longClickListener.onItemLongClick(currentRecipe);
@@ -154,7 +138,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return recipeList == null ? 0 : recipeList.size();
     }
 
-    // --- SELECTION HELPERS (Home Only) ---
     public void toggleSelection(int recipeId) {
         if (isSimpleMode) return; // Disable for dialog
         boolean existsInList = recipeList.stream().anyMatch(r -> r.getRecipeId() == recipeId);
@@ -188,7 +171,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return items;
     }
 
-    // --- VIEW HOLDER ---
     public static class RecipeViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public ImageView image;
@@ -196,18 +178,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         public ImageView checkIcon;
         public ImageView favoriteIcon;
 
-        // New for Simple Mode
         public ImageView pinIcon;
 
         public RecipeViewHolder(@NonNull View itemView, boolean isSimpleMode) {
             super(itemView);
 
             if (isSimpleMode) {
-                // IDs from item_meal_plan_search_recipe.xml
                 title = itemView.findViewById(R.id.tv_recipe_title);
                 pinIcon = itemView.findViewById(R.id.iv_pin_icon);
             } else {
-                // IDs from item_recipe_card.xml
                 title = itemView.findViewById(R.id.txt_recipe_title);
                 image = itemView.findViewById(R.id.img_recipe);
                 overlay = itemView.findViewById(R.id.view_overlay);

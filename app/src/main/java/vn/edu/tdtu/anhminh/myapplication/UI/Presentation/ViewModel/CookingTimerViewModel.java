@@ -21,7 +21,7 @@ public class CookingTimerViewModel extends AndroidViewModel {
     private final CancelCountdownTimerUseCase cancelTimerUseCase;
 
     private CountDownTimer uiTimer;
-    private final int NOTIFICATION_ID = 1001; // Unique ID for this timer
+    private final int NOTIFICATION_ID = 1001;
 
     // LiveData for UI
     private final MutableLiveData<String> timeLeftText = new MutableLiveData<>("00:00:00");
@@ -31,14 +31,11 @@ public class CookingTimerViewModel extends AndroidViewModel {
     public CookingTimerViewModel(@NonNull Application application) {
         super(application);
 
-        // 1. Initialize Infrastructure
         AlarmScheduler alarmScheduler = new AlarmScheduler(application);
 
-        // 2. Initialize Use Cases
         this.startTimerUseCase = new StartCountdownTimerUseCase(alarmScheduler);
         this.cancelTimerUseCase = new CancelCountdownTimerUseCase(alarmScheduler);
 
-        // Ensure Notification Channel exists
         Channels.createChannels(application);
     }
 
@@ -50,8 +47,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
     public void startCookingTimer(long durationMillis) {
         if (durationMillis <= 0) return;
 
-        // A. Schedule the Background Notification (System Alarm)
-        // This ensures the notification sends even if app is killed
         startTimerUseCase.execute(
                 durationMillis,
                 NOTIFICATION_ID,
@@ -69,20 +64,16 @@ public class CookingTimerViewModel extends AndroidViewModel {
                 }
         );
 
-        // B. Start the Foreground UI Counter (Visuals)
         startUITimer(durationMillis);
     }
 
     public void stopCookingTimer() {
-        // A. Cancel System Alarm
         cancelTimerUseCase.execute(NOTIFICATION_ID, null);
 
-        // B. Cancel UI Timer
         if (uiTimer != null) {
             uiTimer.cancel();
         }
 
-        // Reset UI
         isTimerRunning.setValue(false);
         timeLeftText.setValue("00:00:00");
         progress.setValue(100);
@@ -94,7 +85,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
         uiTimer = new CountDownTimer(durationTotal, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                // 1. Calculate Hours, Minutes, Seconds
                 long totalSeconds = millisUntilFinished / 1000;
 
                 long hours = totalSeconds / 3600;
@@ -102,7 +92,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
                 long minutes = remainder / 60;
                 long seconds = remainder % 60;
 
-                // 2. Format String based on duration
                 String timeFormatted;
                 if (hours > 0) {
                     timeFormatted = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
@@ -112,7 +101,6 @@ public class CookingTimerViewModel extends AndroidViewModel {
 
                 timeLeftText.setValue(timeFormatted);
 
-                // 3. Update Progress Bar (Shrink effect)
                 int progressPercent = (int) ((millisUntilFinished * 100) / durationTotal);
                 progress.setValue(progressPercent);
             }

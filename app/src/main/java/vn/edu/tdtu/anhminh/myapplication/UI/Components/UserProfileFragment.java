@@ -53,7 +53,6 @@ public class UserProfileFragment extends Fragment {
 
         pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
-                // Save to internal storage immediately
                 String localPath = saveImageToInternalStorage(uri);
                 if (localPath != null) {
                     selectedAvatarUri = localPath;

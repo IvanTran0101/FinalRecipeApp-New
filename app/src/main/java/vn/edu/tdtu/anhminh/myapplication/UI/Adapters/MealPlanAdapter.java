@@ -156,7 +156,6 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.ViewHo
 
                     chip.setCloseIconVisible(true);
                     chip.setOnCloseIconClickListener(v -> {
-                        // Safe access to Plan Domain Model
                         listener.onRemoveMealClick(item.getPlan());
                     });
                     mealChipGroup.addView(chip);

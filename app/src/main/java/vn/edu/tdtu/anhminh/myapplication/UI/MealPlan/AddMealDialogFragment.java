@@ -74,7 +74,6 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
             selectedDay = (Calendar) getArguments().getSerializable(ARG_DAY);
         }
 
-        // 3. Initialize ViewModel (Use requireActivity() to share data)
         ViewModelFactory factory = Injection.provideViewModelFactory();
         viewModel = new ViewModelProvider(requireActivity(), factory).get(RecipeViewModel.class);
 
@@ -82,7 +81,6 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_recipes);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // 4. Initialize Adapter
         recipeAdapter = new RecipeAdapter(new ArrayList<>(), recipe -> {
             if (listener != null) {
                 listener.onRecipeSelected(recipe, selectedDay);
@@ -91,10 +89,8 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
         }, true);
         recyclerView.setAdapter(recipeAdapter);
 
-        // 5. OBSERVE DATA (This fixes the "Nothing Displayed" error)
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), recipes -> {
             if (recipes != null) {
-                // Optional: Sort Pinned recipes to top
                 List<Recipe> sortedList = recipes.stream()
                         .sorted((r1, r2) -> {
                             boolean p1 = r1.getPinned() != null && r1.getPinned();
@@ -106,10 +102,8 @@ public class AddMealDialogFragment extends BottomSheetDialogFragment {
             }
         });
 
-        // 6. Load Initial Data
         viewModel.search("");
 
-        // 7. Implement Search Logic
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

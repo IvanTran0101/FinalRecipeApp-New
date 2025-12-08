@@ -104,7 +104,6 @@ public class MapFragment extends Fragment {
 
                 for (DisplayNearbyStoreUseCase.Store store : stores) {
                     Marker marker = new Marker(map);
-                    // Access public fields directly
                     marker.setPosition(new GeoPoint(store.lat, store.lon));
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                     marker.setTitle(store.name);

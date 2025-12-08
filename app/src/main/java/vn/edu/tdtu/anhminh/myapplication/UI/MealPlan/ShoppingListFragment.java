@@ -36,7 +36,6 @@ public class ShoppingListFragment extends Fragment {
             NavHostFragment.findNavController(this).popBackStack();
         });
 
-        // Use requireActivity() so it shares the same ViewModel instance as MealPlanFragment
         viewModel = new ViewModelProvider(requireActivity()).get(MealPlanViewModel.class);
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_shopping_list);
@@ -44,14 +43,12 @@ public class ShoppingListFragment extends Fragment {
         adapter = new ShoppingListAdapter();
         recyclerView.setAdapter(adapter);
 
-        // Fetch Logic
         UserPrefs prefs = UserPrefs.getInstance(requireContext());
         int userId = prefs.getUserId();
         int weekId = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
 
         viewModel.generateShoppingList(userId, weekId);
 
-        // Observe Result
         viewModel.getShoppingList().observe(getViewLifecycleOwner(), items -> {
             adapter.setItems(items);
         });

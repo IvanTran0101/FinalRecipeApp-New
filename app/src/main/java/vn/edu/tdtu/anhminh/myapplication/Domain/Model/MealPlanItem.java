@@ -1,7 +1,6 @@
 package vn.edu.tdtu.anhminh.myapplication.Domain.Model;
 
 public class MealPlanItem {
-    // We store the Domain Models here, not Entities
     private final Plan plan;
     private final Recipe recipe;
 

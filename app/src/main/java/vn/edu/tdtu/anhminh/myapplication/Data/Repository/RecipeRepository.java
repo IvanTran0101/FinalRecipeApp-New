@@ -105,9 +105,6 @@ public class RecipeRepository {
         return RecipeMapper.toModelList(entities);
     }
 
-    // ---------------------------------------------------
-    // RECIPE: search by title
-    // ---------------------------------------------------
     public LiveData<List<Recipe>> searchRecipes(String searchQuery, int userId) {
         return Transformations.map(
                 recipeDAO.searchRecipesForUser(searchQuery, userId),
